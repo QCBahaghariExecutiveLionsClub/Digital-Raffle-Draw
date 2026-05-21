@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Lucky Draw — Admin Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;800&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --gold:#D4A017; --gold-light:#F5C842;
+  --deep:#1A0A2E; --deep2:#2D1B5E;
+  --accent:#E85D04; --cream:#FFF8EE;
+  --green:#2A9D5C; --red:#C0392B;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{
+  font-family:'Nunito',sans-serif;
+  background:var(--deep);min-height:100vh;
+  color:var(--cream);overflow-x:hidden;
+}
+body::before{
+  content:'';position:fixed;inset:0;
+  background:
+    radial-gradient(ellipse at 20% 20%,rgba(212,160,23,.1) 0%,transparent 50%),
+    radial-gradient(ellipse at 80% 80%,rgba(232,93,4,.08) 0%,transparent 50%),
+    radial-gradient(ellipse at 50% 50%,rgba(45,27,94,.8) 0%,var(--deep) 100%);
+  z-index:0;pointer-events:none;
+}
+.stars{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+.star{position:absolute;background:#fff;border-radius:50%;animation:twinkle var(--d,3s) ease-in-out infinite var(--delay,0s);}
+@keyframes twinkle{0%,100%{opacity:.1;}50%{opacity:.7;}}
+
+.page{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:40px 20px 80px;}
+
+header{text-align:center;margin-bottom:36px;}
+.logo-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:linear-gradient(135deg,var(--gold),var(--accent));
+  padding:7px 20px;border-radius:100px;
+  font-family:'Playfair Display',serif;font-size:12px;letter-spacing:3px;text-transform:uppercase;
+  color:#fff;margin-bottom:16px;box-shadow:0 4px 20px rgba(212,160,23,.4);
+}
+header h1{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(1.8rem,5vw,3rem);font-weight:800;
+  background:linear-gradient(135deg,var(--gold-light),var(--gold),#fff8);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin-bottom:8px;
+}
+header p{font-size:1rem;color:rgba(255,248,238,.6);}
+
+.nav-links{display:flex;gap:12px;justify-content:center;margin-bottom:30px;flex-wrap:wrap;}
+.nav-links a{
+  color:var(--gold);text-decoration:none;font-weight:700;font-size:.88rem;
+  padding:8px 18px;border:1.5px solid rgba(212,160,23,.3);border-radius:50px;transition:all .2s;
+}
+.nav-links a:hover{background:rgba(212,160,23,.1);border-color:var(--gold);}
+
+/* Search card */
+.search-card{
+  background:rgba(255,255,255,.055);
+  border:1px solid rgba(212,160,23,.25);
+  border-radius:20px;padding:28px 28px;
+  backdrop-filter:blur(16px);
+  box-shadow:0 20px 60px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.08);
+  margin-bottom:24px;
+}
+.search-label{
+  font-size:11px;letter-spacing:3px;text-transform:uppercase;
+  color:var(--gold);font-weight:700;margin-bottom:16px;
+  display:flex;align-items:center;gap:10px;
+}
+.search-label::before,.search-label::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(212,160,23,.4),transparent);}
+
+.search-bar-wrap{display:flex;gap:12px;flex-wrap:wrap;}
+.search-input-wrap{flex:1;position:relative;min-width:200px;}
+.search-icon{
+  position:absolute;left:14px;top:50%;transform:translateY(-50%);
+  font-size:1.1rem;pointer-events:none;
+}
+#searchInput{
+  width:100%;
+  background:rgba(255,255,255,.07);
+  border:1.5px solid rgba(212,160,23,.25);
+  border-radius:12px;
+  padding:14px 16px 14px 46px;
+  font-family:'Nunito',sans-serif;font-size:1rem;
+  color:var(--cream);outline:none;
+  transition:border-color .25s,box-shadow .25s;
+}
+#searchInput::placeholder{color:rgba(255,248,238,.3);}
+#searchInput:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,160,23,.15);}
+
+.filter-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;}
+.filter-tab{
+  padding:7px 16px;border-radius:50px;
+  border:1px solid rgba(212,160,23,.25);
+  background:rgba(212,160,23,.08);
+  color:rgba(255,248,238,.6);font-size:.82rem;font-weight:700;
+  cursor:pointer;transition:all .2s;font-family:'Nunito',sans-serif;
+}
+.filter-tab.active,.filter-tab:hover{
+  background:rgba(212,160,23,.2);
+  border-color:var(--gold);color:var(--gold-light);
+}
+
+.btn-search{
+  padding:14px 28px;
+  background:linear-gradient(135deg,var(--gold),var(--accent));
+  border:none;border-radius:12px;
+  font-family:'Playfair Display',serif;font-size:1rem;font-weight:600;
+  color:#fff;cursor:pointer;transition:all .2s;
+  box-shadow:0 6px 20px rgba(212,160,23,.35);
+  white-space:nowrap;
+}
+.btn-search:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(212,160,23,.45);}
+
+/* Stats row */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:24px;}
+.stat-card{
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(212,160,23,.18);
+  border-radius:16px;padding:18px 20px;
+  text-align:center;
+  backdrop-filter:blur(10px);
+}
+.stat-num{font-family:'Playfair Display',serif;font-size:2rem;font-weight:800;color:var(--gold-light);}
+.stat-label{font-size:.78rem;color:rgba(255,248,238,.5);text-transform:uppercase;letter-spacing:1px;margin-top:4px;}
+
+/* Results */
+.results-wrap{display:flex;flex-direction:column;gap:14px;}
+
+.result-card{
+  background:rgba(255,255,255,.055);
+  border:1px solid rgba(212,160,23,.18);
+  border-radius:16px;
+  backdrop-filter:blur(12px);
+  overflow:hidden;
+  transition:border-color .25s,box-shadow .25s;
+  animation:slideUp .35s ease both;
+}
+@keyframes slideUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:none;}}
+.result-card:hover{border-color:rgba(212,160,23,.4);box-shadow:0 8px 30px rgba(0,0,0,.3);}
+.result-card.winner-card{
+  border-color:rgba(212,160,23,.5);
+  background:linear-gradient(135deg,rgba(212,160,23,.1),rgba(232,93,4,.06));
+}
+
+.card-header{
+  display:flex;align-items:center;gap:14px;
+  padding:16px 20px;
+  border-bottom:1px solid rgba(255,255,255,.05);
+}
+.avatar{
+  width:48px;height:48px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:800;font-size:1.1rem;color:#fff;flex-shrink:0;
+}
+.card-name{font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:700;color:var(--gold-light);}
+.card-ticket{font-family:'Courier New',monospace;font-size:.8rem;color:rgba(255,248,238,.5);margin-top:2px;}
+.winner-badge{
+  margin-left:auto;
+  background:linear-gradient(135deg,var(--gold),var(--accent));
+  padding:5px 14px;border-radius:50px;
+  font-size:.75rem;font-weight:800;color:#fff;
+  white-space:nowrap;
+}
+
+.card-body{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:0;}
+.card-field{
+  padding:12px 20px;
+  border-right:1px solid rgba(255,255,255,.04);
+}
+.card-field:last-child{border-right:none;}
+.field-label{font-size:.72rem;text-transform:uppercase;letter-spacing:1px;color:rgba(255,248,238,.4);margin-bottom:4px;}
+.field-val{font-size:.9rem;font-weight:600;color:var(--cream);}
+
+/* Status chips */
+.chip{
+  display:inline-block;padding:3px 10px;border-radius:20px;font-size:.75rem;font-weight:700;
+}
+.chip-green{background:rgba(42,157,92,.2);color:#5edc9a;border:1px solid rgba(42,157,92,.3);}
+.chip-gold{background:rgba(212,160,23,.2);color:var(--gold-light);border:1px solid rgba(212,160,23,.3);}
+.chip-gray{background:rgba(255,255,255,.08);color:rgba(255,248,238,.5);border:1px solid rgba(255,255,255,.1);}
+
+/* Empty / loading */
+.state-box{
+  background:rgba(255,255,255,.04);border:1px solid rgba(212,160,23,.1);
+  border-radius:16px;padding:60px 20px;text-align:center;
+  color:rgba(255,248,238,.4);
+}
+.state-box .emoji{font-size:3rem;display:block;margin-bottom:12px;}
+.state-box p{font-size:1rem;line-height:1.6;}
+
+.spinner{
+  display:inline-block;width:20px;height:20px;
+  border:2px solid rgba(255,255,255,.2);border-top-color:var(--gold);
+  border-radius:50%;animation:spin .7s linear infinite;
+  vertical-align:middle;margin-right:8px;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* Config banner */
+.config-banner{
+  background:rgba(232,93,4,.12);border:1px solid rgba(232,93,4,.35);
+  border-radius:12px;padding:12px 18px;font-size:.85rem;
+  color:rgba(255,248,238,.8);margin-bottom:20px;
+}
+.config-banner code{background:rgba(0,0,0,.3);padding:2px 6px;border-radius:4px;font-size:.78rem;color:var(--gold-light);}
+
+/* Pagination */
+.pagination{display:flex;gap:8px;justify-content:center;margin-top:20px;flex-wrap:wrap;}
+.page-btn{
+  width:38px;height:38px;border-radius:50%;
+  border:1px solid rgba(212,160,23,.25);
+  background:rgba(212,160,23,.08);color:rgba(255,248,238,.7);
+  font-weight:700;font-size:.9rem;cursor:pointer;
+  transition:all .2s;font-family:'Nunito',sans-serif;
+  display:flex;align-items:center;justify-content:center;
+}
+.page-btn.active,.page-btn:hover{background:rgba(212,160,23,.25);border-color:var(--gold);color:var(--gold-light);}
+.page-btn:disabled{opacity:.3;cursor:not-allowed;}
+
+/* Toast */
+.toast{
+  position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(100px);
+  background:rgba(45,27,94,.95);border:1px solid rgba(212,160,23,.4);
+  color:var(--cream);padding:13px 24px;border-radius:50px;
+  font-weight:700;font-size:.9rem;box-shadow:0 10px 40px rgba(0,0,0,.4);
+  transition:transform .4s cubic-bezier(.34,1.56,.64,1);
+  z-index:1000;white-space:nowrap;
+}
+.toast.show{transform:translateX(-50%) translateY(0);}
+
+@media(max-width:540px){
+  .search-card{padding:20px 16px;}
+  .card-body{grid-template-columns:1fr 1fr;}
+}
+</style>
+</head>
+<body>
+
+<div class="stars" id="stars"></div>
+
+<div class="page">
+  <header>
+    <div class="logo-badge">🔍 Admin Panel</div>
+    <h1>Ticket Checker</h1>
+    <p>Search and verify any registered ticket or winner instantly.</p>
+  </header>
+
+  <div class="nav-links">
+    <a href="registration.html">📋 Register</a>
+    <a href="raffle-draw.html">🎯 Draw</a>
+  </div>
+
+  <!-- <div class="config-banner">
+    ⚙️ Replace <code>https://script.google.com/macros/s/AKfycbzxtytNifMW_EgTPraXCAzRMLgGJYCyeN-g-GK2NEoGCl1fnp-esJAfst049eDtaAHvEQ/exec</code> in the script with your Google Apps Script Web App URL.
+  </div> -->
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-num" id="statTotal">—</div>
+      <div class="stat-label">Total Tickets</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="statParticipants">—</div>
+      <div class="stat-label">Participants</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="statWinners">—</div>
+      <div class="stat-label">Winners Drawn</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="statRevenue">—</div>
+      <div class="stat-label">Total Revenue</div>
+    </div>
+  </div>
+
+  <!-- Search -->
+  <div class="search-card">
+    <div class="search-label">Search Tickets</div>
+    <div class="search-bar-wrap">
+      <div class="search-input-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput"
+          placeholder="Search by name, email, ticket number, or reference..."
+          oninput="onSearchInput()"
+          onkeydown="if(event.key==='Enter')doSearch()"/>
+      </div>
+      <button class="btn-search" onclick="doSearch()">Search</button>
+    </div>
+    <div class="filter-tabs">
+      <button class="filter-tab active" onclick="setFilter('all',this)">All Records</button>
+      <button class="filter-tab" onclick="setFilter('winners',this)">🏆 Winners Only</button>
+      <button class="filter-tab" onclick="setFilter('gcash',this)">GCash</button>
+      <button class="filter-tab" onclick="setFilter('maya',this)">Maya</button>
+      <button class="filter-tab" onclick="setFilter('cash',this)">Cash</button>
+    </div>
+  </div>
+
+  <!-- Results -->
+  <div id="resultsArea">
+    <div class="state-box">
+      <span class="emoji">🔎</span>
+      <p>Enter a name, email, or ticket number above<br/>and press Search to look up records.</p>
+    </div>
+  </div>
+
+  <div class="pagination" id="pagination"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ====== CONFIG ======
+const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbzxtytNifMW_EgTPraXCAzRMLgGJYCyeN-g-GK2NEoGCl1fnp-esJAfst049eDtaAHvEQ/exec';
+
+// ====== STARS ======
+(function(){
+  const c = document.getElementById('stars');
+  for(let i=0;i<60;i++){
+    const s=document.createElement('div');s.className='star';
+    const sz=Math.random()*2+.5;
+    s.style.cssText=`width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${(Math.random()*3+2).toFixed(1)}s;--delay:-${(Math.random()*5).toFixed(1)}s;`;
+    c.appendChild(s);
+  }
+})();
+
+// ====== STATE ======
+let allRecords = [];
+let filteredRecords = [];
+let currentFilter = 'all';
+let currentPage = 1;
+const PAGE_SIZE = 10;
+
+const AVATARCOLORS = ['#E74C3C','#3498DB','#2ECC71','#F39C12','#9B59B6','#1ABC9C','#E67E22','#E91E63'];
+
+// ====== INIT ======
+window.addEventListener('load', async () => {
+  await loadAll();
+});
+
+async function loadAll(){
+  setLoading();
+  try {
+    const resp = await fetch(WEBAPP_URL + '?action=getAll', {mode:'cors'});
+    const data = await resp.json();
+    if(data.success){
+      allRecords = data.records || [];
+      updateStats(data.stats || {});
+    } else { throw new Error(); }
+  } catch(e) {
+    // Demo data fallback
+    allRecords = generateDemoData();
+    updateStats({
+      total: allRecords.length,
+      participants: new Set(allRecords.map(r=>r.email)).size,
+      winners: allRecords.filter(r=>r.isWinner).length,
+      revenue: allRecords.reduce((s,r)=>s+((r.ticketQty||1)*100),0)
+    });
+    showToast('Demo mode: showing sample records', true);
+  }
+  filteredRecords = [...allRecords];
+  renderResults(filteredRecords);
+}
+
+function generateDemoData(){
+  const names = ['Maria Santos','Jose Reyes','Ana Gonzales','Pedro Cruz','Lola Batungbakal','Eduardo Villanueva','Carmen Flores','Roberto Bautista','Gloria Fernandez','Andres Mendoza','Teresita Diaz','Francisco Ramos'];
+  const methods = ['GCash','Maya','Cash','Bank Transfer'];
+  return names.map((name,i)=>({
+    ticketId: 'TKT-' + String(i+1).padStart(3,'0'),
+    name, email: name.split(' ')[0].toLowerCase()+'@example.com',
+    phone: '+63 9' + Math.floor(Math.random()*1e9).toString().slice(0,9),
+    ticketQty: Math.ceil(Math.random()*3),
+    paymentMethod: methods[i%methods.length],
+    referenceNo: 'REF-' + Math.random().toString(36).slice(2,10).toUpperCase(),
+    registeredAt: new Date(Date.now()-Math.random()*7*24*3600000).toLocaleDateString('en-PH'),
+    isWinner: i === 4 || i === 9,
+    winnerRound: i === 4 ? 'Round 1' : i === 9 ? 'Round 2' : null,
+  }));
+}
+
+function updateStats(s){
+  document.getElementById('statTotal').textContent = s.total ?? allRecords.length;
+  document.getElementById('statParticipants').textContent = s.participants ?? '—';
+  document.getElementById('statWinners').textContent = s.winners ?? allRecords.filter(r=>r.isWinner).length;
+  document.getElementById('statRevenue').textContent = s.revenue != null ? '₱'+Number(s.revenue).toLocaleString() : '—';
+}
+
+// ====== SEARCH ======
+let searchTimeout;
+function onSearchInput(){
+  clearTimeout(searchTimeout);
+  searchTimeout = setTimeout(doSearch, 300);
+}
+
+function doSearch(){
+  const q = document.getElementById('searchInput').value.toLowerCase().trim();
+  let results = allRecords;
+
+  // Filter by tab
+  if(currentFilter === 'winners') results = results.filter(r=>r.isWinner);
+  else if(currentFilter !== 'all') results = results.filter(r=>(r.paymentMethod||'').toLowerCase() === currentFilter);
+
+  // Filter by search query
+  if(q){
+    results = results.filter(r=>
+      (r.name||'').toLowerCase().includes(q) ||
+      (r.email||'').toLowerCase().includes(q) ||
+      (r.ticketId||'').toLowerCase().includes(q) ||
+      (r.referenceNo||'').toLowerCase().includes(q) ||
+      (r.phone||'').toLowerCase().includes(q)
+    );
+  }
+
+  filteredRecords = results;
+  currentPage = 1;
+  renderResults(results);
+}
+
+function setFilter(filter, btn){
+  currentFilter = filter;
+  document.querySelectorAll('.filter-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  doSearch();
+}
+
+// ====== RENDER ======
+function setLoading(){
+  document.getElementById('resultsArea').innerHTML = `
+    <div class="state-box">
+      <span class="emoji"><span class="spinner"></span></span>
+      <p>Loading records...</p>
+    </div>`;
+}
+
+function renderResults(records){
+  const area = document.getElementById('resultsArea');
+  const paginator = document.getElementById('pagination');
+
+  if(records.length === 0){
+    area.innerHTML = `<div class="state-box"><span class="emoji">🔍</span><p>No records found matching your search.</p></div>`;
+    paginator.innerHTML = '';
+    return;
+  }
+
+  const total = records.length;
+  const totalPages = Math.ceil(total/PAGE_SIZE);
+  currentPage = Math.min(currentPage, totalPages);
+  const start = (currentPage-1)*PAGE_SIZE;
+  const page = records.slice(start, start+PAGE_SIZE);
+
+  area.innerHTML = `
+    <div style="font-size:.82rem;color:rgba(255,248,238,.4);margin-bottom:12px;">
+      Showing ${start+1}–${Math.min(start+PAGE_SIZE,total)} of ${total} record${total!==1?'s':''}
+    </div>
+    <div class="results-wrap">
+      ${page.map((r,i)=>renderCard(r, start+i)).join('')}
+    </div>`;
+
+  // Pagination
+  if(totalPages > 1){
+    let pages = '';
+    for(let p=1;p<=totalPages;p++){
+      if(p===1||p===totalPages||Math.abs(p-currentPage)<=1){
+        pages+=`<button class="page-btn ${p===currentPage?'active':''}" onclick="goPage(${p})">${p}</button>`;
+      } else if(Math.abs(p-currentPage)===2){
+        pages+=`<button class="page-btn" disabled>…</button>`;
+      }
+    }
+    paginator.innerHTML =
+      `<button class="page-btn" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}>‹</button>` +
+      pages +
+      `<button class="page-btn" onclick="goPage(${currentPage+1})" ${currentPage===totalPages?'disabled':''}>›</button>`;
+  } else {
+    paginator.innerHTML='';
+  }
+}
+
+function renderCard(r, idx){
+  const initials = (r.name||'??').split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
+  const color = AVATARCOLORS[idx % AVATARCOLORS.length];
+  const isWinner = r.isWinner;
+  return `
+  <div class="result-card ${isWinner?'winner-card':''}">
+    <div class="card-header">
+      <div class="avatar" style="background:${color}">${initials}</div>
+      <div>
+        <div class="card-name">${r.name||'—'} ${isWinner?'🏆':''}</div>
+        <div class="card-ticket">${r.ticketId||'—'}</div>
+      </div>
+      ${isWinner?`<div class="winner-badge">🏆 ${r.winnerRound||'Winner'}</div>`:''}
+    </div>
+    <div class="card-body">
+      <div class="card-field">
+        <div class="field-label">Email</div>
+        <div class="field-val">${r.email||'—'}</div>
+      </div>
+      <div class="card-field">
+        <div class="field-label">Phone</div>
+        <div class="field-val">${r.phone||'—'}</div>
+      </div>
+      <div class="card-field">
+        <div class="field-label">Tickets</div>
+        <div class="field-val">${r.ticketQty||1} × ₱100 = ₱${((r.ticketQty||1)*100).toLocaleString()}</div>
+      </div>
+      <div class="card-field">
+        <div class="field-label">Payment</div>
+        <div class="field-val">
+          <span class="chip chip-gold">${r.paymentMethod||'—'}</span>
+        </div>
+      </div>
+      <div class="card-field">
+        <div class="field-label">Reference</div>
+        <div class="field-val" style="font-family:'Courier New',monospace;font-size:.82rem;">${r.referenceNo||'—'}</div>
+      </div>
+      <div class="card-field">
+        <div class="field-label">Registered</div>
+        <div class="field-val">${r.registeredAt||'—'}</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function goPage(p){
+  currentPage = p;
+  renderResults(filteredRecords);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ====== TOAST ======
+function showToast(msg,isWarn=false){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.style.background=isWarn?'rgba(192,57,43,.9)':'rgba(45,27,94,.95)';
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3500);
+}
+</script>
+</body>
+</html>

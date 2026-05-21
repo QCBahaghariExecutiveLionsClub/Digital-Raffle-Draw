@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Lucky Draw — Register</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;800&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --gold: #D4A017;
+    --gold-light: #F5C842;
+    --gold-dark: #A07010;
+    --deep: #1A0A2E;
+    --deep2: #2D1B5E;
+    --accent: #E85D04;
+    --cream: #FFF8EE;
+    --green: #2A9D5C;
+    --red: #C0392B;
+    --card: rgba(255,255,255,0.06);
+    --radius: 16px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--deep);
+    min-height: 100vh;
+    color: var(--cream);
+    overflow-x: hidden;
+  }
+
+  /* Animated starfield background */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 20%, rgba(212,160,23,0.12) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba(232,93,4,0.1) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 50%, rgba(45,27,94,0.8) 0%, var(--deep) 100%);
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .stars {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    overflow: hidden;
+  }
+  .star {
+    position: absolute;
+    background: #fff;
+    border-radius: 50%;
+    animation: twinkle var(--d, 3s) ease-in-out infinite var(--delay, 0s);
+  }
+  @keyframes twinkle {
+    0%,100%{opacity:0.1;transform:scale(1);}
+    50%{opacity:0.8;transform:scale(1.4);}
+  }
+
+  .page-wrap {
+    position: relative; z-index: 1;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 40px 20px 60px;
+    min-height: 100vh;
+  }
+
+  /* Header */
+  header {
+    text-align: center;
+    margin-bottom: 36px;
+    animation: slideDown 0.8s ease both;
+  }
+  @keyframes slideDown { from{opacity:0;transform:translateY(-30px);}to{opacity:1;transform:none;} }
+
+  .logo-badge {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: linear-gradient(135deg, var(--gold), var(--accent));
+    padding: 8px 22px; border-radius: 100px;
+    font-family: 'Playfair Display', serif;
+    font-size: 13px; letter-spacing: 3px; text-transform: uppercase;
+    color: #fff; margin-bottom: 18px;
+    box-shadow: 0 4px 20px rgba(212,160,23,0.4);
+  }
+
+  header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.2rem, 6vw, 3.8rem);
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--gold-light), var(--gold), #fff8);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.1;
+    margin-bottom: 10px;
+    text-shadow: none;
+  }
+
+  header p {
+    font-size: 1.15rem;
+    color: rgba(255,248,238,0.7);
+    max-width: 420px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  /* Form card */
+  .form-card {
+    background: rgba(255,255,255,0.055);
+    border: 1px solid rgba(212,160,23,0.25);
+    border-radius: 24px;
+    padding: 44px 44px;
+    width: 100%; max-width: 580px;
+    backdrop-filter: blur(16px);
+    box-shadow:
+      0 0 0 1px rgba(212,160,23,0.08),
+      0 30px 80px rgba(0,0,0,0.5),
+      inset 0 1px 0 rgba(255,255,255,0.1);
+    animation: fadeUp 0.9s 0.2s ease both;
+  }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(30px);}to{opacity:1;transform:none;} }
+
+  /* Section dividers */
+  .section-label {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 700;
+    margin-bottom: 18px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .section-label::before, .section-label::after {
+    content: ''; flex: 1; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(212,160,23,0.4), transparent);
+  }
+
+  /* Fields */
+  .field-group { margin-bottom: 20px; }
+  .field-row { display: grid; gap: 16px; grid-template-columns: 1fr 1fr; }
+
+  label {
+    display: block;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: rgba(255,248,238,0.75);
+    margin-bottom: 7px;
+    letter-spacing: 0.3px;
+  }
+  label .req { color: var(--gold); margin-left: 2px; }
+
+  input, select, textarea {
+    width: 100%;
+    background: rgba(255,255,255,0.06);
+    border: 1.5px solid rgba(212,160,23,0.2);
+    border-radius: 10px;
+    padding: 13px 16px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 1rem;
+    color: var(--cream);
+    outline: none;
+    transition: border-color 0.25s, background 0.25s, box-shadow 0.25s;
+  }
+  input::placeholder, textarea::placeholder { color: rgba(255,248,238,0.3); }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--gold);
+    background: rgba(212,160,23,0.08);
+    box-shadow: 0 0 0 3px rgba(212,160,23,0.15);
+  }
+  input.error { border-color: var(--red); box-shadow: 0 0 0 3px rgba(192,57,43,0.15); }
+  input.valid { border-color: var(--green); }
+
+  select option { background: var(--deep2); color: var(--cream); }
+
+  .field-hint {
+    font-size: 0.78rem;
+    color: rgba(255,248,238,0.4);
+    margin-top: 5px;
+  }
+  .field-error {
+    font-size: 0.78rem;
+    color: #ff7675;
+    margin-top: 5px;
+    display: none;
+  }
+  .field-error.show { display: block; }
+
+  /* File upload */
+  .upload-zone {
+    border: 2px dashed rgba(212,160,23,0.3);
+    border-radius: 12px;
+    padding: 28px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.25s;
+    position: relative;
+    overflow: hidden;
+  }
+  .upload-zone:hover { border-color: var(--gold); background: rgba(212,160,23,0.06); }
+  .upload-zone input[type="file"] {
+    position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+  }
+  .upload-icon { font-size: 2.2rem; margin-bottom: 8px; }
+  .upload-text { font-size: 0.9rem; color: rgba(255,248,238,0.6); }
+  .upload-text strong { color: var(--gold); }
+  #fileName { font-size: 0.82rem; color: var(--gold-light); margin-top: 8px; }
+  #previewWrap { margin-top: 12px; display: none; }
+  #previewWrap img { max-height: 100px; border-radius: 8px; border: 1px solid rgba(212,160,23,0.3); }
+
+  /* Ticket count */
+  .ticket-counter {
+    display: flex; align-items: center; gap: 0;
+    background: rgba(255,255,255,0.06);
+    border: 1.5px solid rgba(212,160,23,0.2);
+    border-radius: 10px; overflow: hidden; width: fit-content;
+  }
+  .ticket-counter button {
+    width: 44px; height: 48px; background: rgba(212,160,23,0.15);
+    border: none; color: var(--gold-light); font-size: 1.3rem;
+    cursor: pointer; transition: background 0.2s;
+    font-family: inherit;
+  }
+  .ticket-counter button:hover { background: rgba(212,160,23,0.3); }
+  .ticket-counter input {
+    width: 70px; text-align: center; border: none; border-radius: 0;
+    background: transparent;
+    border-left: 1px solid rgba(212,160,23,0.15);
+    border-right: 1px solid rgba(212,160,23,0.15);
+  }
+
+  .price-tag {
+    font-size: 0.85rem; color: rgba(255,248,238,0.5);
+    margin-left: 14px;
+  }
+  .price-tag strong { color: var(--gold-light); font-size: 1rem; }
+
+  /* Submit */
+  .btn-submit {
+    width: 100%;
+    padding: 17px;
+    background: linear-gradient(135deg, var(--gold), var(--accent));
+    border: none;
+    border-radius: 12px;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #fff;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+    box-shadow: 0 8px 30px rgba(212,160,23,0.4);
+    margin-top: 10px;
+    letter-spacing: 0.5px;
+  }
+  .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(212,160,23,0.5); }
+  .btn-submit:active { transform: translateY(0); }
+  .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+  /* Toast / success */
+  .toast {
+    position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px);
+    background: var(--green);
+    color: #fff; padding: 16px 28px; border-radius: 50px;
+    font-weight: 700; font-size: 1rem;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+    transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+    z-index: 1000; white-space: nowrap;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  .toast.error-toast { background: var(--red); }
+
+  /* Success screen */
+  .success-screen {
+    display: none;
+    text-align: center;
+    padding: 20px 0;
+    animation: fadeUp 0.6s ease both;
+  }
+  .success-screen.show { display: block; }
+  .ticket-reveal {
+    background: linear-gradient(135deg, rgba(212,160,23,0.15), rgba(232,93,4,0.1));
+    border: 2px solid rgba(212,160,23,0.4);
+    border-radius: 20px;
+    padding: 30px;
+    margin: 24px 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .ticket-reveal::before {
+    content: '🎫';
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 10px;
+  }
+  .ticket-id {
+    font-family: 'Courier New', monospace;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--gold-light);
+    letter-spacing: 4px;
+    text-shadow: 0 0 20px rgba(212,160,23,0.6);
+  }
+  .ticket-name {
+    font-size: 1rem;
+    color: rgba(255,248,238,0.7);
+    margin-top: 8px;
+  }
+
+  .nav-links {
+    display: flex; gap: 14px; justify-content: center;
+    margin-top: 20px; flex-wrap: wrap;
+  }
+  .nav-links a {
+    color: var(--gold);
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.95rem;
+    padding: 10px 22px;
+    border: 1.5px solid rgba(212,160,23,0.3);
+    border-radius: 50px;
+    transition: all 0.2s;
+  }
+  .nav-links a:hover { background: rgba(212,160,23,0.1); border-color: var(--gold); }
+
+  /* Loading spinner */
+  .spinner {
+    display: inline-block; width: 18px; height: 18px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    vertical-align: middle; margin-right: 8px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Ticket price per ticket label */
+  .ticket-price-row {
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  }
+
+  /* Config banner */
+  .config-banner {
+    background: rgba(232,93,4,0.15);
+    border: 1px solid rgba(232,93,4,0.4);
+    border-radius: 12px;
+    padding: 14px 18px;
+    font-size: 0.85rem;
+    color: rgba(255,248,238,0.8);
+    margin-bottom: 28px;
+    line-height: 1.6;
+  }
+  .config-banner strong { color: var(--accent); }
+  .config-banner code {
+    background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 4px;
+    font-size: 0.8rem; color: var(--gold-light);
+  }
+
+  @media(max-width: 540px){
+    .form-card { padding: 28px 20px; }
+    .field-row { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="stars" id="stars"></div>
+
+<div class="page-wrap">
+  <header>
+    <div class="logo-badge">🎰 Grand Raffle Draw 2025</div>
+    <h1>Secure Your Lucky Ticket</h1>
+    <p>Register now for a chance to win incredible prizes. Every ticket is a chance to change your life!</p>
+  </header>
+
+  <div class="form-card">
+
+    <!-- <div class="config-banner">
+      ⚙️ <strong>Setup required:</strong> Replace <code>https://script.google.com/macros/s/AKfycbzxtytNifMW_EgTPraXCAzRMLgGJYCyeN-g-GK2NEoGCl1fnp-esJAfst049eDtaAHvEQ/exec</code> at the bottom of this page with your Google Apps Script Web App URL. See <strong>README.md</strong> for instructions.
+    </div> -->
+
+    <!-- Registration Form -->
+    <form id="registrationForm" novalidate>
+
+      <div class="section-label">Personal Information</div>
+
+      <div class="field-row">
+        <div class="field-group">
+          <label>First Name <span class="req">*</span></label>
+          <input type="text" id="firstName" name="firstName" placeholder="Juan" autocomplete="given-name"/>
+          <div class="field-error" id="firstNameErr">Please enter your first name.</div>
+        </div>
+        <div class="field-group">
+          <label>Last Name <span class="req">*</span></label>
+          <input type="text" id="lastName" name="lastName" placeholder="Dela Cruz" autocomplete="family-name"/>
+          <div class="field-error" id="lastNameErr">Please enter your last name.</div>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label>Email Address <span class="req">*</span></label>
+        <input type="email" id="email" name="email" placeholder="juan@example.com" autocomplete="email"/>
+        <div class="field-error" id="emailErr">Please enter a valid email address.</div>
+      </div>
+
+      <div class="field-group">
+        <label>Phone Number <span class="req">*</span></label>
+        <input type="tel" id="phone" name="phone" placeholder="+63 912 345 6789" autocomplete="tel"/>
+        <div class="field-error" id="phoneErr">Please enter a valid phone number.</div>
+      </div>
+
+      <div class="section-label" style="margin-top:28px;">Ticket & Payment</div>
+
+      <div class="field-group">
+        <label>Number of Tickets <span class="req">*</span></label>
+        <div class="ticket-price-row">
+          <div class="ticket-counter">
+            <button type="button" onclick="changeQty(-1)">−</button>
+            <input type="number" id="ticketQty" name="ticketQty" value="1" min="1" max="50" readonly/>
+            <button type="button" onclick="changeQty(1)">+</button>
+          </div>
+          <div class="price-tag">× ₱100 = Total: <strong id="totalPrice">₱100</strong></div>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label>Payment Method <span class="req">*</span></label>
+        <select id="paymentMethod" name="paymentMethod">
+          <option value="">— Select payment method —</option>
+          <option value="GCash">GCash</option>
+          <option value="Maya">Maya</option>
+          <option value="Bank Transfer">Bank Transfer</option>
+          <option value="Cash">Cash</option>
+          <option value="Credit Card">Credit Card</option>
+        </select>
+        <div class="field-error" id="paymentErr">Please select a payment method.</div>
+      </div>
+
+      <div class="field-group">
+        <label>Reference / Transaction Number <span class="req">*</span></label>
+        <input type="text" id="referenceNo" name="referenceNo" placeholder="e.g. GC-20250521-XXXX"/>
+        <div class="field-hint">Enter your GCash/Maya/Bank reference number or "CASH" if paying in person.</div>
+        <div class="field-error" id="referenceErr">Please enter your reference or transaction number.</div>
+      </div>
+
+      <div class="section-label" style="margin-top:28px;">Payment Receipt (Optional)</div>
+
+      <div class="field-group">
+        <label>Upload Payment Screenshot</label>
+        <div class="upload-zone" id="uploadZone">
+          <input type="file" id="receiptImage" name="receiptImage" accept="image/*"/>
+          <div class="upload-icon">📸</div>
+          <div class="upload-text">
+            <strong>Click to upload</strong> or drag & drop<br/>
+            PNG, JPG, WEBP up to 5MB
+          </div>
+          <div id="fileName"></div>
+          <div id="previewWrap"><img id="previewImg" src="" alt="Preview"/></div>
+        </div>
+        <div class="field-error" id="imageErr">File size must be under 5MB.</div>
+      </div>
+
+      <button type="submit" class="btn-submit" id="submitBtn">
+        🎟️ Register My Ticket
+      </button>
+    </form>
+
+    <!-- Success Screen -->
+    <div class="success-screen" id="successScreen">
+      <div style="font-size:3.5rem; margin-bottom:8px;">🎉</div>
+      <h2 style="font-family:'Playfair Display',serif; font-size:1.8rem; color:var(--gold-light); margin-bottom:8px;">You're In!</h2>
+      <p style="color:rgba(255,248,238,0.6); margin-bottom:4px;">Your ticket has been registered successfully.</p>
+
+      <div class="ticket-reveal">
+        <div class="ticket-id" id="ticketIdDisplay">—</div>
+        <div class="ticket-name" id="ticketNameDisplay"></div>
+      </div>
+
+      <p style="font-size:0.85rem; color:rgba(255,248,238,0.5);">Screenshot or write down your Ticket ID. You'll need it to claim your prize.</p>
+
+      <div class="nav-links">
+        <a href="raffle-draw.html">🎯 Watch the Draw</a>
+        <a href="registration.html" onclick="resetForm()">＋ Register Another</a>
+        <a href="admin.html">🔍 Admin Panel</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast">✓ Registration successful!</div>
+
+<script>
+  // ====== CONFIGURATION ======
+  const WEBAPP_URL = 'YOUR_WEBAPP_URL'; // Replace with your Google Apps Script Web App URL
+  const TICKET_PRICE = 100;
+
+  // ====== STARS ======
+  (function(){
+    const container = document.getElementById('stars');
+    for(let i = 0; i < 80; i++){
+      const s = document.createElement('div');
+      s.className = 'star';
+      const size = Math.random() * 2.5 + 0.5;
+      s.style.cssText = `
+        width:${size}px; height:${size}px;
+        top:${Math.random()*100}%;
+        left:${Math.random()*100}%;
+        --d:${(Math.random()*3+2).toFixed(1)}s;
+        --delay:-${(Math.random()*5).toFixed(1)}s;
+      `;
+      container.appendChild(s);
+    }
+  })();
+
+  // ====== TICKET COUNTER ======
+  function changeQty(delta){
+    const inp = document.getElementById('ticketQty');
+    let val = parseInt(inp.value) + delta;
+    val = Math.max(1, Math.min(50, val));
+    inp.value = val;
+    document.getElementById('totalPrice').textContent = '₱' + (val * TICKET_PRICE).toLocaleString();
+  }
+
+  // ====== FILE UPLOAD PREVIEW ======
+  document.getElementById('receiptImage').addEventListener('change', function(e){
+    const file = e.target.files[0];
+    const err = document.getElementById('imageErr');
+    err.classList.remove('show');
+    document.getElementById('fileName').textContent = '';
+    document.getElementById('previewWrap').style.display = 'none';
+
+    if(!file) return;
+
+    if(file.size > 5 * 1024 * 1024){
+      err.classList.add('show');
+      e.target.value = '';
+      return;
+    }
+    document.getElementById('fileName').textContent = '📎 ' + file.name;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      document.getElementById('previewImg').src = ev.target.result;
+      document.getElementById('previewWrap').style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+  });
+
+  // ====== VALIDATION ======
+  function validateField(id, errId, test){
+    const el = document.getElementById(id);
+    const err = document.getElementById(errId);
+    const valid = test(el.value.trim());
+    el.classList.toggle('error', !valid);
+    el.classList.toggle('valid', valid);
+    err.classList.toggle('show', !valid);
+    return valid;
+  }
+
+  function validateAll(){
+    const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneRe = /^[\d\s\+\-\(\)]{7,20}$/;
+    let ok = true;
+    ok = validateField('firstName','firstNameErr', v => v.length >= 2) && ok;
+    ok = validateField('lastName','lastNameErr', v => v.length >= 2) && ok;
+    ok = validateField('email','emailErr', v => emailRe.test(v)) && ok;
+    ok = validateField('phone','phoneErr', v => phoneRe.test(v)) && ok;
+    ok = validateField('paymentMethod','paymentErr', v => v !== '') && ok;
+    ok = validateField('referenceNo','referenceErr', v => v.length >= 2) && ok;
+    return ok;
+  }
+
+  // Live validation
+  ['firstName','lastName','email','phone','referenceNo'].forEach(id => {
+    document.getElementById(id).addEventListener('blur', () => validateAll());
+  });
+  document.getElementById('paymentMethod').addEventListener('change', () => validateAll());
+
+  // ====== IMAGE TO BASE64 ======
+  async function toBase64(file){
+    return new Promise((res, rej) => {
+      if(!file){ res(null); return; }
+      const r = new FileReader();
+      r.onload = e => res(e.target.result.split(',')[1]);
+      r.onerror = rej;
+      r.readAsDataURL(file);
+    });
+  }
+
+  // ====== FORM SUBMIT ======
+  document.getElementById('registrationForm').addEventListener('submit', async function(e){
+    e.preventDefault();
+    if(!validateAll()) return;
+
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Registering...';
+
+    const imgFile = document.getElementById('receiptImage').files[0];
+    const imgData = await toBase64(imgFile);
+
+    const payload = {
+      action: 'register',
+      firstName: document.getElementById('firstName').value.trim(),
+      lastName: document.getElementById('lastName').value.trim(),
+      email: document.getElementById('email').value.trim(),
+      phone: document.getElementById('phone').value.trim(),
+      ticketQty: document.getElementById('ticketQty').value,
+      paymentMethod: document.getElementById('paymentMethod').value,
+      referenceNo: document.getElementById('referenceNo').value.trim(),
+      receiptImage: imgData || null,
+      receiptFileName: imgFile ? imgFile.name : null
+    };
+
+    try {
+      const resp = await fetch(WEBAPP_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+        mode: 'cors'
+      });
+      const data = await resp.json();
+
+      if(data.success){
+        // Show success screen
+        document.getElementById('registrationForm').style.display = 'none';
+        const ss = document.getElementById('successScreen');
+        ss.classList.add('show');
+        document.getElementById('ticketIdDisplay').textContent = data.ticketIds.join(', ');
+        document.getElementById('ticketNameDisplay').textContent =
+          payload.firstName + ' ' + payload.lastName + ' — ' + data.ticketIds.length + ' ticket(s)';
+        showToast('Registration successful! 🎉');
+      } else {
+        showToast('Error: ' + (data.message || 'Something went wrong.'), true);
+        btn.disabled = false;
+        btn.innerHTML = '🎟️ Register My Ticket';
+      }
+    } catch(err) {
+      // Demo mode (no backend connected)
+      const demoId = 'TKT-' + Date.now().toString().slice(-6);
+      document.getElementById('registrationForm').style.display = 'none';
+      document.getElementById('successScreen').classList.add('show');
+      document.getElementById('ticketIdDisplay').textContent = demoId;
+      document.getElementById('ticketNameDisplay').textContent =
+        payload.firstName + ' ' + payload.lastName + ' (Demo Mode — backend not connected)';
+      showToast('Demo mode: Backend not connected.', true);
+    }
+  });
+
+  function showToast(msg, isError = false){
+    const t = document.getElementById('toast');
+    t.textContent = (isError ? '⚠️ ' : '✓ ') + msg;
+    t.className = 'toast' + (isError ? ' error-toast' : '') + ' show';
+    setTimeout(() => t.classList.remove('show'), 4500);
+  }
+
+  function resetForm(){
+    document.getElementById('registrationForm').reset();
+    document.getElementById('registrationForm').style.display = '';
+    document.getElementById('successScreen').classList.remove('show');
+    document.getElementById('submitBtn').disabled = false;
+    document.getElementById('submitBtn').innerHTML = '🎟️ Register My Ticket';
+    document.getElementById('ticketQty').value = 1;
+    document.getElementById('totalPrice').textContent = '₱100';
+    document.getElementById('previewWrap').style.display = 'none';
+    document.getElementById('fileName').textContent = '';
+    ['firstName','lastName','email','phone','referenceNo'].forEach(id=>{
+      const el = document.getElementById(id);
+      el.classList.remove('error','valid');
+    });
+    document.querySelectorAll('.field-error').forEach(e=>e.classList.remove('show'));
+  }
+</script>
+</body>
+</html>

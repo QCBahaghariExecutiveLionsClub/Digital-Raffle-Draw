@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Lucky Draw — Raffle Draw</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --gold:#D4A017; --gold-light:#F5C842; --gold-pale:#FFF3CC;
+  --deep:#1A0A2E; --deep2:#2D1B5E; --deep3:#3D2575;
+  --accent:#E85D04; --cream:#FFF8EE;
+  --green:#2A9D5C; --red:#C0392B;
+  --ball1:#E74C3C; --ball2:#3498DB; --ball3:#2ECC71;
+  --ball4:#F39C12; --ball5:#9B59B6; --ball6:#1ABC9C;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{
+  font-family:'Nunito',sans-serif;
+  background:var(--deep);
+  min-height:100vh; color:var(--cream);
+  overflow-x:hidden;
+}
+body::before{
+  content:'';position:fixed;inset:0;
+  background:
+    radial-gradient(ellipse at 15% 15%,rgba(212,160,23,.15) 0%,transparent 50%),
+    radial-gradient(ellipse at 85% 85%,rgba(232,93,4,.12) 0%,transparent 50%),
+    radial-gradient(ellipse at 50% 50%,rgba(45,27,94,.8) 0%,var(--deep) 100%);
+  z-index:0;pointer-events:none;
+}
+.stars{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+.star{position:absolute;background:#fff;border-radius:50%;animation:twinkle var(--d,3s) ease-in-out infinite var(--delay,0s);}
+@keyframes twinkle{0%,100%{opacity:.1;transform:scale(1);}50%{opacity:.85;transform:scale(1.5);}}
+
+/* ---- Layout ---- */
+.page{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;padding:30px 20px 80px;}
+
+header{text-align:center;margin-bottom:32px;}
+.logo-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:linear-gradient(135deg,var(--gold),var(--accent));
+  padding:7px 20px;border-radius:100px;
+  font-family:'Playfair Display',serif;font-size:12px;letter-spacing:3px;text-transform:uppercase;
+  color:#fff;margin-bottom:16px;box-shadow:0 4px 20px rgba(212,160,23,.4);
+}
+header h1{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(2rem,6vw,3.5rem);font-weight:800;
+  background:linear-gradient(135deg,var(--gold-light),var(--gold),#fff8);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  line-height:1.1;margin-bottom:10px;
+}
+header p{font-size:1.1rem;color:rgba(255,248,238,.65);max-width:500px;margin:0 auto;}
+
+/* ---- Nav ---- */
+.nav-links{display:flex;gap:12px;justify-content:center;margin-bottom:30px;flex-wrap:wrap;}
+.nav-links a{
+  color:var(--gold);text-decoration:none;font-weight:700;font-size:.9rem;
+  padding:9px 20px;border:1.5px solid rgba(212,160,23,.3);border-radius:50px;transition:all .2s;
+}
+.nav-links a:hover{background:rgba(212,160,23,.1);border-color:var(--gold);}
+
+/* ---- Main grid ---- */
+.main-grid{display:grid;gap:24px;width:100%;max-width:1100px;grid-template-columns:1fr 340px;}
+
+/* ---- Draw Stage ---- */
+.draw-stage{
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(212,160,23,.2);
+  border-radius:24px;
+  backdrop-filter:blur(16px);
+  box-shadow:0 30px 80px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.08);
+  overflow:hidden;
+}
+
+/* Machine */
+.machine-wrap{
+  background:linear-gradient(180deg,rgba(45,27,94,.9) 0%,rgba(26,10,46,1) 100%);
+  padding:30px 20px 20px;
+  position:relative;
+  border-bottom:1px solid rgba(212,160,23,.15);
+}
+.machine-title{
+  font-family:'Playfair Display',serif;
+  font-size:1.1rem;text-align:center;color:var(--gold-light);
+  margin-bottom:20px;letter-spacing:1px;
+}
+
+/* Ball drum */
+#ballDrum{
+  width:240px;height:240px;
+  border-radius:50%;
+  background:
+    radial-gradient(circle at 35% 35%,rgba(255,255,255,.1) 0%,transparent 60%),
+    linear-gradient(135deg,rgba(212,160,23,.15),rgba(232,93,4,.1));
+  border:3px solid rgba(212,160,23,.4);
+  box-shadow:
+    0 0 0 6px rgba(212,160,23,.08),
+    0 0 40px rgba(212,160,23,.2),
+    inset 0 0 40px rgba(0,0,0,.4);
+  margin:0 auto;
+  position:relative;
+  overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+}
+#drumInner{
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  transition:transform .1s;
+}
+.drum-ball{
+  position:absolute;
+  width:42px;height:42px;
+  border-radius:50%;
+  font-weight:800;font-size:.85rem;color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 12px rgba(0,0,0,.4),inset 0 -4px 8px rgba(0,0,0,.3),inset 0 4px 8px rgba(255,255,255,.2);
+  cursor:default;
+  transition:transform .15s;
+  will-change:transform;
+}
+.drum-label{
+  text-align:center;
+  font-size:.8rem;color:rgba(255,248,238,.5);
+  margin-top:14px;
+}
+
+/* Tube / chute */
+.tube{
+  width:60px;height:80px;
+  background:linear-gradient(180deg,rgba(212,160,23,.15),rgba(212,160,23,.05));
+  border:2px solid rgba(212,160,23,.3);
+  border-radius:0 0 30px 30px;
+  margin:0 auto;position:relative;
+  display:flex;align-items:flex-end;justify-content:center;
+  padding-bottom:8px;
+}
+#selectedBall{
+  width:46px;height:46px;
+  border-radius:50%;
+  display:none;
+  font-weight:800;font-size:.95rem;color:#fff;
+  align-items:center;justify-content:center;
+  box-shadow:0 4px 16px rgba(0,0,0,.5),inset 0 -4px 8px rgba(0,0,0,.3),inset 0 4px 8px rgba(255,255,255,.25);
+  animation:dropIn .5s cubic-bezier(.34,1.56,.64,1) both;
+}
+@keyframes dropIn{from{transform:translateY(-60px);opacity:0;}to{transform:none;opacity:1;}}
+
+/* Result Banner */
+.result-banner{
+  padding:24px 28px;text-align:center;
+  display:none;
+  animation:fadeUp .7s cubic-bezier(.34,1.56,.64,1) both;
+}
+.result-banner.show{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:none;}}
+.winner-badge{
+  display:inline-block;
+  background:linear-gradient(135deg,var(--gold),var(--accent));
+  padding:6px 20px;border-radius:100px;
+  font-size:.8rem;letter-spacing:2px;text-transform:uppercase;font-weight:800;
+  margin-bottom:14px;color:#fff;
+  box-shadow:0 4px 20px rgba(212,160,23,.5);
+}
+.winner-name{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(1.5rem,4vw,2.4rem);font-weight:800;
+  color:var(--gold-light);margin-bottom:6px;
+}
+.winner-ticket{
+  font-family:'Courier New',monospace;
+  font-size:1.2rem;color:rgba(255,248,238,.7);
+  letter-spacing:2px;margin-bottom:4px;
+}
+.winner-email{font-size:.9rem;color:rgba(255,248,238,.5);}
+
+/* Controls */
+.controls{padding:20px 28px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+.btn{
+  padding:14px 28px;border:none;border-radius:12px;
+  font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:600;
+  cursor:pointer;transition:all .2s;letter-spacing:.3px;
+}
+.btn-draw{
+  background:linear-gradient(135deg,var(--gold),var(--accent));
+  color:#fff;box-shadow:0 8px 30px rgba(212,160,23,.4);
+  font-size:1.15rem;padding:16px 36px;
+}
+.btn-draw:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(212,160,23,.5);}
+.btn-draw:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+.btn-secondary{
+  background:rgba(212,160,23,.12);
+  border:1.5px solid rgba(212,160,23,.3);
+  color:var(--gold-light);
+}
+.btn-secondary:hover{background:rgba(212,160,23,.2);}
+.btn-load{
+  background:rgba(42,157,92,.15);
+  border:1.5px solid rgba(42,157,92,.3);
+  color:#5edc9a;
+}
+.btn-load:hover{background:rgba(42,157,92,.25);}
+
+/* ---- Participants Panel ---- */
+.panel{
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(212,160,23,.2);
+  border-radius:24px;
+  backdrop-filter:blur(16px);
+  box-shadow:0 30px 80px rgba(0,0,0,.4);
+  display:flex;flex-direction:column;
+  height:fit-content;
+  max-height:780px;
+}
+.panel-header{
+  padding:20px 22px 14px;
+  border-bottom:1px solid rgba(212,160,23,.15);
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:10px;
+}
+.panel-header h3{
+  font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--gold-light);
+}
+.count-badge{
+  background:rgba(212,160,23,.2);border:1px solid rgba(212,160,23,.3);
+  border-radius:20px;padding:4px 12px;font-size:.8rem;color:var(--gold-light);font-weight:700;
+}
+
+.search-bar{
+  padding:12px 16px;
+  border-bottom:1px solid rgba(212,160,23,.1);
+}
+.search-bar input{
+  width:100%;background:rgba(255,255,255,.06);
+  border:1px solid rgba(212,160,23,.2);border-radius:8px;
+  padding:9px 14px;font-family:'Nunito',sans-serif;
+  font-size:.9rem;color:var(--cream);outline:none;
+  transition:border-color .2s;
+}
+.search-bar input:focus{border-color:var(--gold);}
+.search-bar input::placeholder{color:rgba(255,248,238,.3);}
+
+.participants-list{
+  overflow-y:auto;padding:10px 12px;flex:1;
+  max-height:480px;
+}
+.participants-list::-webkit-scrollbar{width:5px;}
+.participants-list::-webkit-scrollbar-track{background:transparent;}
+.participants-list::-webkit-scrollbar-thumb{background:rgba(212,160,23,.3);border-radius:3px;}
+
+.participant-item{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 12px;border-radius:10px;
+  transition:background .2s;cursor:default;
+  border-bottom:1px solid rgba(255,255,255,.04);
+}
+.participant-item:hover{background:rgba(212,160,23,.07);}
+.participant-item.winner-item{
+  background:linear-gradient(135deg,rgba(212,160,23,.2),rgba(232,93,4,.1));
+  border:1px solid rgba(212,160,23,.4);
+  animation:winnerPulse 1.5s ease infinite;
+}
+@keyframes winnerPulse{0%,100%{box-shadow:0 0 0 0 rgba(212,160,23,.3);}50%{box-shadow:0 0 0 6px rgba(212,160,23,.0);}}
+
+.p-avatar{
+  width:36px;height:36px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:800;font-size:.9rem;color:#fff;flex-shrink:0;
+}
+.p-info{flex:1;min-width:0;}
+.p-name{font-weight:700;font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.p-ticket{font-size:.75rem;color:rgba(255,248,238,.45);font-family:'Courier New',monospace;}
+.p-badge{font-size:.7rem;background:rgba(212,160,23,.25);color:var(--gold-light);padding:2px 8px;border-radius:20px;white-space:nowrap;}
+
+.empty-state{
+  text-align:center;padding:40px 20px;
+  color:rgba(255,248,238,.35);font-size:.9rem;
+}
+.empty-state .emoji{font-size:2.5rem;display:block;margin-bottom:10px;}
+
+/* ---- Winners log at bottom ---- */
+.winners-log{
+  width:100%;max-width:1100px;
+  background:rgba(212,160,23,.06);
+  border:1px solid rgba(212,160,23,.2);
+  border-radius:20px;
+  margin-top:24px;
+  overflow:hidden;
+}
+.winners-log-header{
+  padding:16px 22px;
+  border-bottom:1px solid rgba(212,160,23,.15);
+  font-family:'Playfair Display',serif;font-size:1rem;color:var(--gold-light);
+  display:flex;align-items:center;gap:10px;
+}
+.winners-log-body{padding:16px 22px;display:flex;flex-wrap:wrap;gap:12px;}
+.winner-chip{
+  background:rgba(212,160,23,.12);border:1px solid rgba(212,160,23,.3);
+  border-radius:50px;padding:8px 16px;
+  font-size:.85rem;color:var(--cream);
+  display:flex;align-items:center;gap:8px;
+}
+.winner-chip .wc-name{font-weight:700;color:var(--gold-light);}
+.winner-chip .wc-ticket{font-family:'Courier New',monospace;font-size:.75rem;color:rgba(255,248,238,.5);}
+
+/* ---- Confetti canvas ---- */
+#confettiCanvas{
+  position:fixed;inset:0;pointer-events:none;z-index:999;
+  display:none;
+}
+
+/* ---- Spinning animation ---- */
+.spinning #drumInner{animation:drumSpin 0.08s linear infinite;}
+@keyframes drumSpin{to{transform:rotate(360deg);}}
+
+/* Toast */
+.toast{
+  position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(100px);
+  background:rgba(45,27,94,.95);border:1px solid rgba(212,160,23,.4);
+  color:var(--cream);padding:14px 26px;border-radius:50px;
+  font-weight:700;font-size:.95rem;
+  box-shadow:0 10px 40px rgba(0,0,0,.4);
+  transition:transform .4s cubic-bezier(.34,1.56,.64,1);
+  z-index:1000;white-space:nowrap;
+}
+.toast.show{transform:translateX(-50%) translateY(0);}
+
+/* Config banner */
+.config-banner{
+  width:100%;max-width:1100px;
+  background:rgba(232,93,4,.12);border:1px solid rgba(232,93,4,.35);
+  border-radius:12px;padding:12px 18px;
+  font-size:.85rem;color:rgba(255,248,238,.8);
+  margin-bottom:20px;
+}
+.config-banner code{background:rgba(0,0,0,.3);padding:2px 6px;border-radius:4px;font-size:.78rem;color:var(--gold-light);}
+
+@media(max-width:860px){
+  .main-grid{grid-template-columns:1fr;}
+  .panel{max-height:380px;}
+}
+</style>
+</head>
+<body>
+
+<div class="stars" id="stars"></div>
+<canvas id="confettiCanvas"></canvas>
+
+<div class="page">
+  <header>
+    <div class="logo-badge">🎰 Grand Raffle Draw 2025</div>
+    <h1>The Draw</h1>
+    <p>Watch the lucky balls spin and see who destiny chooses tonight!</p>
+  </header>
+
+  <div class="nav-links">
+    <a href="registration.html">📋 Register</a>
+    <a href="admin.html">🔍 Admin</a>
+  </div>
+
+  <!-- <div class="config-banner">
+    ⚙️ Replace <code>https://script.google.com/macros/s/AKfycbzxtytNifMW_EgTPraXCAzRMLgGJYCyeN-g-GK2NEoGCl1fnp-esJAfst049eDtaAHvEQ/exec</code> in the script below with your Google Apps Script Web App URL.
+  </div> -->
+
+  <div class="main-grid">
+
+    <!-- Draw Stage -->
+    <div class="draw-stage">
+      <div class="machine-wrap">
+        <div class="machine-title">🎱 Lucky Ball Machine</div>
+        <div id="ballDrum">
+          <div id="drumInner"></div>
+        </div>
+        <div class="drum-label" id="drumLabel">Load participants to begin</div>
+        <div style="text-align:center;margin-top:16px;">
+          <div class="tube"><div id="selectedBall"></div></div>
+        </div>
+      </div>
+
+      <div class="result-banner" id="resultBanner">
+        <div class="winner-badge">🏆 Winner!</div>
+        <div class="winner-name" id="rWinnerName">—</div>
+        <div class="winner-ticket" id="rWinnerTicket">—</div>
+        <div class="winner-email" id="rWinnerEmail">—</div>
+      </div>
+
+      <div class="controls">
+        <button class="btn btn-load" onclick="loadParticipants()">⬇ Load Participants</button>
+        <button class="btn btn-draw" id="drawBtn" onclick="startDraw()" disabled>🎯 Draw Winner!</button>
+        <button class="btn btn-secondary" onclick="resetDraw()">↺ Reset</button>
+      </div>
+    </div>
+
+    <!-- Participants Panel -->
+    <div class="panel">
+      <div class="panel-header">
+        <h3>🎟 Participants</h3>
+        <div class="count-badge" id="countBadge">0 tickets</div>
+      </div>
+      <div class="search-bar">
+        <input type="text" id="pSearch" placeholder="🔍 Search participant..." oninput="filterParticipants()"/>
+      </div>
+      <div class="participants-list" id="participantsList">
+        <div class="empty-state"><span class="emoji">🎟</span>Click "Load Participants" to see registered players.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Winners Log -->
+  <div class="winners-log" id="winnersLog" style="display:none;">
+    <div class="winners-log-header">🏆 Winners This Session</div>
+    <div class="winners-log-body" id="winnersLogBody"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ====== CONFIG ======
+const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbzxtytNifMW_EgTPraXCAzRMLgGJYCyeN-g-GK2NEoGCl1fnp-esJAfst049eDtaAHvEQ/exec';
+
+// ====== STARS ======
+(function(){
+  const c = document.getElementById('stars');
+  for(let i=0;i<80;i++){
+    const s = document.createElement('div');
+    s.className='star';
+    const sz=Math.random()*2.5+.5;
+    s.style.cssText=`width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${(Math.random()*3+2).toFixed(1)}s;--delay:-${(Math.random()*5).toFixed(1)}s;`;
+    c.appendChild(s);
+  }
+})();
+
+// ====== STATE ======
+let participants = [];
+let filteredParticipants = [];
+let winners = [];
+let isDrawing = false;
+let drumBalls = [];
+
+const BALL_COLORS = ['#E74C3C','#3498DB','#2ECC71','#F39C12','#9B59B6','#1ABC9C','#E67E22','#E91E63','#00BCD4','#FF5722'];
+const AVATARCOLORS = ['#E74C3C','#3498DB','#2ECC71','#F39C12','#9B59B6','#1ABC9C','#E67E22'];
+
+// ====== DEMO DATA (fallback) ======
+const DEMO_DATA = [
+  {name:'Maria Santos',ticket:'TKT-001',email:'maria@example.com'},
+  {name:'Jose Reyes',ticket:'TKT-002',email:'jose@example.com'},
+  {name:'Ana Gonzales',ticket:'TKT-003',email:'ana@example.com'},
+  {name:'Pedro Cruz',ticket:'TKT-004',email:'pedro@example.com'},
+  {name:'Lola Batungbakal',ticket:'TKT-005',email:'lola@example.com'},
+  {name:'Eduardo Villanueva',ticket:'TKT-006',email:'edu@example.com'},
+  {name:'Carmen Flores',ticket:'TKT-007',email:'carmen@example.com'},
+  {name:'Roberto Bautista',ticket:'TKT-008',email:'rob@example.com'},
+  {name:'Gloria Fernandez',ticket:'TKT-009',email:'gloria@example.com'},
+  {name:'Andres Mendoza',ticket:'TKT-010',email:'andres@example.com'},
+];
+
+// ====== LOAD PARTICIPANTS ======
+async function loadParticipants(){
+  showToast('Loading participants...');
+  try {
+    const resp = await fetch(WEBAPP_URL + '?action=getParticipants', {mode:'cors'});
+    const data = await resp.json();
+    if(data.success && data.participants){
+      participants = data.participants;
+      showToast('✓ Loaded ' + participants.length + ' participants!');
+    } else {
+      throw new Error('No data');
+    }
+  } catch(e) {
+    // Demo fallback
+    participants = DEMO_DATA;
+    showToast('Demo mode: showing sample data', true);
+  }
+  filteredParticipants = [...participants];
+  renderParticipants();
+  buildDrum();
+  document.getElementById('drawBtn').disabled = participants.length === 0;
+  document.getElementById('drumLabel').textContent = participants.length + ' participants loaded';
+}
+
+// ====== DRUM ======
+function buildDrum(){
+  const inner = document.getElementById('drumInner');
+  inner.innerHTML = '';
+  drumBalls = [];
+  const count = Math.min(participants.length, 18);
+  for(let i=0;i<count;i++){
+    const ball = document.createElement('div');
+    ball.className = 'drum-ball';
+    ball.style.background = BALL_COLORS[i % BALL_COLORS.length];
+    const angle = (i / count) * 360;
+    const radius = 85;
+    ball.style.left = (120 + Math.cos(angle*Math.PI/180)*radius - 21) + 'px';
+    ball.style.top  = (120 + Math.sin(angle*Math.PI/180)*radius - 21) + 'px';
+    ball.textContent = String(i+1).padStart(2,'0');
+    inner.appendChild(ball);
+    drumBalls.push({el:ball, angle, radius});
+  }
+}
+
+let animFrame, rotAngle = 0;
+function animateDrum(speed){
+  rotAngle += speed;
+  const count = drumBalls.length;
+  drumBalls.forEach((b,i)=>{
+    const a = ((b.angle + rotAngle) * Math.PI) / 180;
+    const r = b.radius;
+    b.el.style.left = (120 + Math.cos(a)*r - 21)+'px';
+    b.el.style.top  = (120 + Math.sin(a)*r - 21)+'px';
+    const scale = 0.7 + 0.3*((Math.sin(a)+1)/2);
+    b.el.style.transform = `scale(${scale})`;
+    b.el.style.opacity = 0.5 + 0.5*scale;
+    b.el.style.zIndex = Math.round(scale*10);
+  });
+}
+
+// ====== DRAW ======
+async function startDraw(){
+  if(isDrawing || participants.length === 0) return;
+  isDrawing = true;
+  document.getElementById('drawBtn').disabled = true;
+  document.getElementById('resultBanner').classList.remove('show');
+
+  // Hide old selected ball
+  const selBall = document.getElementById('selectedBall');
+  selBall.style.display = 'none';
+
+  // Pick winner
+  const winner = participants[Math.floor(Math.random()*participants.length)];
+
+  // Spin animation
+  let speed = 8, elapsed = 0;
+  const totalTime = 3500;
+  const start = performance.now();
+
+  function spinFrame(now){
+    elapsed = now - start;
+    const progress = Math.min(elapsed/totalTime, 1);
+    // ease-out speed
+    const currentSpeed = speed * (1 - progress*progress) + 0.5;
+    animateDrum(currentSpeed);
+    if(elapsed < totalTime){
+      animFrame = requestAnimationFrame(spinFrame);
+    } else {
+      // Done spinning — show result
+      revealWinner(winner);
+    }
+  }
+  requestAnimationFrame(spinFrame);
+}
+
+function revealWinner(winner){
+  isDrawing = false;
+
+  // Show ball in tube
+  const selBall = document.getElementById('selectedBall');
+  const color = BALL_COLORS[Math.floor(Math.random()*BALL_COLORS.length)];
+  selBall.style.background = color;
+  selBall.style.boxShadow = `0 4px 20px ${color}88, inset 0 -4px 8px rgba(0,0,0,.3), inset 0 4px 8px rgba(255,255,255,.25)`;
+  selBall.textContent = '★';
+  selBall.style.display = 'flex';
+
+  // Update result banner
+  document.getElementById('rWinnerName').textContent = winner.name;
+  document.getElementById('rWinnerTicket').textContent = winner.ticket;
+  document.getElementById('rWinnerEmail').textContent = winner.email || '';
+  document.getElementById('resultBanner').classList.add('show');
+
+  // Highlight in list
+  document.querySelectorAll('.participant-item').forEach(el=>{
+    el.classList.toggle('winner-item', el.dataset.ticket === winner.ticket);
+  });
+
+  // Add to winners log
+  winners.push(winner);
+  updateWinnersLog();
+
+  // Confetti!
+  startConfetti();
+  setTimeout(stopConfetti, 5000);
+
+  // Save winner to backend
+  saveWinner(winner);
+
+  document.getElementById('drawBtn').disabled = false;
+  showToast('🏆 Winner: ' + winner.name + '!');
+}
+
+async function saveWinner(winner){
+  try {
+    await fetch(WEBAPP_URL, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'saveWinner', ...winner}),
+      mode:'cors'
+    });
+  } catch(e){ /* silent fail */ }
+}
+
+function resetDraw(){
+  cancelAnimationFrame(animFrame);
+  rotAngle = 0;
+  document.getElementById('selectedBall').style.display = 'none';
+  document.getElementById('resultBanner').classList.remove('show');
+  document.querySelectorAll('.participant-item').forEach(el=>el.classList.remove('winner-item'));
+  if(drumBalls.length) buildDrum();
+  document.getElementById('drawBtn').disabled = participants.length === 0;
+  showToast('Draw reset.');
+}
+
+// ====== PARTICIPANTS LIST ======
+function renderParticipants(){
+  const list = document.getElementById('participantsList');
+  document.getElementById('countBadge').textContent = participants.length + ' ticket' + (participants.length!==1?'s':'');
+
+  if(filteredParticipants.length === 0){
+    list.innerHTML = '<div class="empty-state"><span class="emoji">🔍</span>No participants found.</div>';
+    return;
+  }
+
+  list.innerHTML = filteredParticipants.map((p,i) => {
+    const initials = p.name.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
+    const color = AVATARCOLORS[i % AVATARCOLORS.length];
+    const isWinner = winners.some(w=>w.ticket===p.ticket);
+    return `<div class="participant-item ${isWinner?'winner-item':''}" data-ticket="${p.ticket}">
+      <div class="p-avatar" style="background:${color}">${initials}</div>
+      <div class="p-info">
+        <div class="p-name">${p.name} ${isWinner?'🏆':''}</div>
+        <div class="p-ticket">${p.ticket}</div>
+      </div>
+      ${isWinner?'<span class="p-badge">Winner</span>':''}
+    </div>`;
+  }).join('');
+}
+
+function filterParticipants(){
+  const q = document.getElementById('pSearch').value.toLowerCase();
+  filteredParticipants = participants.filter(p =>
+    p.name.toLowerCase().includes(q) ||
+    p.ticket.toLowerCase().includes(q) ||
+    (p.email||'').toLowerCase().includes(q)
+  );
+  renderParticipants();
+}
+
+// ====== WINNERS LOG ======
+function updateWinnersLog(){
+  const log = document.getElementById('winnersLog');
+  const body = document.getElementById('winnersLogBody');
+  if(winners.length === 0){ log.style.display='none'; return; }
+  log.style.display = '';
+  body.innerHTML = winners.map((w,i)=>`
+    <div class="winner-chip">
+      <span>🏆 #${i+1}</span>
+      <span class="wc-name">${w.name}</span>
+      <span class="wc-ticket">${w.ticket}</span>
+    </div>
+  `).join('');
+}
+
+// ====== CONFETTI ======
+const canvas = document.getElementById('confettiCanvas');
+const ctx = canvas.getContext('2d');
+let confettiPieces = [];
+let confettiRunning = false;
+let confettiFrame;
+
+function startConfetti(){
+  canvas.style.display = 'block';
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  confettiPieces = [];
+  for(let i=0;i<220;i++){
+    confettiPieces.push({
+      x: Math.random()*canvas.width,
+      y: -Math.random()*200 - 20,
+      w: Math.random()*10+5,
+      h: Math.random()*6+4,
+      color: BALL_COLORS[Math.floor(Math.random()*BALL_COLORS.length)],
+      vx: (Math.random()-0.5)*6,
+      vy: Math.random()*4+2,
+      rot: Math.random()*360,
+      vrot: (Math.random()-0.5)*8,
+      opacity: 1,
+    });
+  }
+  confettiRunning = true;
+  drawConfetti();
+}
+
+function drawConfetti(){
+  if(!confettiRunning) return;
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  let alive = false;
+  confettiPieces.forEach(p=>{
+    p.x += p.vx;
+    p.y += p.vy;
+    p.vy += 0.08;
+    p.rot += p.vrot;
+    if(p.y > canvas.height + 20) return;
+    alive = true;
+    ctx.save();
+    ctx.globalAlpha = p.opacity;
+    ctx.translate(p.x,p.y);
+    ctx.rotate(p.rot*Math.PI/180);
+    ctx.fillStyle = p.color;
+    ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+    ctx.restore();
+  });
+  if(alive) confettiFrame = requestAnimationFrame(drawConfetti);
+  else stopConfetti();
+}
+
+function stopConfetti(){
+  confettiRunning = false;
+  cancelAnimationFrame(confettiFrame);
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  canvas.style.display = 'none';
+}
+
+// ====== TOAST ======
+function showToast(msg, isWarn=false){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.background = isWarn ? 'rgba(192,57,43,.9)' : 'rgba(45,27,94,.95)';
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3500);
+}
+
+// Kick off idle drum spin
+setInterval(()=>{ if(!isDrawing && drumBalls.length) animateDrum(0.3); }, 30);
+</script>
+</body>
+</html>
