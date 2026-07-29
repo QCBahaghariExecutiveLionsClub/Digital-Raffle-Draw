@@ -143,6 +143,7 @@ function registerParticipant(data) {
       'Active',                            // O: Status
       '',                                  // P: Winner Round (filled later)
       '',                                  // Q: Notes
+      data.referralName || '',             // R: Referral Name
     ]);
 
     // Save receipt image to Drive (optional)
@@ -234,6 +235,7 @@ function getAllRecords() {
       status:        row[14],
       isWinner:      !!winnerMap[ticketId],
       winnerRound:   winnerMap[ticketId] || null,
+      referralName:  row[17] || '',
     });
   }
 
@@ -623,7 +625,7 @@ function ensureRegistrationsHeader(sheet) {
     const headers = [
       'Ticket ID','Full Name','First Name','Last Name','Email','Phone',
       'Tickets Qty','Price Each','Total Amount','Payment Method','Reference No',
-      'Receipt File','Has Receipt','Registered At','Status','Winner Round','Notes'
+      'Receipt File','Has Receipt','Registered At','Status','Winner Round','Notes','Referral Name'
     ];
     sheet.appendRow(headers);
     sheet.getRange(1, 1, 1, headers.length)

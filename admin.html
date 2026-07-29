@@ -454,9 +454,9 @@ header p{font-size:1rem;color:rgba(255,248,238,.6);}
 
 <script>
 // ====== CONFIG ======
-const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbzDRN38pM5AqjOWROamx0wJwddjezEOaNMmV3zHuQYKJ6J6A220NqqZ0liLf8lshq2iAA/exec';
-const API_SECRET = 'L10nsClvbQCBELC'; // ← If you are a smart-ass, congratulations, you found the secret key. Be proud of yourself. I hope you use it responsibly and do not abuse it.
-const ADMIN_PIN = '4321'; //
+const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbygci2qjK95pWw4JF31pb9o01V8Hvz8Q3mSERwo4JcQNhseXfTKjwpsZ6MpVHxObPbo9w/exec';
+const API_SECRET = 'L10nsClvbQCBELC'; // ← Must match API_SECRET in Code.gs
+const ADMIN_PIN = '4321'; // ← Change this and share only with the organizer/admin team
 
 // ====== STARS ======
 (function(){
@@ -693,6 +693,11 @@ function renderCard(r, idx){
         <div class="field-label">Registered</div>
         <div class="field-val">${r.registeredAt||'—'}</div>
       </div>
+      ${r.referralName ? `
+      <div class="card-field">
+        <div class="field-label">Referred By</div>
+        <div class="field-val">${r.referralName}</div>
+      </div>` : ''}
     </div>
   </div>`;
 }

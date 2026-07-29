@@ -356,6 +356,51 @@
     .form-card { padding: 28px 20px; }
     .field-row { grid-template-columns: 1fr; }
   }
+
+  /* ===== How-to-Pay info box ===== */
+  .howto-pay {
+    background: rgba(232,93,4,0.12);
+    border: 2px solid rgba(232,93,4,0.4);
+    border-radius: 16px;
+    padding: 22px 22px;
+    margin-bottom: 30px;
+  }
+  .howto-pay .howto-title {
+    display: flex; align-items: center; gap: 10px;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem; font-weight: 700; color: var(--gold-light);
+    margin-bottom: 10px;
+  }
+  .howto-pay p {
+    font-size: 0.95rem; line-height: 1.7; color: rgba(255,248,238,0.85); margin-bottom: 10px;
+  }
+  .howto-pay ol {
+    margin: 10px 0 14px 22px; font-size: 0.95rem; line-height: 1.8; color: rgba(255,248,238,0.9);
+  }
+  .howto-pay ol li strong { color: var(--gold-light); }
+  .contact-box {
+    background: rgba(0,0,0,0.25);
+    border: 1px solid rgba(212,160,23,0.3);
+    border-radius: 12px;
+    padding: 16px 18px;
+    margin-top: 12px;
+  }
+  .contact-box .contact-title {
+    font-weight: 800; color: var(--gold-light); font-size: 0.95rem; margin-bottom: 8px;
+  }
+  .contact-box .contact-line {
+    font-size: 0.92rem; color: rgba(255,248,238,0.85); line-height: 1.9;
+  }
+  .contact-box .contact-line strong { color: var(--cream); }
+  .fine-print-box {
+    background: rgba(0,0,0,0.25);
+    border: 1px solid rgba(212,160,23,0.2);
+    border-radius: 12px;
+    padding: 14px 16px;
+    font-size: 0.82rem; line-height: 1.6; color: rgba(255,248,238,0.6);
+    margin-top: 8px;
+  }
+  .fine-print-box strong { color: var(--gold-light); }
 </style>
 </head>
 <body>
@@ -374,6 +419,30 @@
     <!-- <div class="config-banner">
       ⚙️ <strong>Setup required:</strong> Replace <code>https://script.google.com/macros/s/AKfycbzxtytNifMW_EgTPraXCAzRMLgGJYCyeN-g-GK2NEoGCl1fnp-esJAfst049eDtaAHvEQ/exec</code> at the bottom of this page with your Google Apps Script Web App URL. See <strong>README.md</strong> for instructions.
     </div> -->
+
+    <!-- ===== HOW TO PAY (plain-language, non-techy friendly) ===== -->
+    <div class="howto-pay">
+      <div class="howto-title">💡 Important: Please Read Before You Continue</div>
+      <p>
+        This webpage is <strong>only a form</strong> — it does <strong>not</strong> take your payment directly.
+        You need to send your payment first, then come back and fill out this form.
+      </p>
+      <ol>
+        <li>Send your payment (GCash, Bank Transfer, or Cash) using the contact details below.</li>
+        <li>Keep the <strong>reference number</strong> or receipt GCash/Maya/your bank gives you — you'll need it below. If you paid in cash, ask for a receipt or the name of the person who received your payment.</li>
+        <li>Fill out this form with your details and that reference number to claim your ticket.</li>
+      </ol>
+      <div class="contact-box">
+        <div class="contact-title">📞 For Payment & Questions, Contact:</div>
+        <div class="contact-line">
+          <strong>Quezon City Bahaghari Executive Lions Club</strong><br/>
+          Contact Person: <strong>[Add Name Here]</strong><br/>
+          Mobile / GCash Number: <strong>[Add Number Here]</strong><br/>
+          Bank Account (if applicable): <strong>[Add Bank Details Here]</strong><br/>
+          Facebook Page / Email: <strong>[Add Link or Email Here]</strong>
+        </div>
+      </div>
+    </div>
 
     <!-- Registration Form -->
     <form id="registrationForm" novalidate>
@@ -405,6 +474,12 @@
         <div class="field-error" id="phoneErr">Please enter a valid phone number.</div>
       </div>
 
+      <div class="field-group">
+        <label>Who Invited or Referred You? <span style="color:rgba(255,248,238,0.4); font-weight:600; font-size:0.8rem; text-transform:uppercase; margin-left:6px;">Optional</span></label>
+        <input type="text" id="referralName" name="referralName" placeholder="e.g. Name of the member or friend who told you about this raffle"/>
+        <div class="field-hint">If a Lions Club member, seller, or friend invited you to join, please write their name here.</div>
+      </div>
+
       <div class="section-label" style="margin-top:28px;">Ticket & Payment</div>
 
       <div class="field-group">
@@ -420,22 +495,26 @@
       </div>
 
       <div class="field-group">
-        <label>Payment Method <span class="req">*</span></label>
+        <label>How Did You Send Your Payment? <span class="req">*</span></label>
         <select id="paymentMethod" name="paymentMethod">
-          <option value="">— Select payment method —</option>
+          <option value="">— Please select one —</option>
           <option value="GCash">GCash</option>
           <option value="Maya">Maya</option>
           <option value="Bank Transfer">Bank Transfer</option>
-          <option value="Cash">Cash</option>
-          <option value="Credit Card">Credit Card</option>
+          <option value="Cash">Cash (Paid in Person)</option>
+          <option value="Credit Card">Credit / Debit Card</option>
         </select>
-        <div class="field-error" id="paymentErr">Please select a payment method.</div>
+        <div class="field-hint">Choose how you already sent your payment to Quezon City Bahaghari Executive Lions Club.</div>
+        <div class="field-error" id="paymentErr">Please select how you paid.</div>
       </div>
 
       <div class="field-group">
-        <label>Reference / Transaction Number <span class="req">*</span></label>
-        <input type="text" id="referenceNo" name="referenceNo" placeholder="e.g. GC-20250521-XXXX"/>
-        <div class="field-hint">Enter your GCash/Maya/Bank reference number or "CASH" if paying in person.</div>
+        <label>Proof of Payment / Reference Number <span class="req">*</span></label>
+        <input type="text" id="referenceNo" name="referenceNo" placeholder="e.g. GC-20250521-XXXX or write CASH"/>
+        <div class="field-hint">This is the reference number that GCash, Maya, or your bank gave you after you sent the payment (usually found in your app's transaction history or the SMS/receipt they sent you). If you paid in cash directly to a Lions Club member, write "CASH" and that member's name instead.</div>
+        <div class="fine-print-box">
+          <strong>📋 Please note:</strong> This box is <strong>not</strong> for entering a password or a promo code — it's simply proof that you already paid. Filling out this form does not automatically send any payment; you must send your payment separately first (see the payment instructions above). Incorrect or missing reference numbers may delay or affect the release of your ticket.
+        </div>
         <div class="field-error" id="referenceErr">Please enter your reference or transaction number.</div>
       </div>
 
@@ -488,7 +567,7 @@
 
 <script>
   // ====== CONFIGURATION ======
-  const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbzDRN38pM5AqjOWROamx0wJwddjezEOaNMmV3zHuQYKJ6J6A220NqqZ0liLf8lshq2iAA/exec'; // Replace with your Google Apps Script Web App URL
+  const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbygci2qjK95pWw4JF31pb9o01V8Hvz8Q3mSERwo4JcQNhseXfTKjwpsZ6MpVHxObPbo9w/exec'; // Replace with your Google Apps Script Web App URL
   const TICKET_PRICE = 100;
 
   // ====== STARS ======
@@ -601,6 +680,7 @@
       lastName: document.getElementById('lastName').value.trim(),
       email: document.getElementById('email').value.trim(),
       phone: document.getElementById('phone').value.trim(),
+      referralName: document.getElementById('referralName').value.trim(),
       ticketQty: document.getElementById('ticketQty').value,
       paymentMethod: document.getElementById('paymentMethod').value,
       referenceNo: document.getElementById('referenceNo').value.trim(),
