@@ -207,6 +207,7 @@
     letter-spacing: 0.5px; text-transform: uppercase; margin-top: 8px;
   }
   .badge.pending { background: rgba(232,93,4,0.2); color: #ffab6b; border: 1px solid rgba(232,93,4,0.5); }
+  .badge.verified-badge { background: rgba(42,157,92,0.2); color: #7be3a6; border: 1px solid rgba(42,157,92,0.5); }
   .ticket-card .view-link {
     display: inline-block; margin-top: 10px; color: var(--gold); text-decoration: none; font-weight: 700; font-size: 0.88rem;
     border-bottom: 1px dashed var(--gold);
@@ -261,7 +262,7 @@
   <header>
     <div class="logo-badge">🎟️ QCBELC Lion's Club Member / Volunteer Tool</div>
     <h1>Generate Raffle Ticket</h1>
-    <p>Fill this out for a Donor / Sponsor who paid you for raffle tickets. Each ticket gets its own scannable QR code.</p>
+    <p>Fill this out for a donor/supporter who paid you (or a member) for raffle tickets. Each ticket gets its own scannable QR code.</p>
   </header>
 
   <div class="form-card">
@@ -272,9 +273,9 @@
       <div class="section-label">Who Is Filling This Out</div>
 
       <div class="field-group">
-        <label>Your Full Name (Lion's Club Member / Volunteer / Assistant) <span class="req">*</span></label>
+        <label>Your Full Name (QCBELC Lion's Club Member / Volunteer) <span class="req">*</span></label>
         <input type="text" id="memberName" name="memberName" placeholder="e.g. Maria Santos" autocomplete="name"/>
-        <div class="field-hint">This is you — the member, volunteer, or assistant recording this sale. It will appear on the ticket so donor / supporter's know who to contact.</div>
+        <div class="field-hint">This is you — the QCBELC Lion's Club member, Volunteer, or Assistant recording this sale. It will appear on the ticket so Donor / Supporter know who to contact.</div>
         <div class="field-error" id="memberNameErr">Please enter your full name.</div>
       </div>
 
@@ -284,7 +285,7 @@
         <label>Donor / Supporter's Full Name <span class="req">*</span></label>
         <input type="text" id="donorName" name="donorName" placeholder="e.g. Juan Dela Cruz" autocomplete="off"/>
         <div class="field-hint">The person who will own this ticket / these tickets.</div>
-        <div class="field-error" id="donorNameErr">Please enter the Donor / Supporter's full name.</div>
+        <div class="field-error" id="donorNameErr">Please enter the donor/supporter's full name.</div>
       </div>
 
       <div class="field-group">
@@ -299,17 +300,17 @@
         <div class="ticket-price-row">
           <div class="ticket-counter">
             <button type="button" onclick="changeQty(-1)">−</button>
-            <input type="number" id="ticketQty" name="ticketQty" value="1" min="1" max="50" readonly/>
+            <input type="number" id="ticketQty" name="ticketQty" value="1" min="1" max="10" readonly/>
             <button type="button" onclick="changeQty(1)">+</button>
           </div>
           <div class="price-tag">× ₱100 = Total: <strong id="totalPrice">₱100</strong></div>
         </div>
-        <div class="field-hint">Each ticket will get its own unique QR code and Ticket ID.</div>
+        <div class="field-hint">Each ticket will get its own unique QR code and Ticket ID. Maximum 10 tickets per submission.</div>
       </div>
 
       <div class="field-group">
         <label>Payment Method <span class="opt">Optional</span></label>
-        <!-- <select id="paymentMethod" name="paymentMethod">
+        <select id="paymentMethod" name="paymentMethod">
           <option value="">— Select payment method —</option>
           <option value="GCash">GCash</option>
           <option value="Maya">Maya</option>
@@ -317,11 +318,6 @@
           <option value="Cash">Cash</option>
           <option value="Credit Card">Credit Card</option>
           <option value="Other">Other</option>
-        </select> -->
-        <select id="paymentMethod" name="paymentMethod">
-          <option value="">— Select payment method —</option>
-          <option value="Cash">Cash</option>
-          <option value="Bank transfer - PNB">Bank transfer - PNB</option>
         </select>
       </div>
 
@@ -332,7 +328,7 @@
       </div>
 
       <div class="field-group">
-        <label>Photo of Receipt / Payment Screenshot <span class="req">*</span></label>
+        <label>Photo of Receipt / Payment Screenshot <span class="opt">Optional</span></label>
         <div class="upload-zone" id="uploadZone">
           <input type="file" id="receiptImage" name="receiptImage" accept="image/*" capture="environment"/>
           <div class="upload-icon">📸</div>
@@ -350,17 +346,16 @@
       <div class="fine-print">
         <strong>📋 Please read before submitting:</strong>
         <ul>
-          <li>By generating this ticket, you confirm that payment was actually received from the donor / supporter named above.</li>
-          <li>The receipt photo (and transaction number, if provided) will be used to verify this payment. Missing or unclear proof of payment may cause the ticket to be voided.</li>
-          <li>Tickets start as <strong>"Not Verified"</strong> and will be marked <strong>"Verified"</strong> once the organizer confirms the payment.</li>
-          <li>Only <strong>verified</strong> tickets are eligible to claim prizes if drawn as a winner.</li>
-          <li>Please double-check the donor / supporter's name and receipt photo before submitting — corrections may take time.</li>
+          <li>By generating this ticket, you confirm that payment was actually received from the donor/supporter named above.</li>
+          <li>Tickets generated by a QCBELC member are considered <strong>"Good as Sold"</strong> — no separate verification step is needed.</li>
+          <li>A receipt photo or reference number is optional and only kept for the committee's own records.</li>
+          <li>Please double-check the donor/supporter's name before submitting — corrections may take time.</li>
         </ul>
       </div>
 
       <div class="agree-row">
         <input type="checkbox" id="agreeCheck"/>
-        <label for="agreeCheck">I confirm the details above are accurate and that payment was received from the donor / supporter.</label>
+        <label for="agreeCheck">I confirm the details above are accurate and that payment was received from the donor/supporter.</label>
       </div>
       <div class="field-error" id="agreeErr" style="margin-top:-14px; margin-bottom:18px;">Please confirm the checkbox above before submitting.</div>
 
@@ -378,12 +373,12 @@
       </div>
 
       <div class="screenshot-note">
-        📸 <strong>Please screenshot or save this screen for the donor / supporter.</strong><br/>
-        Each ticket below has its own QR code — the donor / supporter can scan it anytime to view or share their ticket.
+        📸 <strong>Please screenshot or save this screen for the donor/supporter.</strong><br/>
+        Each ticket below has its own QR code — the donor/supporter can scan it anytime to view or share their ticket.
       </div>
 
       <div class="screenshot-note" style="border-color: rgba(232,93,4,0.4); background: rgba(232,93,4,0.1);">
-        🔑 <strong>Important:</strong> If this ticket is ever given or sold to someone else later, they'll need the <strong>last 4 digits of the transaction number</strong> (<span id="transactionLast4"></span>) to update the ticket owner. Please share that with the donor / supporter.
+        🔑 <strong>Important:</strong> If this ticket is ever given or sold to someone else later, they'll need the <strong>last 4 digits of the transaction number</strong> (<span id="transactionLast4"></span>) to update the ticket owner. Please share that with the donor/supporter.
       </div>
 
       <div id="ticketList"></div>
@@ -402,9 +397,9 @@
 
 <script>
   // ====== CONFIGURATION ======
-  const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycby3ieuUIhB5nnUda2DrcGH2YP4xWGW1S5lOF7VQCql1vLEXJs1wjXkVyXSVNKkG0Ku_WQ/exec'; // Replace with your Google Apps Script Web App URL
+  const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbx4Cc78NLP780OzP5eCZvxPf8JdRbE2XOhYnxR9LywitpVr5FJPsPZNOKCSF3dZu0En7w/exec'; // Replace with your Google Apps Script Web App URL
   const TICKET_PRICE = 100;
-  const SELLER_PIN = '1234';
+  const SELLER_PIN = '1234'; //
   const API_SECRET = 'L10nsClvbQCBELC'; //
 
   // ====== STARS ======
@@ -441,13 +436,13 @@
   function changeQty(delta){
     const inp = document.getElementById('ticketQty');
     let val = parseInt(inp.value) + delta;
-    val = Math.max(1, Math.min(50, val));
+    val = Math.max(1, Math.min(10, val));
     inp.value = val;
     document.getElementById('totalPrice').textContent = '₱' + (val * TICKET_PRICE).toLocaleString();
   }
 
   // ====== VALIDATION ======
-  const REQUIRE_RECEIPT_PHOTO = true; // ← keep in sync with REQUIRE_RECEIPT_PHOTO in Code.gs
+  const REQUIRE_RECEIPT_PHOTO = false; // ← keep in sync with REQUIRE_RECEIPT_PHOTO in Code.gs
   let compressedReceiptBase64 = null;
   let receiptFileName = null;
 
@@ -570,7 +565,7 @@
       <div class="buyer">${buyerName}</div>
       <div class="meta">Sold by: ${document.getElementById('memberName').value.trim()}</div>
       <div class="meta">QR ID: ${ticket.qrCodeId}</div>
-      <span class="badge pending">⏳ Not Verified Yet</span><br/>
+      <span class="badge verified-badge">✅ Good as Sold</span><br/>
       <a class="view-link" href="${viewUrl}" target="_blank">🔗 Open Full Digital Ticket</a>
     `;
     card.appendChild(info);
