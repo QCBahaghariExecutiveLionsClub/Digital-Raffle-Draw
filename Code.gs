@@ -18,11 +18,22 @@
 const SHEET_ID = 'YOUR_GOOGLE_SHEET_ID'; // ← Replace this
 const TICKET_PRICE = 100; // Price per ticket in PHP
 
+// Shared secret required for sensitive actions (ticket generation, admin data,
+// verifying tickets, saving winners). Change this to your own long random string,
+// then put the SAME value in generate-ticket.html (and admin.html / raffle-draw.html
+// if you add the check there too — see README).
+const API_SECRET = 'CHANGE-THIS-TO-A-LONG-RANDOM-SECRET-2025';
+
+// Actions that require the secret key to run (protects write access + PII)
+const PROTECTED_POST_ACTIONS = ['generateTicket', 'saveWinner', 'importExcel', 'verifyGeneratedTicket'];
+const PROTECTED_GET_ACTIONS  = ['getAll', 'getGeneratedTickets'];
+
 // Sheet tab names (auto-created if missing)
 const SHEETS = {
   REGISTRATIONS: 'Registrations',
   WINNERS: 'Winners',
   IMPORTS: 'Imports',
+  GENERATE_TICKETS: 'GenerateTicket',
 };
 
 // ============================================================
@@ -31,6 +42,13 @@ const SHEETS = {
 function doGet(e) {
   const action = (e && e.parameter && e.parameter.action) || 'ping';
 
+  if (PROTECTED_GET_ACTIONS.indexOf(action) !== -1) {
+    const providedSecret = (e && e.parameter && e.parameter.secret) || '';
+    if (providedSecret !== API_SECRET) {
+      return jsonResponse({ success: false, message: 'Unauthorized. Missing or invalid access key.' });
+    }
+  }
+
   let result;
   try {
     switch (action) {
@@ -38,6 +56,8 @@ function doGet(e) {
       case 'getAll':          result = getAllRecords();    break;
       case 'getWinners':      result = getWinners();      break;
       case 'getStats':        result = getStats();         break;
+      case 'getTicketByQR':   result = getTicketByQR(e.parameter.qrCodeId); break;
+      case 'getGeneratedTickets': result = getGeneratedTickets(); break;
       case 'ping':            result = { success: true, message: 'Lucky Draw API is live!' }; break;
       default:                result = { success: false, message: 'Unknown action: ' + action };
     }
@@ -60,6 +80,13 @@ function doPost(e) {
   }
 
   const action = payload.action || '';
+
+  if (PROTECTED_POST_ACTIONS.indexOf(action) !== -1) {
+    if (payload.secret !== API_SECRET) {
+      return jsonResponse({ success: false, message: 'Unauthorized. Missing or invalid access key.' });
+    }
+  }
+
   let result;
 
   try {
@@ -67,6 +94,9 @@ function doPost(e) {
       case 'register':    result = registerParticipant(payload); break;
       case 'saveWinner':  result = saveWinner(payload);          break;
       case 'importExcel': result = importExcelData(payload);     break;
+      case 'generateTicket':     result = generateTicket(payload);      break;
+      case 'updateTicketHolder': result = updateTicketHolder(payload);  break;
+      case 'verifyGeneratedTicket': result = verifyGeneratedTicket(payload); break;
       default:            result = { success: false, message: 'Unknown POST action: ' + action };
     }
   } catch (err) {
@@ -320,6 +350,204 @@ function importExcelData(payload) {
 }
 
 // ============================================================
+//  GENERATE TICKET (seller / assistant issued tickets)
+// ============================================================
+/**
+ * Column layout for the GenerateTicket sheet:
+ * A: QRCodeID          B: Ticket ID         C: MemberName (Seller/Assistant)
+ * D: DonorName         E: CurrentHolderName F: DonorPhone
+ * G: TransactionNumberId  H: PaymentMethod   I: TicketQty (batch size)
+ * J: PriceEach         K: TotalAmount       L: Status (Not Verified / Verified)
+ * M: GeneratedAt        N: VerifiedAt        O: Notes (holder-change / audit log)
+ */
+function generateTicket(data) {
+  const sheet = getOrCreateSheet(SHEETS.GENERATE_TICKETS);
+  ensureGenerateTicketsHeader(sheet);
+
+  const memberName = (data.memberName || '').trim();
+  const donorName  = (data.donorName || '').trim();
+  const transactionNumberId = (data.transactionNumberId || '').trim();
+
+  if (!memberName) return { success: false, message: 'Seller/assistant name is required.' };
+  if (!donorName)  return { success: false, message: "Buyer's full name is required." };
+  if (!transactionNumberId) return { success: false, message: 'Transaction/reference number is required as proof of payment.' };
+
+  const qty = Math.max(1, Math.min(50, parseInt(data.ticketQty) || 1));
+  const timestamp = new Date();
+  const dateStr = Utilities.formatDate(timestamp, Session.getScriptTimeZone(), 'yyyy-MM-dd HH:mm:ss');
+
+  const tickets = [];
+
+  for (let i = 0; i < qty; i++) {
+    const qrCodeId = generateQRCodeId();
+    const ticketId = generateTicketId();
+
+    sheet.appendRow([
+      qrCodeId,                       // A: QRCodeID
+      ticketId,                       // B: Ticket ID
+      memberName,                     // C: MemberName
+      donorName,                      // D: DonorName
+      donorName,                      // E: CurrentHolderName (defaults to donor)
+      (data.donorPhone || '').trim(), // F: DonorPhone
+      transactionNumberId,            // G: TransactionNumberId
+      data.paymentMethod || '',       // H: PaymentMethod
+      qty,                            // I: TicketQty (batch size)
+      TICKET_PRICE,                   // J: PriceEach
+      qty * TICKET_PRICE,             // K: TotalAmount
+      'Not Verified',                 // L: Status
+      dateStr,                        // M: GeneratedAt
+      '',                             // N: VerifiedAt
+      '',                             // O: Notes
+    ]);
+
+    tickets.push({ ticketId, qrCodeId });
+  }
+
+  return {
+    success: true,
+    tickets: tickets,
+    donorName: donorName,
+    message: qty + ' ticket(s) generated for ' + donorName + '.',
+  };
+}
+
+/** Look up a single ticket by its QRCodeID (used by view-ticket.html) */
+function getTicketByQR(qrCodeId) {
+  if (!qrCodeId) return { success: false, message: 'No ticket code provided.' };
+
+  const sheet = getOrCreateSheet(SHEETS.GENERATE_TICKETS);
+  const data = sheet.getDataRange().getValues();
+
+  for (let i = 1; i < data.length; i++) {
+    const row = data[i];
+    if (row[0] === qrCodeId) {
+      // Only return fields safe for public display on view-ticket.html.
+      // Phone number and full transaction number are intentionally withheld.
+      return {
+        success: true,
+        ticket: {
+          ticketId:          row[1],
+          memberName:        row[2],
+          donorName:         row[3],
+          currentHolderName: row[4],
+          status:            row[11],
+          generatedAt:       row[12],
+        }
+      };
+    }
+  }
+  return { success: false, message: 'No ticket found for this QR code.' };
+}
+
+/** List all generated tickets (for admin panel use) */
+function getGeneratedTickets() {
+  const sheet = getOrCreateSheet(SHEETS.GENERATE_TICKETS);
+  const data = sheet.getDataRange().getValues();
+  if (data.length <= 1) return { success: true, tickets: [] };
+
+  const tickets = [];
+  for (let i = 1; i < data.length; i++) {
+    const row = data[i];
+    tickets.push({
+      qrCodeId: row[0], ticketId: row[1], memberName: row[2], donorName: row[3],
+      currentHolderName: row[4], donorPhone: row[5], transactionNumberId: row[6],
+      paymentMethod: row[7], ticketQty: row[8], priceEach: row[9], totalAmount: row[10],
+      status: row[11], generatedAt: row[12], verifiedAt: row[13], notes: row[14],
+    });
+  }
+  return { success: true, tickets };
+}
+
+/**
+ * Update who currently holds a ticket (e.g. it was resold/given away).
+ * The original DonorName (column D) is preserved for audit purposes;
+ * only CurrentHolderName (column E) changes, with a note logged.
+ *
+ * To prevent anyone who merely sees/screenshots a QR code from hijacking
+ * ownership, the caller must also supply the last 4 characters of the
+ * ticket's TransactionNumberId — known only to the seller and buyer.
+ */
+function updateTicketHolder(data) {
+  const qrCodeId = data.qrCodeId;
+  const newHolderName = (data.newHolderName || '').trim();
+  const verifyCode = (data.verifyCode || '').trim().toUpperCase();
+
+  if (!qrCodeId) return { success: false, message: 'No ticket code provided.' };
+  if (newHolderName.length < 2) return { success: false, message: 'Please enter a valid full name.' };
+  if (!verifyCode) return { success: false, message: 'Please enter the 4-digit verification code from your seller.' };
+
+  const sheet = getOrCreateSheet(SHEETS.GENERATE_TICKETS);
+  const values = sheet.getDataRange().getValues();
+
+  for (let i = 1; i < values.length; i++) {
+    if (values[i][0] === qrCodeId) {
+      const transactionNumberId = String(values[i][6] || '');
+      const expectedCode = transactionNumberId.slice(-4).toUpperCase();
+
+      if (!expectedCode || verifyCode !== expectedCode) {
+        return { success: false, message: 'Incorrect verification code. Please check with the person who gave you this ticket.' };
+      }
+
+      const oldHolder = values[i][4];
+      const rowNum = i + 1;
+      sheet.getRange(rowNum, 5).setValue(newHolderName); // E: CurrentHolderName
+
+      const ts = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyy-MM-dd HH:mm:ss');
+      const prevNotes = values[i][14] || '';
+      const logLine = `[${ts}] Holder changed from "${oldHolder}" to "${newHolderName}"`;
+      const newNotes = prevNotes ? (prevNotes + ' | ' + logLine) : logLine;
+      sheet.getRange(rowNum, 15).setValue(newNotes); // O: Notes
+
+      return { success: true, message: 'Ticket holder updated.', newHolderName };
+    }
+  }
+  return { success: false, message: 'No ticket found for this QR code.' };
+}
+
+/** Mark a generated ticket as Verified (for admin use once payment is confirmed) */
+function verifyGeneratedTicket(data) {
+  const qrCodeId = data.qrCodeId;
+  if (!qrCodeId) return { success: false, message: 'No ticket code provided.' };
+
+  const sheet = getOrCreateSheet(SHEETS.GENERATE_TICKETS);
+  const values = sheet.getDataRange().getValues();
+
+  for (let i = 1; i < values.length; i++) {
+    if (values[i][0] === qrCodeId) {
+      const rowNum = i + 1;
+      const ts = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyy-MM-dd HH:mm:ss');
+      sheet.getRange(rowNum, 12).setValue('Verified'); // L: Status
+      sheet.getRange(rowNum, 14).setValue(ts);          // N: VerifiedAt
+      return { success: true, message: 'Ticket marked as Verified.' };
+    }
+  }
+  return { success: false, message: 'No ticket found for this QR code.' };
+}
+
+/** Generate a unique QR code identifier: QR-XXXXXXXX */
+function generateQRCodeId() {
+  const rand = Utilities.getUuid().replace(/-/g, '').substring(0, 10).toUpperCase();
+  return 'QR-' + rand;
+}
+
+/** Set up GenerateTicket sheet header if empty */
+function ensureGenerateTicketsHeader(sheet) {
+  if (sheet.getLastRow() === 0) {
+    const headers = [
+      'QRCodeID','Ticket ID','MemberName','DonorName','CurrentHolderName','DonorPhone',
+      'TransactionNumberId','PaymentMethod','TicketQty','PriceEach','TotalAmount',
+      'Status','GeneratedAt','VerifiedAt','Notes'
+    ];
+    sheet.appendRow(headers);
+    sheet.getRange(1, 1, 1, headers.length)
+      .setBackground('#E85D04')
+      .setFontColor('#fff')
+      .setFontWeight('bold');
+    sheet.setFrozenRows(1);
+  }
+}
+
+// ============================================================
 //  ADMIN: SEARCH TICKETS (server-side, optional)
 // ============================================================
 function searchTickets(query) {
@@ -434,7 +662,9 @@ function initSheets() {
   const ss = SpreadsheetApp.openById(SHEET_ID);
   const regSheet = getOrCreateSheet(SHEETS.REGISTRATIONS);
   const winSheet = getOrCreateSheet(SHEETS.WINNERS);
+  const genSheet = getOrCreateSheet(SHEETS.GENERATE_TICKETS);
   ensureRegistrationsHeader(regSheet);
   ensureWinnersHeader(winSheet);
-  Logger.log('Sheets initialised: ' + SHEETS.REGISTRATIONS + ', ' + SHEETS.WINNERS);
+  ensureGenerateTicketsHeader(genSheet);
+  Logger.log('Sheets initialised: ' + SHEETS.REGISTRATIONS + ', ' + SHEETS.WINNERS + ', ' + SHEETS.GENERATE_TICKETS);
 }

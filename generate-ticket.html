@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0"/>
+<title>Lucky Draw — Generate Ticket (Seller)</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  :root {
+    --gold: #D4A017;
+    --gold-light: #F5C842;
+    --gold-dark: #A07010;
+    --deep: #1A0A2E;
+    --deep2: #2D1B5E;
+    --accent: #E85D04;
+    --cream: #FFF8EE;
+    --green: #2A9D5C;
+    --red: #C0392B;
+    --card: rgba(255,255,255,0.06);
+    --radius: 16px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--deep);
+    min-height: 100vh;
+    color: var(--cream);
+    overflow-x: hidden;
+    font-size: 17px; /* larger base size for readability */
+  }
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 20%, rgba(212,160,23,0.12) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba(232,93,4,0.1) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 50%, rgba(45,27,94,0.8) 0%, var(--deep) 100%);
+    z-index: 0; pointer-events: none;
+  }
+  .stars { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+  .star { position: absolute; background: #fff; border-radius: 50%; animation: twinkle var(--d, 3s) ease-in-out infinite var(--delay, 0s); }
+  @keyframes twinkle { 0%,100%{opacity:0.1;transform:scale(1);} 50%{opacity:0.8;transform:scale(1.4);} }
+
+  .page-wrap { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; padding: 40px 20px 60px; min-height: 100vh; }
+
+  header { text-align: center; margin-bottom: 30px; animation: slideDown 0.8s ease both; }
+  @keyframes slideDown { from{opacity:0;transform:translateY(-30px);}to{opacity:1;transform:none;} }
+  .logo-badge {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: linear-gradient(135deg, var(--gold), var(--accent));
+    padding: 9px 24px; border-radius: 100px;
+    font-family: 'Playfair Display', serif; font-size: 13px; letter-spacing: 3px; text-transform: uppercase;
+    color: #fff; margin-bottom: 18px; box-shadow: 0 4px 20px rgba(212,160,23,0.4);
+  }
+  header h1 {
+    font-family: 'Playfair Display', serif; font-size: clamp(2rem, 6vw, 3.2rem); font-weight: 800;
+    background: linear-gradient(135deg, var(--gold-light), var(--gold), #fff8);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    line-height: 1.15; margin-bottom: 10px;
+  }
+  header p { font-size: 1.1rem; color: rgba(255,248,238,0.75); max-width: 480px; margin: 0 auto; line-height: 1.6; }
+
+  .form-card {
+    background: rgba(255,255,255,0.055);
+    border: 1px solid rgba(212,160,23,0.25);
+    border-radius: 24px; padding: 40px; width: 100%; max-width: 620px;
+    backdrop-filter: blur(16px);
+    box-shadow: 0 0 0 1px rgba(212,160,23,0.08), 0 30px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+    animation: fadeUp 0.9s 0.2s ease both;
+  }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(30px);}to{opacity:1;transform:none;} }
+
+  .section-label {
+    font-size: 12px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); font-weight: 700;
+    margin-bottom: 18px; display: flex; align-items: center; gap: 10px;
+  }
+  .section-label::before, .section-label::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, transparent, rgba(212,160,23,0.4), transparent); }
+
+  .field-group { margin-bottom: 22px; }
+  .field-row { display: grid; gap: 16px; grid-template-columns: 1fr 1fr; }
+  label { display: block; font-size: 0.95rem; font-weight: 700; color: rgba(255,248,238,0.85); margin-bottom: 8px; letter-spacing: 0.3px; }
+  label .req { color: var(--gold); margin-left: 2px; }
+  label .opt { color: rgba(255,248,238,0.4); font-weight: 600; font-size: 0.8rem; text-transform: uppercase; margin-left: 6px; }
+
+  input, select, textarea {
+    width: 100%; background: rgba(255,255,255,0.06); border: 1.5px solid rgba(212,160,23,0.2);
+    border-radius: 10px; padding: 15px 16px; font-family: 'Nunito', sans-serif; font-size: 1.05rem;
+    color: var(--cream); outline: none; transition: border-color 0.25s, background 0.25s, box-shadow 0.25s;
+  }
+  input::placeholder, textarea::placeholder { color: rgba(255,248,238,0.3); }
+  input:focus, select:focus, textarea:focus { border-color: var(--gold); background: rgba(212,160,23,0.08); box-shadow: 0 0 0 3px rgba(212,160,23,0.15); }
+  input.error { border-color: var(--red); box-shadow: 0 0 0 3px rgba(192,57,43,0.15); }
+  input.valid { border-color: var(--green); }
+  select option { background: var(--deep2); color: var(--cream); }
+
+  .field-hint { font-size: 0.85rem; color: rgba(255,248,238,0.5); margin-top: 6px; line-height: 1.5; }
+  .field-error { font-size: 0.85rem; color: #ff7675; margin-top: 6px; display: none; }
+  .field-error.show { display: block; }
+
+  .ticket-counter {
+    display: flex; align-items: center; gap: 0; background: rgba(255,255,255,0.06);
+    border: 1.5px solid rgba(212,160,23,0.2); border-radius: 10px; overflow: hidden; width: fit-content;
+  }
+  .ticket-counter button {
+    width: 52px; height: 54px; background: rgba(212,160,23,0.15); border: none; color: var(--gold-light);
+    font-size: 1.5rem; cursor: pointer; transition: background 0.2s; font-family: inherit;
+  }
+  .ticket-counter button:hover { background: rgba(212,160,23,0.3); }
+  .ticket-counter input {
+    width: 76px; text-align: center; border: none; border-radius: 0; background: transparent;
+    border-left: 1px solid rgba(212,160,23,0.15); border-right: 1px solid rgba(212,160,23,0.15);
+    font-size: 1.1rem; font-weight: 700;
+  }
+  .price-tag { font-size: 0.95rem; color: rgba(255,248,238,0.6); margin-left: 14px; }
+  .price-tag strong { color: var(--gold-light); font-size: 1.1rem; }
+  .ticket-price-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+
+  /* Fine print box */
+  .fine-print {
+    background: rgba(0,0,0,0.25); border: 1px solid rgba(212,160,23,0.2); border-radius: 12px;
+    padding: 18px 20px; font-size: 0.85rem; line-height: 1.7; color: rgba(255,248,238,0.65); margin-bottom: 18px;
+  }
+  .fine-print strong { color: var(--gold-light); }
+  .fine-print ul { margin: 8px 0 0 20px; }
+
+  .agree-row { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 24px; }
+  .agree-row input[type="checkbox"] {
+    width: 24px; height: 24px; flex-shrink: 0; margin-top: 2px; accent-color: var(--gold); cursor: pointer;
+  }
+  .agree-row label { font-size: 0.92rem; color: rgba(255,248,238,0.8); font-weight: 600; margin: 0; cursor: pointer; line-height: 1.5; }
+
+  .btn-submit {
+    width: 100%; padding: 19px; background: linear-gradient(135deg, var(--gold), var(--accent));
+    border: none; border-radius: 12px; font-family: 'Playfair Display', serif; font-size: 1.25rem; font-weight: 600;
+    color: #fff; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+    box-shadow: 0 8px 30px rgba(212,160,23,0.4); margin-top: 6px; letter-spacing: 0.5px;
+  }
+  .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(212,160,23,0.5); }
+  .btn-submit:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+
+  .toast {
+    position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px);
+    background: var(--green); color: #fff; padding: 16px 28px; border-radius: 50px; font-weight: 700; font-size: 1rem;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.4); transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+    z-index: 1000; max-width: 90vw; text-align: center;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  .toast.error-toast { background: var(--red); }
+
+  .spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 8px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .nav-links { display: flex; gap: 14px; justify-content: center; margin-top: 26px; flex-wrap: wrap; }
+  .nav-links a {
+    color: var(--gold); text-decoration: none; font-weight: 700; font-size: 0.95rem; padding: 11px 24px;
+    border: 1.5px solid rgba(212,160,23,0.3); border-radius: 50px; transition: all 0.2s;
+  }
+  .nav-links a:hover { background: rgba(212,160,23,0.1); border-color: var(--gold); }
+
+  /* ===== PIN GATE ===== */
+  .pin-gate {
+    position: fixed; inset: 0; z-index: 2000;
+    background: var(--deep);
+    display: flex; align-items: center; justify-content: center; padding: 20px;
+  }
+  .pin-card {
+    background: rgba(255,255,255,0.055); border: 1px solid rgba(212,160,23,0.3); border-radius: 24px;
+    padding: 44px 34px; max-width: 380px; width: 100%; text-align: center;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+  }
+  .pin-card .icon { font-size: 3rem; margin-bottom: 14px; }
+  .pin-card h2 { font-family: 'Playfair Display', serif; color: var(--gold-light); font-size: 1.5rem; margin-bottom: 10px; }
+  .pin-card p { color: rgba(255,248,238,0.7); font-size: 0.95rem; margin-bottom: 22px; line-height: 1.6; }
+  .pin-card input {
+    text-align: center; letter-spacing: 8px; font-size: 1.6rem; font-weight: 700;
+    padding: 16px; margin-bottom: 14px;
+  }
+  .pin-card button {
+    width: 100%; padding: 15px; background: linear-gradient(135deg, var(--gold), var(--accent));
+    border: none; border-radius: 12px; color: #fff; font-weight: 700; font-size: 1.05rem; cursor: pointer;
+  }
+  .pin-card .pin-err { color: #ff7675; font-size: 0.85rem; margin-top: 10px; display: none; }
+  .pin-card .pin-err.show { display: block; }
+
+  /* ===== SUCCESS: generated tickets ===== */
+  .success-screen { display: none; animation: fadeUp 0.6s ease both; }
+  .success-screen.show { display: block; }
+  .success-head { text-align: center; margin-bottom: 26px; }
+  .success-head .emoji { font-size: 3rem; margin-bottom: 6px; }
+  .success-head h2 { font-family: 'Playfair Display', serif; font-size: 1.7rem; color: var(--gold-light); margin-bottom: 6px; }
+  .success-head p { color: rgba(255,248,238,0.65); font-size: 0.95rem; }
+
+  .ticket-card {
+    background: linear-gradient(135deg, rgba(212,160,23,0.14), rgba(232,93,4,0.08));
+    border: 2px solid rgba(212,160,23,0.35); border-radius: 18px; padding: 22px; margin-bottom: 18px;
+    display: flex; gap: 18px; align-items: center; flex-wrap: wrap;
+  }
+  .ticket-card .qr-box { background: #fff; padding: 8px; border-radius: 10px; flex-shrink: 0; line-height: 0; }
+  .ticket-card .qr-box img, .ticket-card .qr-box canvas { display: block; width: 110px; height: 110px; }
+  .ticket-card .info { flex: 1; min-width: 180px; }
+  .ticket-card .tid { font-family: 'Courier New', monospace; font-size: 1.15rem; font-weight: 700; color: var(--gold-light); letter-spacing: 1px; }
+  .ticket-card .buyer { font-size: 1.05rem; font-weight: 700; margin-top: 4px; }
+  .ticket-card .meta { font-size: 0.85rem; color: rgba(255,248,238,0.6); margin-top: 4px; }
+  .badge {
+    display: inline-block; padding: 4px 12px; border-radius: 50px; font-size: 0.75rem; font-weight: 800;
+    letter-spacing: 0.5px; text-transform: uppercase; margin-top: 8px;
+  }
+  .badge.pending { background: rgba(232,93,4,0.2); color: #ffab6b; border: 1px solid rgba(232,93,4,0.5); }
+  .ticket-card .view-link {
+    display: inline-block; margin-top: 10px; color: var(--gold); text-decoration: none; font-weight: 700; font-size: 0.88rem;
+    border-bottom: 1px dashed var(--gold);
+  }
+
+  .screenshot-note {
+    background: rgba(212,160,23,0.1); border: 1px solid rgba(212,160,23,0.3); border-radius: 12px;
+    padding: 16px 18px; font-size: 0.92rem; text-align: center; color: rgba(255,248,238,0.85); margin: 20px 0; line-height: 1.6;
+  }
+
+  @media(max-width: 540px){
+    .form-card { padding: 26px 18px; }
+    .field-row { grid-template-columns: 1fr; }
+    .ticket-card { flex-direction: column; text-align: center; }
+    .ticket-card .info { text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<div class="stars" id="stars"></div>
+
+<!-- ===== PIN GATE ===== -->
+<div class="pin-gate" id="pinGate">
+  <div class="pin-card">
+    <div class="icon">🔐</div>
+    <h2>Seller Access</h2>
+    <p>This page is for authorized members, sellers, and assistants only.<br/>Please enter the access PIN given to you by the raffle organizer.</p>
+    <input type="password" id="pinInput" inputmode="numeric" maxlength="8" placeholder="• • • •" autocomplete="off"/>
+    <button type="button" onclick="checkPin()">Unlock</button>
+    <div class="pin-err" id="pinErr">Incorrect PIN. Please try again or ask the organizer.</div>
+  </div>
+</div>
+
+<div class="page-wrap">
+  <header>
+    <div class="logo-badge">🎟️ Seller / Assistant Tool</div>
+    <h1>Generate Raffle Ticket</h1>
+    <p>Fill this out for a buyer who paid you (or a member) for raffle tickets. Each ticket gets its own scannable QR code.</p>
+  </header>
+
+  <div class="form-card">
+
+    <!-- ===== GENERATE FORM ===== -->
+    <form id="generateForm" novalidate>
+
+      <div class="section-label">Who Is Filling This Out</div>
+
+      <div class="field-group">
+        <label>Your Full Name (Seller / Assistant) <span class="req">*</span></label>
+        <input type="text" id="memberName" name="memberName" placeholder="e.g. Maria Santos" autocomplete="name"/>
+        <div class="field-hint">This is you — the member, seller, or assistant recording this sale. It will appear on the ticket so buyers know who to contact.</div>
+        <div class="field-error" id="memberNameErr">Please enter your full name.</div>
+      </div>
+
+      <div class="section-label" style="margin-top:8px;">Ticket Buyer Details</div>
+
+      <div class="field-group">
+        <label>Buyer's Full Name <span class="req">*</span></label>
+        <input type="text" id="donorName" name="donorName" placeholder="e.g. Juan Dela Cruz" autocomplete="off"/>
+        <div class="field-hint">The person who will own this ticket / these tickets.</div>
+        <div class="field-error" id="donorNameErr">Please enter the buyer's full name.</div>
+      </div>
+
+      <div class="field-group">
+        <label>Buyer's Phone Number <span class="opt">Optional</span></label>
+        <input type="tel" id="donorPhone" name="donorPhone" placeholder="+63 912 345 6789" autocomplete="off"/>
+      </div>
+
+      <div class="section-label" style="margin-top:8px;">Tickets & Payment</div>
+
+      <div class="field-group">
+        <label>Number of Tickets <span class="req">*</span></label>
+        <div class="ticket-price-row">
+          <div class="ticket-counter">
+            <button type="button" onclick="changeQty(-1)">−</button>
+            <input type="number" id="ticketQty" name="ticketQty" value="1" min="1" max="50" readonly/>
+            <button type="button" onclick="changeQty(1)">+</button>
+          </div>
+          <div class="price-tag">× ₱100 = Total: <strong id="totalPrice">₱100</strong></div>
+        </div>
+        <div class="field-hint">Each ticket will get its own unique QR code and Ticket ID.</div>
+      </div>
+
+      <div class="field-group">
+        <label>Payment Method <span class="opt">Optional</span></label>
+        <select id="paymentMethod" name="paymentMethod">
+          <option value="">— Select payment method —</option>
+          <option value="GCash">GCash</option>
+          <option value="Maya">Maya</option>
+          <option value="Bank Transfer">Bank Transfer</option>
+          <option value="Cash">Cash</option>
+          <option value="Credit Card">Credit Card</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+
+      <div class="field-group">
+        <label>Transaction / Reference Number <span class="req">*</span></label>
+        <input type="text" id="transactionNumberId" name="transactionNumberId" placeholder="e.g. GC-20250521-XXXX or OR #1234"/>
+        <div class="field-hint">Mandatory. This is the buyer's proof of payment — write the GCash/Maya/Bank reference number, or the Official Receipt / Cash Voucher number if paid in cash.</div>
+        <div class="field-error" id="transactionErr">A transaction/reference number is required as proof of payment.</div>
+      </div>
+
+      <div class="fine-print">
+        <strong>📋 Please read before submitting:</strong>
+        <ul>
+          <li>By generating this ticket, you confirm that payment was actually received from the buyer named above.</li>
+          <li>The transaction/reference number entered will be used to verify this payment. False or missing proof of payment may cause the ticket to be voided.</li>
+          <li>Tickets start as <strong>"Not Verified"</strong> and will be marked <strong>"Verified"</strong> once the organizer confirms the payment.</li>
+          <li>Only <strong>verified</strong> tickets are eligible to claim prizes if drawn as a winner.</li>
+          <li>Please double-check the buyer's name and transaction number before submitting — corrections may take time.</li>
+        </ul>
+      </div>
+
+      <div class="agree-row">
+        <input type="checkbox" id="agreeCheck"/>
+        <label for="agreeCheck">I confirm the details above are accurate and that payment was received from the buyer.</label>
+      </div>
+      <div class="field-error" id="agreeErr" style="margin-top:-14px; margin-bottom:18px;">Please confirm the checkbox above before submitting.</div>
+
+      <button type="submit" class="btn-submit" id="submitBtn">
+        🎟️ Generate Ticket(s)
+      </button>
+    </form>
+
+    <!-- ===== SUCCESS: SHOW GENERATED TICKETS ===== -->
+    <div class="success-screen" id="successScreen">
+      <div class="success-head">
+        <div class="emoji">✅</div>
+        <h2>Tickets Generated!</h2>
+        <p id="successSummary"></p>
+      </div>
+
+      <div class="screenshot-note">
+        📸 <strong>Please screenshot or save this screen for the buyer.</strong><br/>
+        Each ticket below has its own QR code — the buyer can scan it anytime to view or share their ticket.
+      </div>
+
+      <div class="screenshot-note" style="border-color: rgba(232,93,4,0.4); background: rgba(232,93,4,0.1);">
+        🔑 <strong>Important:</strong> If this ticket is ever given or sold to someone else later, they'll need the <strong>last 4 digits of the transaction number</strong> (<span id="transactionLast4"></span>) to update the ticket owner. Please share that with the buyer.
+      </div>
+
+      <div id="ticketList"></div>
+
+      <div class="nav-links">
+        <a href="generate-ticket.html" onclick="resetForm(); return false;">＋ Generate More</a>
+        <a href="registration.html">🎫 Buyer Self-Registration</a>
+        <a href="admin.html">🔍 Admin Panel</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast">✓ Success!</div>
+
+<script>
+  // ====== CONFIGURATION ======
+  const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbzDRN38pM5AqjOWROamx0wJwddjezEOaNMmV3zHuQYKJ6J6A220NqqZ0liLf8lshq2iAA/exec'; // Replace with your Google Apps Script Web App URL
+  const TICKET_PRICE = 100;
+  const SELLER_PIN = '1234'; // ← a very simple PIN for users
+  const API_SECRET = 'L10nsClvbQCBELC'; // ← If you are a smart-ass, congratulations, you found the secret key. Be proud of yourself. I hope you use it responsibly and do not abuse it.
+
+  // ====== STARS ======
+  (function(){
+    const container = document.getElementById('stars');
+    for(let i = 0; i < 80; i++){
+      const s = document.createElement('div');
+      s.className = 'star';
+      const size = Math.random() * 2.5 + 0.5;
+      s.style.cssText = `width:${size}px; height:${size}px; top:${Math.random()*100}%; left:${Math.random()*100}%; --d:${(Math.random()*3+2).toFixed(1)}s; --delay:-${(Math.random()*5).toFixed(1)}s;`;
+      container.appendChild(s);
+    }
+  })();
+
+  // ====== PIN GATE ======
+  function checkPin(){
+    const val = document.getElementById('pinInput').value.trim();
+    const err = document.getElementById('pinErr');
+    if(val === SELLER_PIN){
+      document.getElementById('pinGate').style.display = 'none';
+      sessionStorage.setItem('luckyDrawSellerUnlocked', '1');
+    } else {
+      err.classList.add('show');
+      document.getElementById('pinInput').value = '';
+      document.getElementById('pinInput').focus();
+    }
+  }
+  document.getElementById('pinInput').addEventListener('keydown', e => { if(e.key === 'Enter') checkPin(); });
+  if(sessionStorage.getItem('luckyDrawSellerUnlocked') === '1'){
+    document.getElementById('pinGate').style.display = 'none';
+  }
+
+  // ====== TICKET COUNTER ======
+  function changeQty(delta){
+    const inp = document.getElementById('ticketQty');
+    let val = parseInt(inp.value) + delta;
+    val = Math.max(1, Math.min(50, val));
+    inp.value = val;
+    document.getElementById('totalPrice').textContent = '₱' + (val * TICKET_PRICE).toLocaleString();
+  }
+
+  // ====== VALIDATION ======
+  function validateField(id, errId, test){
+    const el = document.getElementById(id);
+    const err = document.getElementById(errId);
+    const valid = test(el.value.trim());
+    el.classList.toggle('error', !valid);
+    el.classList.toggle('valid', valid);
+    err.classList.toggle('show', !valid);
+    return valid;
+  }
+  function validateAll(){
+    let ok = true;
+    ok = validateField('memberName','memberNameErr', v => v.length >= 2) && ok;
+    ok = validateField('donorName','donorNameErr', v => v.length >= 2) && ok;
+    ok = validateField('transactionNumberId','transactionErr', v => v.length >= 2) && ok;
+    const agreeErr = document.getElementById('agreeErr');
+    const agreed = document.getElementById('agreeCheck').checked;
+    agreeErr.classList.toggle('show', !agreed);
+    ok = agreed && ok;
+    return ok;
+  }
+  ['memberName','donorName','transactionNumberId'].forEach(id => {
+    document.getElementById(id).addEventListener('blur', () => validateAll());
+  });
+
+  // ====== BUILD TICKET CARD (with offline QR) ======
+  function ticketOrigin(){
+    // Build the base URL for view-ticket.html relative to this page
+    const parts = window.location.href.split('/');
+    parts.pop();
+    return parts.join('/') + '/view-ticket.html';
+  }
+
+  function renderTicketCard(container, ticket, buyerName){
+    const card = document.createElement('div');
+    card.className = 'ticket-card';
+
+    const qrBox = document.createElement('div');
+    qrBox.className = 'qr-box';
+    card.appendChild(qrBox);
+
+    const info = document.createElement('div');
+    info.className = 'info';
+    const viewUrl = ticketOrigin() + '?qr=' + encodeURIComponent(ticket.qrCodeId);
+    info.innerHTML = `
+      <div class="tid">${ticket.ticketId}</div>
+      <div class="buyer">${buyerName}</div>
+      <div class="meta">Sold by: ${document.getElementById('memberName').value.trim()}</div>
+      <div class="meta">QR ID: ${ticket.qrCodeId}</div>
+      <span class="badge pending">⏳ Not Verified Yet</span><br/>
+      <a class="view-link" href="${viewUrl}" target="_blank">🔗 Open Full Digital Ticket</a>
+    `;
+    card.appendChild(info);
+    container.appendChild(card);
+
+    // Generate QR code offline into qrBox, encoding the view-ticket URL
+    new QRCode(qrBox, {
+      text: viewUrl,
+      width: 110,
+      height: 110,
+      colorDark: '#1A0A2E',
+      colorLight: '#ffffff',
+      correctLevel: QRCode.CorrectLevel.M
+    });
+  }
+
+  // ====== FORM SUBMIT ======
+  document.getElementById('generateForm').addEventListener('submit', async function(e){
+    e.preventDefault();
+    if(!validateAll()) return;
+
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Generating...';
+
+    const payload = {
+      action: 'generateTicket',
+      secret: API_SECRET,
+      memberName: document.getElementById('memberName').value.trim(),
+      donorName: document.getElementById('donorName').value.trim(),
+      donorPhone: document.getElementById('donorPhone').value.trim(),
+      ticketQty: document.getElementById('ticketQty').value,
+      paymentMethod: document.getElementById('paymentMethod').value,
+      transactionNumberId: document.getElementById('transactionNumberId').value.trim(),
+    };
+
+    function showResults(tickets, buyerName, demo){
+      document.getElementById('generateForm').style.display = 'none';
+      document.getElementById('successScreen').classList.add('show');
+      document.getElementById('successSummary').textContent =
+        tickets.length + ' ticket(s) generated for ' + buyerName + (demo ? ' (Demo Mode — backend not connected)' : '.');
+      const txn = document.getElementById('transactionNumberId').value.trim();
+      document.getElementById('transactionLast4').textContent = txn ? txn.slice(-4).toUpperCase() : '----';
+      const list = document.getElementById('ticketList');
+      list.innerHTML = '';
+      tickets.forEach(t => renderTicketCard(list, t, buyerName));
+      showToast(demo ? 'Demo mode: backend not connected.' : (tickets.length + ' ticket(s) generated! 🎉'), demo);
+    }
+
+    try {
+      const resp = await fetch(WEBAPP_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload),
+        mode: 'cors'
+      });
+      const data = await resp.json();
+
+      if(data.success){
+        showResults(data.tickets, payload.donorName, false);
+      } else {
+        showToast('Error: ' + (data.message || 'Something went wrong.'), true);
+        btn.disabled = false;
+        btn.innerHTML = '🎟️ Generate Ticket(s)';
+      }
+    } catch(err) {
+      // Demo mode fallback (no backend connected)
+      const qty = parseInt(payload.ticketQty) || 1;
+      const demoTickets = [];
+      for(let i=0;i<qty;i++){
+        demoTickets.push({
+          ticketId: 'TKT-' + Date.now().toString().slice(-6) + '-' + i,
+          qrCodeId: 'QR-DEMO' + Date.now().toString().slice(-5) + i
+        });
+      }
+      showResults(demoTickets, payload.donorName, true);
+    }
+  });
+
+  function showToast(msg, isError = false){
+    const t = document.getElementById('toast');
+    t.textContent = (isError ? '⚠️ ' : '✓ ') + msg;
+    t.className = 'toast' + (isError ? ' error-toast' : '') + ' show';
+    setTimeout(() => t.classList.remove('show'), 5000);
+  }
+
+  function resetForm(){
+    document.getElementById('generateForm').reset();
+    document.getElementById('generateForm').style.display = '';
+    document.getElementById('successScreen').classList.remove('show');
+    document.getElementById('submitBtn').disabled = false;
+    document.getElementById('submitBtn').innerHTML = '🎟️ Generate Ticket(s)';
+    document.getElementById('ticketQty').value = 1;
+    document.getElementById('totalPrice').textContent = '₱100';
+    ['memberName','donorName','transactionNumberId'].forEach(id=>{
+      document.getElementById(id).classList.remove('error','valid');
+    });
+    document.querySelectorAll('.field-error').forEach(e=>e.classList.remove('show'));
+  }
+</script>
+</body>
+</html>

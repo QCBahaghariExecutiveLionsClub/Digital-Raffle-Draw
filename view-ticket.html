@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0"/>
+<title>My Raffle Ticket — Lucky Draw</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  :root {
+    --gold: #D4A017; --gold-light: #F5C842; --gold-dark: #A07010;
+    --deep: #1A0A2E; --deep2: #2D1B5E; --accent: #E85D04; --cream: #FFF8EE;
+    --green: #2A9D5C; --red: #C0392B;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Nunito', sans-serif; background: var(--deep); min-height: 100vh;
+    color: var(--cream); overflow-x: hidden; font-size: 18px; /* extra large for readability */
+  }
+  body::before {
+    content: ''; position: fixed; inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 20%, rgba(212,160,23,0.12) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba(232,93,4,0.1) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 50%, rgba(45,27,94,0.8) 0%, var(--deep) 100%);
+    z-index: 0; pointer-events: none;
+  }
+  .stars { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+  .star { position: absolute; background: #fff; border-radius: 50%; animation: twinkle var(--d, 3s) ease-in-out infinite var(--delay, 0s); }
+  @keyframes twinkle { 0%,100%{opacity:0.1;transform:scale(1);} 50%{opacity:0.8;transform:scale(1.4);} }
+
+  .page-wrap { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; padding: 36px 18px 60px; min-height: 100vh; }
+
+  header { text-align: center; margin-bottom: 26px; }
+  .logo-badge {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: linear-gradient(135deg, var(--gold), var(--accent));
+    padding: 8px 22px; border-radius: 100px; font-family: 'Playfair Display', serif;
+    font-size: 12px; letter-spacing: 3px; text-transform: uppercase; color: #fff;
+    margin-bottom: 14px; box-shadow: 0 4px 20px rgba(212,160,23,0.4);
+  }
+  header h1 {
+    font-family: 'Playfair Display', serif; font-size: clamp(1.7rem, 6vw, 2.6rem); font-weight: 800;
+    background: linear-gradient(135deg, var(--gold-light), var(--gold), #fff8);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+
+  /* ===== LOADING / ERROR STATES ===== */
+  .state-box { text-align: center; padding: 60px 20px; max-width: 420px; }
+  .state-box .icon { font-size: 3.2rem; margin-bottom: 16px; }
+  .state-box h2 { font-family: 'Playfair Display', serif; color: var(--gold-light); font-size: 1.4rem; margin-bottom: 10px; }
+  .state-box p { color: rgba(255,248,238,0.7); font-size: 1.05rem; line-height: 1.6; }
+  .spinner-big {
+    width: 46px; height: 46px; border: 4px solid rgba(212,160,23,0.25); border-top-color: var(--gold);
+    border-radius: 50%; margin: 0 auto 18px; animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ===== TICKET CARD ===== */
+  .ticket-wrap { width: 100%; max-width: 460px; }
+
+  .ticket {
+    background: linear-gradient(160deg, rgba(255,255,255,0.07), rgba(212,160,23,0.06));
+    border: 2px solid rgba(212,160,23,0.4); border-radius: 26px; overflow: hidden;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.1);
+    animation: fadeUp 0.7s ease both;
+  }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:none;} }
+
+  .ticket-top {
+    background: linear-gradient(135deg, var(--gold-dark), var(--gold), var(--accent));
+    padding: 22px 24px; text-align: center; position: relative;
+  }
+  .ticket-top .event-name { font-family: 'Playfair Display', serif; font-size: 1.15rem; font-weight: 800; color: #fff; letter-spacing: 0.5px; }
+  .ticket-top .subtitle { font-size: 0.85rem; color: rgba(255,255,255,0.85); margin-top: 2px; }
+
+  .ticket-body { padding: 26px 24px; text-align: center; }
+
+  .qr-display {
+    background: #fff; border-radius: 16px; padding: 16px; display: inline-block; margin-bottom: 18px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  }
+  .qr-display canvas, .qr-display img { display: block; width: 170px; height: 170px; }
+
+  .ticket-id-big {
+    font-family: 'Courier New', monospace; font-size: 1.5rem; font-weight: 700; color: var(--gold-light);
+    letter-spacing: 2px; text-shadow: 0 0 20px rgba(212,160,23,0.5); word-break: break-all;
+  }
+
+  .status-badge {
+    display: inline-flex; align-items: center; gap: 8px; padding: 8px 20px; border-radius: 50px;
+    font-size: 0.9rem; font-weight: 800; letter-spacing: 0.4px; text-transform: uppercase; margin-top: 14px;
+  }
+  .status-badge.verified { background: rgba(42,157,92,0.2); color: #7be3a6; border: 1.5px solid rgba(42,157,92,0.6); }
+  .status-badge.pending { background: rgba(232,93,4,0.2); color: #ffab6b; border: 1.5px solid rgba(232,93,4,0.6); }
+
+  .divider-dash {
+    border: none; border-top: 2px dashed rgba(212,160,23,0.3); margin: 24px 0; position: relative;
+  }
+  .divider-dash::before, .divider-dash::after {
+    content: ''; position: absolute; top: -11px; width: 22px; height: 22px; background: var(--deep); border-radius: 50%;
+  }
+  .divider-dash::before { left: -34px; }
+  .divider-dash::after { right: -34px; }
+
+  .detail-row {
+    display: flex; justify-content: space-between; align-items: flex-start; gap: 14px;
+    padding: 12px 0; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .detail-row:last-child { border-bottom: none; }
+  .detail-row .dl { font-size: 0.85rem; color: rgba(255,248,238,0.55); font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; min-width: 105px; }
+  .detail-row .dv { font-size: 1.05rem; font-weight: 700; color: var(--cream); text-align: right; flex: 1; }
+  .detail-row .dv.resold { color: var(--gold-light); }
+
+  .original-note { font-size: 0.85rem; color: rgba(255,248,238,0.5); text-align: right; margin-top: 2px; font-weight: 400; }
+
+  .claim-note {
+    background: rgba(212,160,23,0.1); border: 1px solid rgba(212,160,23,0.3); border-radius: 14px;
+    padding: 16px 18px; font-size: 0.92rem; line-height: 1.65; color: rgba(255,248,238,0.85); text-align: left; margin-top: 22px;
+  }
+  .claim-note strong { color: var(--gold-light); }
+
+  /* ===== ACTIONS ===== */
+  .actions { margin-top: 22px; display: flex; flex-direction: column; gap: 12px; }
+  .btn-secondary {
+    width: 100%; padding: 16px; background: rgba(212,160,23,0.12); border: 1.5px solid rgba(212,160,23,0.4);
+    border-radius: 12px; color: var(--gold-light); font-weight: 800; font-size: 1rem; cursor: pointer;
+    font-family: 'Nunito', sans-serif;
+  }
+  .btn-secondary:hover { background: rgba(212,160,23,0.2); }
+
+  .nav-links { display: flex; gap: 14px; justify-content: center; margin-top: 26px; flex-wrap: wrap; }
+  .nav-links a { color: var(--gold); text-decoration: none; font-weight: 700; font-size: 0.9rem; padding: 10px 20px; border: 1.5px solid rgba(212,160,23,0.3); border-radius: 50px; }
+  .nav-links a:hover { background: rgba(212,160,23,0.1); }
+
+  /* ===== CHANGE OWNER MODAL ===== */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 2000;
+    align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(4px);
+  }
+  .modal-overlay.show { display: flex; }
+  .modal-box {
+    background: var(--deep2); border: 1px solid rgba(212,160,23,0.35); border-radius: 22px;
+    padding: 30px 26px; max-width: 420px; width: 100%; box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+  }
+  .modal-box h3 { font-family: 'Playfair Display', serif; color: var(--gold-light); font-size: 1.3rem; margin-bottom: 8px; }
+  .modal-box p { color: rgba(255,248,238,0.7); font-size: 0.92rem; line-height: 1.6; margin-bottom: 18px; }
+  .modal-box label { display: block; font-size: 0.9rem; font-weight: 700; margin-bottom: 8px; color: rgba(255,248,238,0.85); }
+  .modal-box input {
+    width: 100%; background: rgba(255,255,255,0.07); border: 1.5px solid rgba(212,160,23,0.25); border-radius: 10px;
+    padding: 14px 16px; font-size: 1rem; color: var(--cream); outline: none; margin-bottom: 8px;
+  }
+  .modal-box input:focus { border-color: var(--gold); }
+  .modal-box .field-error { font-size: 0.82rem; color: #ff7675; margin-bottom: 10px; display: none; }
+  .modal-box .field-error.show { display: block; }
+  .modal-box .field-hint { font-size: 0.82rem; color: rgba(255,248,238,0.55); line-height: 1.5; }
+  .modal-btns { display: flex; gap: 10px; margin-top: 14px; }
+  .modal-btns button {
+    flex: 1; padding: 14px; border-radius: 10px; border: none; font-weight: 800; font-size: 0.95rem; cursor: pointer; font-family: 'Nunito', sans-serif;
+  }
+  .modal-btns .cancel { background: rgba(255,255,255,0.08); color: var(--cream); }
+  .modal-btns .confirm { background: linear-gradient(135deg, var(--gold), var(--accent)); color: #fff; }
+  .modal-btns button:disabled { opacity: 0.6; cursor: not-allowed; }
+
+  .toast {
+    position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px);
+    background: var(--green); color: #fff; padding: 16px 26px; border-radius: 50px; font-weight: 700; font-size: 0.95rem;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.4); transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+    z-index: 2100; max-width: 90vw; text-align: center;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  .toast.error-toast { background: var(--red); }
+
+  @media(max-width: 480px){
+    .ticket-body { padding: 22px 18px; }
+    .divider-dash::before, .divider-dash::after { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="stars" id="stars"></div>
+
+<div class="page-wrap">
+  <header>
+    <div class="logo-badge">🎰 Grand Raffle Draw 2025</div>
+    <h1>My Digital Ticket</h1>
+  </header>
+
+  <!-- LOADING STATE -->
+  <div class="state-box" id="loadingState">
+    <div class="spinner-big"></div>
+    <h2>Loading your ticket...</h2>
+    <p>Please wait a moment.</p>
+  </div>
+
+  <!-- ERROR STATE -->
+  <div class="state-box" id="errorState" style="display:none;">
+    <div class="icon">😕</div>
+    <h2>Ticket Not Found</h2>
+    <p id="errorMsg">We couldn't find a ticket matching this QR code. Please make sure you scanned it directly from your ticket image, or contact the person who sold you the ticket.</p>
+  </div>
+
+  <!-- TICKET DISPLAY -->
+  <div class="ticket-wrap" id="ticketWrap" style="display:none;">
+    <div class="ticket">
+      <div class="ticket-top">
+        <div class="event-name">🎫 Grand Raffle Draw 2025</div>
+        <div class="subtitle">Official Digital Ticket</div>
+      </div>
+      <div class="ticket-body">
+        <div class="qr-display" id="qrDisplay"></div>
+        <div class="ticket-id-big" id="ticketIdText">—</div>
+        <div><span class="status-badge" id="statusBadge">—</span></div>
+
+        <hr class="divider-dash"/>
+
+        <div class="detail-row">
+          <div class="dl">Ticket Holder</div>
+          <div class="dv" id="holderName">—</div>
+        </div>
+        <div class="detail-row" id="originalRow" style="display:none;">
+          <div class="dl">Original Buyer</div>
+          <div class="dv" id="originalName">—</div>
+        </div>
+        <div class="detail-row">
+          <div class="dl">Sold By</div>
+          <div class="dv" id="sellerName">—</div>
+        </div>
+        <div class="detail-row">
+          <div class="dl">Date Issued</div>
+          <div class="dv" id="issuedDate">—</div>
+        </div>
+
+        <div class="claim-note">
+          🏆 <strong>Prize Claims:</strong> If this ticket is drawn as a winner, claiming the prize requires the ticket to be marked <strong>Verified</strong> and full cooperation with the raffle organizer's identity and payment checks. Keep this ticket safe — screenshots are welcome!
+        </div>
+
+        <div class="actions">
+          <button class="btn-secondary" id="changeOwnerBtn" onclick="openModal()">🔄 This Ticket Was Given / Sold To Me</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-links">
+      <a href="registration.html">🎫 Buy My Own Ticket</a>
+      <a href="admin.html">🔍 Admin Panel</a>
+    </div>
+  </div>
+</div>
+
+<!-- CHANGE OWNER MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-box">
+    <h3>Update Ticket Owner</h3>
+    <p>If someone gave or sold this ticket to you, enter your full name and the <strong>4-digit verification code</strong> given to you by the seller (or the previous owner). This keeps tickets safe from being changed by mistake or by strangers.</p>
+    <label>Your Full Name <span style="color:var(--gold)">*</span></label>
+    <input type="text" id="newHolderInput" placeholder="e.g. Ana Reyes" autocomplete="name"/>
+    <div class="field-error" id="newHolderErr">Please enter a full name (at least 2 characters).</div>
+    <label>Verification Code <span style="color:var(--gold)">*</span></label>
+    <input type="text" id="verifyCodeInput" placeholder="e.g. 4X9B" maxlength="4" style="text-transform:uppercase; letter-spacing:3px;"/>
+    <div class="field-hint" style="margin-bottom:10px;">Ask the person who gave you this ticket for this code — it's the last 4 digits/characters of their payment reference number.</div>
+    <div class="field-error" id="verifyCodeErr">Please enter the 4-character verification code.</div>
+    <div class="modal-btns">
+      <button class="cancel" onclick="closeModal()">Cancel</button>
+      <button class="confirm" id="confirmHolderBtn" onclick="submitNewHolder()">Save Change</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">✓ Saved!</div>
+
+<script>
+  // ====== CONFIGURATION ======
+  const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbzDRN38pM5AqjOWROamx0wJwddjezEOaNMmV3zHuQYKJ6J6A220NqqZ0liLf8lshq2iAA/exec'; // Replace with your Google Apps Script Web App URL
+
+  // ====== STARS ======
+  (function(){
+    const container = document.getElementById('stars');
+    for(let i = 0; i < 60; i++){
+      const s = document.createElement('div');
+      s.className = 'star';
+      const size = Math.random() * 2.5 + 0.5;
+      s.style.cssText = `width:${size}px; height:${size}px; top:${Math.random()*100}%; left:${Math.random()*100}%; --d:${(Math.random()*3+2).toFixed(1)}s; --delay:-${(Math.random()*5).toFixed(1)}s;`;
+      container.appendChild(s);
+    }
+  })();
+
+  // ====== GET QR PARAM ======
+  const urlParams = new URLSearchParams(window.location.search);
+  const qrCodeId = urlParams.get('qr');
+
+  let currentTicket = null;
+
+  function renderQR(){
+    const box = document.getElementById('qrDisplay');
+    box.innerHTML = '';
+    new QRCode(box, {
+      text: window.location.href,
+      width: 170, height: 170,
+      colorDark: '#1A0A2E', colorLight: '#ffffff',
+      correctLevel: QRCode.CorrectLevel.M
+    });
+  }
+
+  function renderTicket(t){
+    currentTicket = t;
+    document.getElementById('loadingState').style.display = 'none';
+    document.getElementById('ticketWrap').style.display = 'block';
+
+    document.getElementById('ticketIdText').textContent = t.ticketId;
+    document.getElementById('holderName').textContent = t.currentHolderName || t.donorName;
+    document.getElementById('sellerName').textContent = t.memberName || '—';
+    document.getElementById('issuedDate').textContent = t.generatedAt ? String(t.generatedAt).split(' ')[0] : '—';
+
+    if(t.currentHolderName && t.currentHolderName !== t.donorName){
+      document.getElementById('originalRow').style.display = 'flex';
+      document.getElementById('originalName').textContent = t.donorName;
+      document.getElementById('holderName').classList.add('resold');
+    }
+
+    const badge = document.getElementById('statusBadge');
+    if((t.status || '').toLowerCase() === 'verified'){
+      badge.textContent = '✅ Verified';
+      badge.className = 'status-badge verified';
+    } else {
+      badge.textContent = '⏳ Pending Verification';
+      badge.className = 'status-badge pending';
+    }
+
+    renderQR();
+  }
+
+  function renderError(msg){
+    document.getElementById('loadingState').style.display = 'none';
+    document.getElementById('errorState').style.display = 'block';
+    if(msg) document.getElementById('errorMsg').textContent = msg;
+  }
+
+  async function loadTicket(){
+    if(!qrCodeId){
+      renderError('No ticket code was found in this link. Please scan the QR code directly from your ticket image.');
+      return;
+    }
+    try {
+      const resp = await fetch(WEBAPP_URL + '?action=getTicketByQR&qrCodeId=' + encodeURIComponent(qrCodeId));
+      const data = await resp.json();
+      if(data.success && data.ticket){
+        renderTicket(data.ticket);
+      } else {
+        renderError(data.message || 'We could not find a ticket matching this QR code.');
+      }
+    } catch(err) {
+      // Demo mode fallback so the page is viewable without a backend connected
+      renderTicket({
+        ticketId: 'TKT-DEMO-000000',
+        qrCodeId: qrCodeId,
+        memberName: 'Maria Santos (Demo)',
+        donorName: 'Juan Dela Cruz (Demo)',
+        currentHolderName: 'Juan Dela Cruz (Demo)',
+        status: 'Not Verified',
+        generatedAt: new Date().toISOString().slice(0,10) + ' (Demo Mode — backend not connected)'
+      });
+    }
+  }
+  loadTicket();
+
+  // ====== CHANGE OWNER MODAL ======
+  function openModal(){
+    document.getElementById('newHolderInput').value = '';
+    document.getElementById('verifyCodeInput').value = '';
+    document.getElementById('newHolderErr').classList.remove('show');
+    document.getElementById('verifyCodeErr').classList.remove('show');
+    document.getElementById('modalOverlay').classList.add('show');
+  }
+  function closeModal(){
+    document.getElementById('modalOverlay').classList.remove('show');
+  }
+
+  async function submitNewHolder(){
+    const input = document.getElementById('newHolderInput');
+    const err = document.getElementById('newHolderErr');
+    const codeInput = document.getElementById('verifyCodeInput');
+    const codeErr = document.getElementById('verifyCodeErr');
+    const name = input.value.trim();
+    const code = codeInput.value.trim();
+
+    let ok = true;
+    if(name.length < 2){ err.classList.add('show'); ok = false; } else { err.classList.remove('show'); }
+    if(code.length < 4){ codeErr.classList.add('show'); ok = false; } else { codeErr.classList.remove('show'); }
+    if(!ok) return;
+
+    const btn = document.getElementById('confirmHolderBtn');
+    btn.disabled = true;
+    btn.textContent = 'Saving...';
+
+    try {
+      const resp = await fetch(WEBAPP_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action: 'updateTicketHolder', qrCodeId: qrCodeId, newHolderName: name, verifyCode: code }),
+        mode: 'cors'
+      });
+      const data = await resp.json();
+      if(data.success){
+        currentTicket.currentHolderName = name;
+        renderTicket(currentTicket);
+        closeModal();
+        showToast('Ticket owner updated! 🎉');
+      } else {
+        showToast(data.message || 'Could not update. Please check the code and try again.', true);
+      }
+    } catch(e) {
+      // Demo mode
+      currentTicket.currentHolderName = name;
+      renderTicket(currentTicket);
+      closeModal();
+      showToast('Demo mode: change shown here only (not saved).', true);
+    }
+    btn.disabled = false;
+    btn.textContent = 'Save Change';
+  }
+
+  function showToast(msg, isError = false){
+    const t = document.getElementById('toast');
+    t.textContent = (isError ? '⚠️ ' : '✓ ') + msg;
+    t.className = 'toast' + (isError ? ' error-toast' : '') + ' show';
+    setTimeout(() => t.classList.remove('show'), 5000);
+  }
+</script>
+</body>
+</html>
