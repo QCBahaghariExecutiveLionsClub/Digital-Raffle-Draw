@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0"/>
-<title>Roaring Raffle Draw — Generate Ticket</title>
+<title>Roaring Raffle Draw — Generate Ticket (Lion's Club Member / Volunteer)</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
@@ -249,8 +249,8 @@
 <div class="pin-gate" id="pinGate">
   <div class="pin-card">
     <div class="icon">🔐</div>
-    <h2>QCBELC Lions Club Member Access</h2>
-    <p>This page is for authorized lions club members, volunteers, and assistants only.<br/>Please enter the access PIN given to you by the raffle organizer.</p>
+    <h2>QCBELC Lion's Club members / Volunteers Access</h2>
+    <p>This page is for authorized QCBELC Lion's Club members, Volunteers, and Assistants only.<br/>Please enter the access PIN given to you by the raffle organizer.</p>
     <input type="password" id="pinInput" inputmode="numeric" maxlength="8" placeholder="• • • •" autocomplete="off"/>
     <button type="button" onclick="checkPin()">Unlock</button>
     <div class="pin-err" id="pinErr">Incorrect PIN. Please try again or ask the organizer.</div>
@@ -261,7 +261,7 @@
   <header>
     <div class="logo-badge">🎟️ QCBELC Lion's Club Member / Volunteer Tool</div>
     <h1>Generate Raffle Ticket</h1>
-    <p>Fill this out for the Donor / Supporter who paid you (or a QCBELC Lion's Club member) for raffle tickets. Each ticket gets its own scannable QR code.</p>
+    <p>Fill this out for a Donor / Sponsor who paid you for raffle tickets. Each ticket gets its own scannable QR code.</p>
   </header>
 
   <div class="form-card">
@@ -274,14 +274,14 @@
       <div class="field-group">
         <label>Your Full Name (Lion's Club Member / Volunteer / Assistant) <span class="req">*</span></label>
         <input type="text" id="memberName" name="memberName" placeholder="e.g. Maria Santos" autocomplete="name"/>
-        <div class="field-hint">This is you — the Lion's member, volunteer, or assistant recording this sale. It will appear on the ticket so Donor / Supporter know who to contact.</div>
+        <div class="field-hint">This is you — the member, volunteer, or assistant recording this sale. It will appear on the ticket so donor / supporter's know who to contact.</div>
         <div class="field-error" id="memberNameErr">Please enter your full name.</div>
       </div>
 
       <div class="section-label" style="margin-top:8px;">Ticket Donor / Supporter Details</div>
 
       <div class="field-group">
-        <label>Donor's Full Name <span class="req">*</span></label>
+        <label>Donor / Supporter's Full Name <span class="req">*</span></label>
         <input type="text" id="donorName" name="donorName" placeholder="e.g. Juan Dela Cruz" autocomplete="off"/>
         <div class="field-hint">The person who will own this ticket / these tickets.</div>
         <div class="field-error" id="donorNameErr">Please enter the Donor / Supporter's full name.</div>
@@ -321,10 +321,9 @@
       </div>
 
       <div class="field-group">
-        <label>Transaction / Reference Number <span class="req">*</span></label>
         <label>Transaction / Reference Number <span class="opt">Optional</span></label>
         <input type="text" id="transactionNumberId" name="transactionNumberId" placeholder="e.g. GC-20250521-XXXX or OR #1234"/>
-        <div class="field-error" id="transactionErr">A transaction/reference number is required as proof of payment.</div>
+        <div class="field-hint">If typing the full number is too long or difficult, you may leave this blank — the receipt photo below will serve as proof of payment instead.</div>
       </div>
 
       <div class="field-group">
@@ -332,6 +331,7 @@
         <div class="upload-zone" id="uploadZone">
           <input type="file" id="receiptImage" name="receiptImage" accept="image/*" capture="environment"/>
           <div class="upload-icon">📸</div>
+          <div class="upload-text">
             <strong>Tap to take a photo</strong> or choose from gallery<br/>
             of the GCash/Bank receipt or screenshot
           </div>
@@ -397,10 +397,9 @@
 
 <script>
   // ====== CONFIGURATION ======
-  const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbygci2qjK95pWw4JF31pb9o01V8Hvz8Q3mSERwo4JcQNhseXfTKjwpsZ6MpVHxObPbo9w/exec'; // Replace with your Google Apps Script Web App URL
   const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycby3ieuUIhB5nnUda2DrcGH2YP4xWGW1S5lOF7VQCql1vLEXJs1wjXkVyXSVNKkG0Ku_WQ/exec'; // Replace with your Google Apps Script Web App URL
   const TICKET_PRICE = 100;
-  const API_SECRET = 'L10nsClvbQCBELC'; // ← If you are a smart-ass, congratulations, you found the secret key. Be proud of yourself. I hope you use it responsibly and do not abuse it.
+  const SELLER_PIN = '1234';
   const API_SECRET = 'L10nsClvbQCBELC'; //
 
   // ====== STARS ======
