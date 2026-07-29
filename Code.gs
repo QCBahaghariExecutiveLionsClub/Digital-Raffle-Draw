@@ -125,6 +125,13 @@ function registerParticipant(data) {
     const ticketId = generateTicketId();
     ticketIds.push(ticketId);
 
+    // Save receipt image to Drive first (if provided) so we can store the link on the row
+    let receiptLink = '';
+    if (data.receiptImage && data.receiptFileName) {
+      try { receiptLink = saveReceiptToDrive(ticketId, data.receiptFileName, data.receiptImage); }
+      catch(e) { /* Drive saving is optional — don't fail registration */ }
+    }
+
     sheet.appendRow([
       ticketId,                            // A: Ticket ID
       (data.firstName + ' ' + data.lastName).trim(), // B: Full Name
@@ -144,13 +151,8 @@ function registerParticipant(data) {
       '',                                  // P: Winner Round (filled later)
       '',                                  // Q: Notes
       data.referralName || '',             // R: Referral Name
+      receiptLink,                         // S: Receipt Link (Google Drive)
     ]);
-
-    // Save receipt image to Drive (optional)
-    if (data.receiptImage && data.receiptFileName) {
-      try { saveReceiptToDrive(ticketId, data.receiptFileName, data.receiptImage); }
-      catch(e) { /* Drive saving is optional — don't fail registration */ }
-    }
   }
 
   return {
@@ -171,7 +173,9 @@ function saveReceiptToDrive(ticketId, fileName, base64Data) {
     'image/jpeg',
     ticketId + '_' + fileName
   );
-  folder.createFile(blob);
+  const file = folder.createFile(blob);
+  try { file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW); } catch(e) { /* sharing may already be set by domain policy */ }
+  return file.getUrl();
 }
 
 function getDriveFolder(name) {
@@ -236,6 +240,7 @@ function getAllRecords() {
       isWinner:      !!winnerMap[ticketId],
       winnerRound:   winnerMap[ticketId] || null,
       referralName:  row[17] || '',
+      receiptLink:   row[18] || '',
     });
   }
 
@@ -361,7 +366,13 @@ function importExcelData(payload) {
  * G: TransactionNumberId  H: PaymentMethod   I: TicketQty (batch size)
  * J: PriceEach         K: TotalAmount       L: Status (Not Verified / Verified)
  * M: GeneratedAt        N: VerifiedAt        O: Notes (holder-change / audit log)
+ * P: ReceiptLink (Google Drive link to the payment screenshot, if provided)
  */
+// Toggle whether a receipt photo is mandatory to generate a ticket.
+// Set to false to make the photo optional again (e.g. once the reference-number
+// field becomes the primary proof, or vice versa).
+const REQUIRE_RECEIPT_PHOTO = true;
+
 function generateTicket(data) {
   const sheet = getOrCreateSheet(SHEETS.GENERATE_TICKETS);
   ensureGenerateTicketsHeader(sheet);
@@ -369,14 +380,35 @@ function generateTicket(data) {
   const memberName = (data.memberName || '').trim();
   const donorName  = (data.donorName || '').trim();
   const transactionNumberId = (data.transactionNumberId || '').trim();
+  const hasReceipt = !!(data.receiptImage && data.receiptFileName);
 
   if (!memberName) return { success: false, message: 'Seller/assistant name is required.' };
   if (!donorName)  return { success: false, message: "Buyer's full name is required." };
-  if (!transactionNumberId) return { success: false, message: 'Transaction/reference number is required as proof of payment.' };
+  if (REQUIRE_RECEIPT_PHOTO && !hasReceipt) {
+    return { success: false, message: 'A photo of the payment receipt/screenshot is required.' };
+  }
+  if (!REQUIRE_RECEIPT_PHOTO && !transactionNumberId && !hasReceipt) {
+    return { success: false, message: 'Please provide either a transaction number or a receipt photo as proof of payment.' };
+  }
 
   const qty = Math.max(1, Math.min(50, parseInt(data.ticketQty) || 1));
   const timestamp = new Date();
   const dateStr = Utilities.formatDate(timestamp, Session.getScriptTimeZone(), 'yyyy-MM-dd HH:mm:ss');
+
+  // Save the receipt photo to Drive ONCE per batch (all tickets in this submission
+  // share the same proof of payment) rather than re-uploading it per ticket.
+  let receiptLink = '';
+  if (hasReceipt) {
+    try {
+      const batchId = generateTicketId(); // reuse as a unique file-naming prefix
+      receiptLink = saveReceiptToDrive(batchId, data.receiptFileName, data.receiptImage);
+    } catch (e) {
+      if (REQUIRE_RECEIPT_PHOTO) {
+        return { success: false, message: 'Could not save the receipt photo. Please try again.' };
+      }
+      // otherwise, non-fatal — continue without a link
+    }
+  }
 
   const tickets = [];
 
@@ -400,6 +432,7 @@ function generateTicket(data) {
       dateStr,                        // M: GeneratedAt
       '',                             // N: VerifiedAt
       '',                             // O: Notes
+      receiptLink,                    // P: ReceiptLink
     ]);
 
     tickets.push({ ticketId, qrCodeId });
@@ -455,6 +488,7 @@ function getGeneratedTickets() {
       currentHolderName: row[4], donorPhone: row[5], transactionNumberId: row[6],
       paymentMethod: row[7], ticketQty: row[8], priceEach: row[9], totalAmount: row[10],
       status: row[11], generatedAt: row[12], verifiedAt: row[13], notes: row[14],
+      receiptLink: row[15] || '',
     });
   }
   return { success: true, tickets };
@@ -486,7 +520,10 @@ function updateTicketHolder(data) {
       const transactionNumberId = String(values[i][6] || '');
       const expectedCode = transactionNumberId.slice(-4).toUpperCase();
 
-      if (!expectedCode || verifyCode !== expectedCode) {
+      if (!expectedCode) {
+        return { success: false, message: 'This ticket has no transfer code on file. Please contact the raffle organizer to update ownership.' };
+      }
+      if (verifyCode !== expectedCode) {
         return { success: false, message: 'Incorrect verification code. Please check with the person who gave you this ticket.' };
       }
 
@@ -538,7 +575,7 @@ function ensureGenerateTicketsHeader(sheet) {
     const headers = [
       'QRCodeID','Ticket ID','MemberName','DonorName','CurrentHolderName','DonorPhone',
       'TransactionNumberId','PaymentMethod','TicketQty','PriceEach','TotalAmount',
-      'Status','GeneratedAt','VerifiedAt','Notes'
+      'Status','GeneratedAt','VerifiedAt','Notes','ReceiptLink'
     ];
     sheet.appendRow(headers);
     sheet.getRange(1, 1, 1, headers.length)
@@ -625,7 +662,7 @@ function ensureRegistrationsHeader(sheet) {
     const headers = [
       'Ticket ID','Full Name','First Name','Last Name','Email','Phone',
       'Tickets Qty','Price Each','Total Amount','Payment Method','Reference No',
-      'Receipt File','Has Receipt','Registered At','Status','Winner Round','Notes','Referral Name'
+      'Receipt File','Has Receipt','Registered At','Status','Winner Round','Notes','Referral Name','Receipt Link'
     ];
     sheet.appendRow(headers);
     sheet.getRange(1, 1, 1, headers.length)

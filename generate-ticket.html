@@ -223,6 +223,22 @@
     .ticket-card { flex-direction: column; text-align: center; }
     .ticket-card .info { text-align: center; }
   }
+
+  /* File upload (receipt photo) */
+  .upload-zone {
+    border: 2px dashed rgba(212,160,23,0.3); border-radius: 12px; padding: 28px;
+    text-align: center; cursor: pointer; transition: all 0.25s; position: relative; overflow: hidden;
+  }
+  .upload-zone.required-empty { border-color: rgba(192,57,43,0.5); }
+  .upload-zone:hover { border-color: var(--gold); background: rgba(212,160,23,0.06); }
+  .upload-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+  .upload-icon { font-size: 2.2rem; margin-bottom: 8px; }
+  .upload-text { font-size: 0.9rem; color: rgba(255,248,238,0.6); }
+  .upload-text strong { color: var(--gold); }
+  #fileName { font-size: 0.82rem; color: var(--gold-light); margin-top: 8px; }
+  #previewWrap { margin-top: 12px; display: none; }
+  #previewImg { max-width: 100%; max-height: 220px; border-radius: 10px; border: 1px solid rgba(212,160,23,0.3); }
+  .compress-note { font-size: 0.78rem; color: rgba(255,248,238,0.4); margin-top: 6px; }
 </style>
 </head>
 <body>
@@ -256,7 +272,7 @@
       <div class="section-label">Who Is Filling This Out</div>
 
       <div class="field-group">
-        <label>Your Full Name (Lion's Member Name / Volunteer) <span class="req">*</span></label>
+        <label>Your Full Name (Lion's Club Member / Volunteer / Assistant) <span class="req">*</span></label>
         <input type="text" id="memberName" name="memberName" placeholder="e.g. Maria Santos" autocomplete="name"/>
         <div class="field-hint">This is you — the Lion's member, volunteer, or assistant recording this sale. It will appear on the ticket so Donor / Supporter know who to contact.</div>
         <div class="field-error" id="memberNameErr">Please enter your full name.</div>
@@ -306,25 +322,40 @@
 
       <div class="field-group">
         <label>Transaction / Reference Number <span class="req">*</span></label>
+        <label>Transaction / Reference Number <span class="opt">Optional</span></label>
         <input type="text" id="transactionNumberId" name="transactionNumberId" placeholder="e.g. GC-20250521-XXXX or OR #1234"/>
-        <div class="field-hint">Mandatory. This is the Donor / Supporter's proof of payment — write the GCash/Maya/Bank reference number, or the Official Receipt / Cash Voucher number if paid in cash.</div>
         <div class="field-error" id="transactionErr">A transaction/reference number is required as proof of payment.</div>
+      </div>
+
+      <div class="field-group">
+        <label>Photo of Receipt / Payment Screenshot <span class="req">*</span></label>
+        <div class="upload-zone" id="uploadZone">
+          <input type="file" id="receiptImage" name="receiptImage" accept="image/*" capture="environment"/>
+          <div class="upload-icon">📸</div>
+            <strong>Tap to take a photo</strong> or choose from gallery<br/>
+            of the GCash/Bank receipt or screenshot
+          </div>
+          <div id="fileName"></div>
+        </div>
+        <div id="previewWrap"><img id="previewImg" src="" alt="Receipt preview"/></div>
+        <div class="compress-note">The photo is automatically resized to save space — no need to worry about file size.</div>
+        <div class="field-error" id="imageErr">Please attach a photo of the receipt or payment screenshot.</div>
       </div>
 
       <div class="fine-print">
         <strong>📋 Please read before submitting:</strong>
         <ul>
-          <li>By generating this ticket, you confirm that payment was actually received from the Donor / Supporter named above.</li>
-          <li>The transaction/reference number entered will be used to verify this payment. False or missing proof of payment may cause the ticket to be voided.</li>
+          <li>By generating this ticket, you confirm that payment was actually received from the donor / supporter named above.</li>
+          <li>The receipt photo (and transaction number, if provided) will be used to verify this payment. Missing or unclear proof of payment may cause the ticket to be voided.</li>
           <li>Tickets start as <strong>"Not Verified"</strong> and will be marked <strong>"Verified"</strong> once the organizer confirms the payment.</li>
           <li>Only <strong>verified</strong> tickets are eligible to claim prizes if drawn as a winner.</li>
-          <li>Please double-check the Donor / Supporter's name and transaction number before submitting — corrections may take time.</li>
+          <li>Please double-check the donor / supporter's name and receipt photo before submitting — corrections may take time.</li>
         </ul>
       </div>
 
       <div class="agree-row">
         <input type="checkbox" id="agreeCheck"/>
-        <label for="agreeCheck">I confirm the details above are accurate and that payment was received from the Donor / Supporter.</label>
+        <label for="agreeCheck">I confirm the details above are accurate and that payment was received from the donor / supporter.</label>
       </div>
       <div class="field-error" id="agreeErr" style="margin-top:-14px; margin-bottom:18px;">Please confirm the checkbox above before submitting.</div>
 
@@ -342,12 +373,12 @@
       </div>
 
       <div class="screenshot-note">
-        📸 <strong>Please screenshot or save this screen for the Donor / Supporter.</strong><br/>
-        Each ticket below has its own QR code — the Donor / Supporter can scan it anytime to view or share their ticket.
+        📸 <strong>Please screenshot or save this screen for the donor / supporter.</strong><br/>
+        Each ticket below has its own QR code — the donor / supporter can scan it anytime to view or share their ticket.
       </div>
 
       <div class="screenshot-note" style="border-color: rgba(232,93,4,0.4); background: rgba(232,93,4,0.1);">
-        🔑 <strong>Important:</strong> If this ticket is ever given or sold to someone else later, they'll need the <strong>last 4 digits of the transaction number</strong> (<span id="transactionLast4"></span>) to update the ticket owner. Please share that with the Donor / Supporter.
+        🔑 <strong>Important:</strong> If this ticket is ever given or sold to someone else later, they'll need the <strong>last 4 digits of the transaction number</strong> (<span id="transactionLast4"></span>) to update the ticket owner. Please share that with the donor / supporter.
       </div>
 
       <div id="ticketList"></div>
@@ -367,9 +398,10 @@
 <script>
   // ====== CONFIGURATION ======
   const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbygci2qjK95pWw4JF31pb9o01V8Hvz8Q3mSERwo4JcQNhseXfTKjwpsZ6MpVHxObPbo9w/exec'; // Replace with your Google Apps Script Web App URL
+  const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycby3ieuUIhB5nnUda2DrcGH2YP4xWGW1S5lOF7VQCql1vLEXJs1wjXkVyXSVNKkG0Ku_WQ/exec'; // Replace with your Google Apps Script Web App URL
   const TICKET_PRICE = 100;
-  const SELLER_PIN = '1234'; // ← a very simple PIN for users
   const API_SECRET = 'L10nsClvbQCBELC'; // ← If you are a smart-ass, congratulations, you found the secret key. Be proud of yourself. I hope you use it responsibly and do not abuse it.
+  const API_SECRET = 'L10nsClvbQCBELC'; //
 
   // ====== STARS ======
   (function(){
@@ -411,6 +443,10 @@
   }
 
   // ====== VALIDATION ======
+  const REQUIRE_RECEIPT_PHOTO = true; // ← keep in sync with REQUIRE_RECEIPT_PHOTO in Code.gs
+  let compressedReceiptBase64 = null;
+  let receiptFileName = null;
+
   function validateField(id, errId, test){
     const el = document.getElementById(id);
     const err = document.getElementById(errId);
@@ -424,15 +460,86 @@
     let ok = true;
     ok = validateField('memberName','memberNameErr', v => v.length >= 2) && ok;
     ok = validateField('donorName','donorNameErr', v => v.length >= 2) && ok;
-    ok = validateField('transactionNumberId','transactionErr', v => v.length >= 2) && ok;
+
+    const imageErr = document.getElementById('imageErr');
+    const uploadZone = document.getElementById('uploadZone');
+    const hasPhoto = !!compressedReceiptBase64;
+    if(REQUIRE_RECEIPT_PHOTO && !hasPhoto){
+      imageErr.classList.add('show');
+      uploadZone.classList.add('required-empty');
+      ok = false;
+    } else {
+      imageErr.classList.remove('show');
+      uploadZone.classList.remove('required-empty');
+    }
+
     const agreeErr = document.getElementById('agreeErr');
     const agreed = document.getElementById('agreeCheck').checked;
     agreeErr.classList.toggle('show', !agreed);
     ok = agreed && ok;
     return ok;
   }
-  ['memberName','donorName','transactionNumberId'].forEach(id => {
+  ['memberName','donorName'].forEach(id => {
     document.getElementById(id).addEventListener('blur', () => validateAll());
+  });
+
+  // ====== RECEIPT PHOTO: COMPRESS TO ~70% QUALITY BEFORE UPLOAD ======
+  function compressImage(file, quality = 0.7, maxDimension = 1600){
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      const reader = new FileReader();
+      reader.onload = (e) => { img.src = e.target.result; };
+      reader.onerror = reject;
+      img.onload = () => {
+        let { width, height } = img;
+        if(width > maxDimension || height > maxDimension){
+          const scale = maxDimension / Math.max(width, height);
+          width = Math.round(width * scale);
+          height = Math.round(height * scale);
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        const dataUrl = canvas.toDataURL('image/jpeg', quality);
+        resolve(dataUrl);
+      };
+      img.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  document.getElementById('receiptImage').addEventListener('change', async function(e){
+    const file = e.target.files[0];
+    const fileNameEl = document.getElementById('fileName');
+    const previewWrap = document.getElementById('previewWrap');
+    const previewImg = document.getElementById('previewImg');
+
+    fileNameEl.textContent = '';
+    previewWrap.style.display = 'none';
+    compressedReceiptBase64 = null;
+    receiptFileName = null;
+
+    if(!file) { validateAll(); return; }
+
+    if(file.size > 15 * 1024 * 1024){
+      fileNameEl.textContent = '⚠️ File is too large. Please choose a smaller photo.';
+      return;
+    }
+
+    fileNameEl.textContent = '⏳ Processing photo...';
+    try {
+      const dataUrl = await compressImage(file, 0.7);
+      compressedReceiptBase64 = dataUrl.split(',')[1]; // strip "data:image/jpeg;base64,"
+      receiptFileName = (file.name || 'receipt').replace(/\.[^.]+$/, '') + '.jpg';
+      fileNameEl.textContent = '📎 ' + receiptFileName + ' — ready';
+      previewImg.src = dataUrl;
+      previewWrap.style.display = 'block';
+    } catch(err){
+      fileNameEl.textContent = '⚠️ Could not process this photo. Please try another.';
+    }
+    validateAll();
   });
 
   // ====== BUILD TICKET CARD (with offline QR) ======
@@ -494,6 +601,8 @@
       ticketQty: document.getElementById('ticketQty').value,
       paymentMethod: document.getElementById('paymentMethod').value,
       transactionNumberId: document.getElementById('transactionNumberId').value.trim(),
+      receiptImage: compressedReceiptBase64 || null,
+      receiptFileName: receiptFileName || null,
     };
 
     function showResults(tickets, buyerName, demo){
@@ -554,7 +663,12 @@
     document.getElementById('submitBtn').innerHTML = '🎟️ Generate Ticket(s)';
     document.getElementById('ticketQty').value = 1;
     document.getElementById('totalPrice').textContent = '₱100';
-    ['memberName','donorName','transactionNumberId'].forEach(id=>{
+    compressedReceiptBase64 = null;
+    receiptFileName = null;
+    document.getElementById('fileName').textContent = '';
+    document.getElementById('previewWrap').style.display = 'none';
+    document.getElementById('uploadZone').classList.remove('required-empty');
+    ['memberName','donorName'].forEach(id=>{
       document.getElementById(id).classList.remove('error','valid');
     });
     document.querySelectorAll('.field-error').forEach(e=>e.classList.remove('show'));

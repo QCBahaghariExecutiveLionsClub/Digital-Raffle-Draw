@@ -454,9 +454,9 @@ header p{font-size:1rem;color:rgba(255,248,238,.6);}
 
 <script>
 // ====== CONFIG ======
-const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbygci2qjK95pWw4JF31pb9o01V8Hvz8Q3mSERwo4JcQNhseXfTKjwpsZ6MpVHxObPbo9w/exec';
-const API_SECRET = 'L10nsClvbQCBELC'; // ← Must match API_SECRET in Code.gs
-const ADMIN_PIN = '4321'; // ← Change this and share only with the organizer/admin team
+const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycby3ieuUIhB5nnUda2DrcGH2YP4xWGW1S5lOF7VQCql1vLEXJs1wjXkVyXSVNKkG0Ku_WQ/exec';
+const API_SECRET = 'L10nsClvbQCBELC';
+const ADMIN_PIN = '4321';
 
 // ====== STARS ======
 (function(){
@@ -698,6 +698,11 @@ function renderCard(r, idx){
         <div class="field-label">Referred By</div>
         <div class="field-val">${r.referralName}</div>
       </div>` : ''}
+      ${r.receiptLink ? `
+      <div class="card-field">
+        <div class="field-label">Receipt</div>
+        <div class="field-val"><a href="${r.receiptLink}" target="_blank" style="color:var(--gold-light); font-weight:800; text-decoration:none; border-bottom:1px dashed var(--gold-light);">🧾 View Receipt</a></div>
+      </div>` : ''}
     </div>
   </div>`;
 }
@@ -884,6 +889,7 @@ function renderGenCard(t){
   actions.className = 'gen-actions';
   actions.innerHTML = `
     <a class="btn-mini" href="${viewUrl}" target="_blank">🖨️ Reprint / View</a>
+    ${t.receiptLink ? `<a class="btn-mini" href="${t.receiptLink}" target="_blank">🧾 View Receipt</a>` : ''}
     ${isVerified ? '' : `<button class="btn-mini verify-btn" onclick="markVerified('${t.qrCodeId}', this)">✅ Mark Verified</button>`}
   `;
   card.appendChild(actions);
