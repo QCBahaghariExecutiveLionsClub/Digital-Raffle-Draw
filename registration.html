@@ -504,6 +504,14 @@
           <option value="Cash">Cash (Paid in Person)</option>
           <option value="Credit Card">Credit / Debit Card</option>
         </select>
+        <select id="paymentMethod" name="paymentMethod">
+          <option value="">— Please select one —</option>
+          <option value="GCash">GCash</option>
+          <option value="Maya">Maya</option>
+          <option value="Bank Transfer">Bank Transfer</option>
+          <option value="Cash">Cash (Paid in Person)</option>
+          <option value="Credit Card">Credit / Debit Card</option>
+        </select>
         <div class="field-hint">Choose how you already sent your payment to Quezon City Bahaghari Executive Lions Club.</div>
         <div class="field-error" id="paymentErr">Please select how you paid.</div>
       </div>
@@ -567,7 +575,7 @@
 
 <script>
   // ====== CONFIGURATION ======
-  const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbx4Cc78NLP780OzP5eCZvxPf8JdRbE2XOhYnxR9LywitpVr5FJPsPZNOKCSF3dZu0En7w/exec'; // Replace with your Google Apps Script Web App URL
+  const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbxIh_VTygREtOyBTGL_OFGPW1mQjpoJ-P2FM-hP6HHC5uRbzARIxw8dLkmGXj4Q384dGQ/exec'; // Replace with your Google Apps Script Web App URL
   const TICKET_PRICE = 100;
 
   // ====== STARS ======
