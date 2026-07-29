@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Lucky Draw — Admin Panel</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;800&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
 :root{
   --gold:#D4A017; --gold-light:#F5C842;
@@ -236,11 +237,87 @@ header p{font-size:1rem;color:rgba(255,248,238,.6);}
   .search-card{padding:20px 16px;}
   .card-body{grid-template-columns:1fr 1fr;}
 }
+
+/* ===== PIN GATE ===== */
+.pin-gate{
+  position:fixed;inset:0;z-index:2000;background:var(--deep);
+  display:flex;align-items:center;justify-content:center;padding:20px;
+}
+.pin-card{
+  background:rgba(255,255,255,.055);border:1px solid rgba(212,160,23,.3);border-radius:24px;
+  padding:44px 34px;max-width:380px;width:100%;text-align:center;box-shadow:0 30px 80px rgba(0,0,0,.5);
+}
+.pin-card .icon{font-size:3rem;margin-bottom:14px;}
+.pin-card h2{font-family:'Playfair Display',serif;color:var(--gold-light);font-size:1.5rem;margin-bottom:10px;}
+.pin-card p{color:rgba(255,248,238,.7);font-size:.95rem;margin-bottom:22px;line-height:1.6;}
+.pin-card input{
+  width:100%;text-align:center;letter-spacing:8px;font-size:1.6rem;font-weight:700;
+  background:rgba(255,255,255,.06);border:1.5px solid rgba(212,160,23,.25);border-radius:10px;
+  padding:16px;margin-bottom:14px;color:var(--cream);outline:none;font-family:'Nunito',sans-serif;
+}
+.pin-card input:focus{border-color:var(--gold);}
+.pin-card button{
+  width:100%;padding:15px;background:linear-gradient(135deg,var(--gold),var(--accent));
+  border:none;border-radius:12px;color:#fff;font-weight:700;font-size:1.05rem;cursor:pointer;font-family:'Nunito',sans-serif;
+}
+.pin-card .pin-err{color:#ff7675;font-size:.85rem;margin-top:10px;display:none;}
+.pin-card .pin-err.show{display:block;}
+
+/* ===== SECTION TABS ===== */
+.section-tabs{display:flex;gap:10px;justify-content:center;margin-bottom:24px;flex-wrap:wrap;}
+.section-tab{
+  padding:11px 24px;border-radius:50px;border:1.5px solid rgba(212,160,23,.3);
+  background:rgba(212,160,23,.08);color:rgba(255,248,238,.7);font-size:.92rem;font-weight:800;
+  cursor:pointer;transition:all .2s;font-family:'Nunito',sans-serif;
+}
+.section-tab.active,.section-tab:hover{background:rgba(212,160,23,.22);border-color:var(--gold);color:var(--gold-light);}
+
+/* ===== Generated ticket cards ===== */
+.gen-card{
+  background:rgba(255,255,255,.055);border:1px solid rgba(212,160,23,.18);border-radius:16px;
+  backdrop-filter:blur(12px);overflow:hidden;animation:slideUp .35s ease both;
+  padding:18px 20px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;
+}
+.gen-card.verified{border-color:rgba(42,157,92,.4);background:linear-gradient(135deg,rgba(42,157,92,.08),rgba(255,255,255,.03));}
+.gen-card .qr-thumb{background:#fff;padding:6px;border-radius:8px;flex-shrink:0;line-height:0;}
+.gen-card .qr-thumb canvas,.gen-card .qr-thumb img{display:block;width:76px;height:76px;}
+.gen-card .gen-info{flex:1;min-width:200px;}
+.gen-card .gen-tid{font-family:'Courier New',monospace;font-size:.95rem;font-weight:700;color:var(--gold-light);}
+.gen-card .gen-holder{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;margin-top:2px;}
+.gen-card .gen-meta{font-size:.82rem;color:rgba(255,248,238,.55);margin-top:3px;line-height:1.6;}
+.gen-card .gen-actions{display:flex;flex-direction:column;gap:8px;flex-shrink:0;}
+.btn-mini{
+  padding:9px 16px;border-radius:8px;border:1.5px solid rgba(212,160,23,.35);background:rgba(212,160,23,.1);
+  color:var(--gold-light);font-size:.82rem;font-weight:800;cursor:pointer;text-decoration:none;text-align:center;
+  font-family:'Nunito',sans-serif;white-space:nowrap;
+}
+.btn-mini:hover{background:rgba(212,160,23,.22);}
+.btn-mini.verify-btn{border-color:rgba(42,157,92,.45);background:rgba(42,157,92,.12);color:#7be3a6;}
+.btn-mini.verify-btn:hover{background:rgba(42,157,92,.22);}
+.btn-mini:disabled{opacity:.5;cursor:not-allowed;}
+
+@media(max-width:540px){
+  .gen-card{flex-direction:column;text-align:center;}
+  .gen-card .gen-actions{flex-direction:row;width:100%;}
+  .gen-card .gen-actions .btn-mini{flex:1;}
+}
 </style>
 </head>
 <body>
 
 <div class="stars" id="stars"></div>
+
+<!-- ===== PIN GATE ===== -->
+<div class="pin-gate" id="pinGate">
+  <div class="pin-card">
+    <div class="icon">🔐</div>
+    <h2>Admin Access</h2>
+    <p>This panel shows participants' personal details. Please enter the admin PIN to continue.</p>
+    <input type="password" id="pinInput" inputmode="numeric" maxlength="8" placeholder="• • • •" autocomplete="off"/>
+    <button type="button" onclick="checkPin()">Unlock</button>
+    <div class="pin-err" id="pinErr">Incorrect PIN. Please try again or contact the organizer.</div>
+  </div>
+</div>
 
 <div class="page">
   <header>
@@ -252,7 +329,16 @@ header p{font-size:1rem;color:rgba(255,248,238,.6);}
   <div class="nav-links">
     <a href="registration.html">📋 Register</a>
     <a href="raffle-draw.html">🎯 Draw</a>
+    <a href="generate-ticket.html">🎟️ Generate Ticket</a>
   </div>
+
+  <div class="section-tabs">
+    <button class="section-tab active" id="tabRegistrations" onclick="switchSection('registrations')">📋 Self-Registrations</button>
+    <button class="section-tab" id="tabGenerated" onclick="switchSection('generated')">🎟️ Seller-Generated Tickets</button>
+  </div>
+
+  <!-- ============ SECTION: REGISTRATIONS (existing) ============ -->
+  <div id="regSection">
 
   <!-- <div class="config-banner">
     ⚙️ Replace <code>https://script.google.com/macros/s/AKfycbzxtytNifMW_EgTPraXCAzRMLgGJYCyeN-g-GK2NEoGCl1fnp-esJAfst049eDtaAHvEQ/exec</code> in the script with your Google Apps Script Web App URL.
@@ -309,6 +395,59 @@ header p{font-size:1rem;color:rgba(255,248,238,.6);}
   </div>
 
   <div class="pagination" id="pagination"></div>
+  </div> <!-- /regSection -->
+
+  <!-- ============ SECTION: SELLER-GENERATED TICKETS (new) ============ -->
+  <div id="genSection" style="display:none;">
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-num" id="genStatTotal">—</div>
+        <div class="stat-label">Total Generated</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="genStatVerified">—</div>
+        <div class="stat-label">Verified</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="genStatPending">—</div>
+        <div class="stat-label">Pending</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="genStatRevenue">—</div>
+        <div class="stat-label">Total Value</div>
+      </div>
+    </div>
+
+    <div class="search-card">
+      <div class="search-label">Search Generated Tickets</div>
+      <div class="search-bar-wrap">
+        <div class="search-input-wrap">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="genSearchInput"
+            placeholder="Search by buyer name, seller name, ticket ID, or transaction number..."
+            oninput="onGenSearchInput()"
+            onkeydown="if(event.key==='Enter')doGenSearch()"/>
+        </div>
+        <button class="btn-search" onclick="doGenSearch()">Search</button>
+      </div>
+      <div class="filter-tabs">
+        <button class="filter-tab active" onclick="setGenFilter('all',this)">All</button>
+        <button class="filter-tab" onclick="setGenFilter('verified',this)">✅ Verified</button>
+        <button class="filter-tab" onclick="setGenFilter('pending',this)">⏳ Pending</button>
+      </div>
+    </div>
+
+    <div id="genResultsArea">
+      <div class="state-box">
+        <span class="emoji">🔎</span>
+        <p>Loading generated tickets...</p>
+      </div>
+    </div>
+
+    <div class="pagination" id="genPagination"></div>
+  </div> <!-- /genSection -->
+
 </div>
 
 <div class="toast" id="toast"></div>
@@ -316,6 +455,8 @@ header p{font-size:1rem;color:rgba(255,248,238,.6);}
 <script>
 // ====== CONFIG ======
 const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbzDRN38pM5AqjOWROamx0wJwddjezEOaNMmV3zHuQYKJ6J6A220NqqZ0liLf8lshq2iAA/exec';
+const API_SECRET = 'L10nsClvbQCBELC'; // ← If you are a smart-ass, congratulations, you found the secret key. Be proud of yourself. I hope you use it responsibly and do not abuse it.
+const ADMIN_PIN = '4321'; //
 
 // ====== STARS ======
 (function(){
@@ -327,6 +468,38 @@ const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbzDRN38pM5AqjOWROamx
     c.appendChild(s);
   }
 })();
+
+// ====== PIN GATE ======
+function checkPin(){
+  const val = document.getElementById('pinInput').value.trim();
+  const err = document.getElementById('pinErr');
+  if(val === ADMIN_PIN){
+    document.getElementById('pinGate').style.display = 'none';
+    sessionStorage.setItem('luckyDrawAdminUnlocked', '1');
+  } else {
+    err.classList.add('show');
+    document.getElementById('pinInput').value = '';
+    document.getElementById('pinInput').focus();
+  }
+}
+document.getElementById('pinInput').addEventListener('keydown', e => { if(e.key === 'Enter') checkPin(); });
+if(sessionStorage.getItem('luckyDrawAdminUnlocked') === '1'){
+  document.getElementById('pinGate').style.display = 'none';
+}
+
+// ====== SECTION SWITCHING ======
+let genLoaded = false;
+function switchSection(section){
+  const isReg = section === 'registrations';
+  document.getElementById('regSection').style.display = isReg ? '' : 'none';
+  document.getElementById('genSection').style.display = isReg ? 'none' : '';
+  document.getElementById('tabRegistrations').classList.toggle('active', isReg);
+  document.getElementById('tabGenerated').classList.toggle('active', !isReg);
+  if(!isReg && !genLoaded){
+    genLoaded = true;
+    loadGenerated();
+  }
+}
 
 // ====== STATE ======
 let allRecords = [];
@@ -345,7 +518,7 @@ window.addEventListener('load', async () => {
 async function loadAll(){
   setLoading();
   try {
-    const resp = await fetch(WEBAPP_URL + '?action=getAll', {mode:'cors'});
+    const resp = await fetch(WEBAPP_URL + '?action=getAll&secret=' + encodeURIComponent(API_SECRET), {mode:'cors'});
     const data = await resp.json();
     if(data.success){
       allRecords = data.records || [];
@@ -537,6 +710,222 @@ function showToast(msg,isWarn=false){
   t.style.background=isWarn?'rgba(192,57,43,.9)':'rgba(45,27,94,.95)';
   t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'),3500);
+}
+
+// ============================================================
+//  GENERATED TICKETS (seller/assistant-issued tickets)
+// ============================================================
+let allGenTickets = [];
+let filteredGenTickets = [];
+let genFilter = 'all';
+let genPage = 1;
+const GEN_PAGE_SIZE = 10;
+
+function ticketViewUrl(qrCodeId){
+  const parts = window.location.href.split('/');
+  parts.pop();
+  return parts.join('/') + '/view-ticket.html?qr=' + encodeURIComponent(qrCodeId);
+}
+
+async function loadGenerated(){
+  document.getElementById('genResultsArea').innerHTML = `
+    <div class="state-box"><span class="emoji"><span class="spinner"></span></span><p>Loading generated tickets...</p></div>`;
+  try {
+    const resp = await fetch(WEBAPP_URL + '?action=getGeneratedTickets&secret=' + encodeURIComponent(API_SECRET), {mode:'cors'});
+    const data = await resp.json();
+    if(data.success){
+      allGenTickets = data.tickets || [];
+    } else { throw new Error(data.message || 'Failed to load'); }
+  } catch(e) {
+    allGenTickets = generateDemoGenTickets();
+    showToast('Demo mode: showing sample generated tickets', true);
+  }
+  updateGenStats();
+  filteredGenTickets = [...allGenTickets];
+  renderGenResults(filteredGenTickets);
+}
+
+function generateDemoGenTickets(){
+  const names = ['Lola Batungbakal','Eduardo Villanueva','Carmen Flores'];
+  const sellers = ['Maria Santos','Jose Reyes'];
+  return names.map((name,i)=>({
+    qrCodeId: 'QR-DEMO000'+i, ticketId: 'TKT-DEMO-00'+i,
+    memberName: sellers[i%sellers.length], donorName: name, currentHolderName: name,
+    donorPhone: '+63 912 345 678'+i, transactionNumberId: 'GC-DEMO-XXX'+i,
+    paymentMethod: 'GCash', ticketQty: 1, priceEach: 100, totalAmount: 100,
+    status: i===0 ? 'Verified' : 'Not Verified', generatedAt: new Date().toISOString().slice(0,10),
+  }));
+}
+
+function updateGenStats(){
+  const total = allGenTickets.length;
+  const verified = allGenTickets.filter(t=>(t.status||'').toLowerCase()==='verified').length;
+  const revenue = allGenTickets.reduce((s,t)=>s+(Number(t.priceEach)||100),0);
+  document.getElementById('genStatTotal').textContent = total;
+  document.getElementById('genStatVerified').textContent = verified;
+  document.getElementById('genStatPending').textContent = total - verified;
+  document.getElementById('genStatRevenue').textContent = '₱'+revenue.toLocaleString();
+}
+
+let genSearchTimeout;
+function onGenSearchInput(){
+  clearTimeout(genSearchTimeout);
+  genSearchTimeout = setTimeout(doGenSearch, 300);
+}
+
+function doGenSearch(){
+  const q = document.getElementById('genSearchInput').value.toLowerCase().trim();
+  let results = allGenTickets;
+
+  if(genFilter === 'verified') results = results.filter(t=>(t.status||'').toLowerCase()==='verified');
+  else if(genFilter === 'pending') results = results.filter(t=>(t.status||'').toLowerCase()!=='verified');
+
+  if(q){
+    results = results.filter(t=>
+      (t.currentHolderName||'').toLowerCase().includes(q) ||
+      (t.donorName||'').toLowerCase().includes(q) ||
+      (t.memberName||'').toLowerCase().includes(q) ||
+      (t.ticketId||'').toLowerCase().includes(q) ||
+      (t.transactionNumberId||'').toLowerCase().includes(q) ||
+      (t.donorPhone||'').toLowerCase().includes(q)
+    );
+  }
+
+  filteredGenTickets = results;
+  genPage = 1;
+  renderGenResults(results);
+}
+
+function setGenFilter(filter, btn){
+  genFilter = filter;
+  btn.parentElement.querySelectorAll('.filter-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  doGenSearch();
+}
+
+function renderGenResults(tickets){
+  const area = document.getElementById('genResultsArea');
+  const paginator = document.getElementById('genPagination');
+
+  if(tickets.length === 0){
+    area.innerHTML = `<div class="state-box"><span class="emoji">🔍</span><p>No generated tickets found matching your search.</p></div>`;
+    paginator.innerHTML = '';
+    return;
+  }
+
+  const total = tickets.length;
+  const totalPages = Math.ceil(total/GEN_PAGE_SIZE);
+  genPage = Math.min(genPage, totalPages);
+  const start = (genPage-1)*GEN_PAGE_SIZE;
+  const page = tickets.slice(start, start+GEN_PAGE_SIZE);
+
+  area.innerHTML = `
+    <div style="font-size:.82rem;color:rgba(255,248,238,.4);margin-bottom:12px;">
+      Showing ${start+1}–${Math.min(start+GEN_PAGE_SIZE,total)} of ${total} ticket${total!==1?'s':''}
+    </div>
+    <div class="results-wrap" id="genCardsWrap"></div>`;
+
+  const wrap = document.getElementById('genCardsWrap');
+  page.forEach(t => wrap.appendChild(renderGenCard(t)));
+
+  if(totalPages > 1){
+    let pages = '';
+    for(let p=1;p<=totalPages;p++){
+      if(p===1||p===totalPages||Math.abs(p-genPage)<=1){
+        pages+=`<button class="page-btn ${p===genPage?'active':''}" onclick="goGenPage(${p})">${p}</button>`;
+      } else if(Math.abs(p-genPage)===2){
+        pages+=`<button class="page-btn" disabled>…</button>`;
+      }
+    }
+    paginator.innerHTML =
+      `<button class="page-btn" onclick="goGenPage(${genPage-1})" ${genPage===1?'disabled':''}>‹</button>` +
+      pages +
+      `<button class="page-btn" onclick="goGenPage(${genPage+1})" ${genPage===totalPages?'disabled':''}>›</button>`;
+  } else {
+    paginator.innerHTML = '';
+  }
+}
+
+function renderGenCard(t){
+  const isVerified = (t.status||'').toLowerCase() === 'verified';
+  const viewUrl = ticketViewUrl(t.qrCodeId);
+  const resold = t.currentHolderName && t.currentHolderName !== t.donorName;
+
+  const card = document.createElement('div');
+  card.className = 'gen-card' + (isVerified ? ' verified' : '');
+
+  const qrBox = document.createElement('div');
+  qrBox.className = 'qr-thumb';
+  card.appendChild(qrBox);
+
+  const info = document.createElement('div');
+  info.className = 'gen-info';
+  info.innerHTML = `
+    <div class="gen-tid">${t.ticketId}</div>
+    <div class="gen-holder">${t.currentHolderName || t.donorName}</div>
+    ${resold ? `<div class="gen-meta">Originally bought by: ${t.donorName}</div>` : ''}
+    <div class="gen-meta">
+      Sold by: ${t.memberName || '—'}<br/>
+      Txn Ref: ${t.transactionNumberId || '—'} · ${t.paymentMethod || '—'}<br/>
+      Phone: ${t.donorPhone || '—'} · Issued: ${t.generatedAt ? String(t.generatedAt).split(' ')[0] : '—'}
+    </div>
+    <span class="chip ${isVerified ? 'chip-green' : 'chip-gold'}" style="margin-top:6px;display:inline-block;">
+      ${isVerified ? '✅ Verified' : '⏳ Not Verified'}
+    </span>
+  `;
+  card.appendChild(info);
+
+  const actions = document.createElement('div');
+  actions.className = 'gen-actions';
+  actions.innerHTML = `
+    <a class="btn-mini" href="${viewUrl}" target="_blank">🖨️ Reprint / View</a>
+    ${isVerified ? '' : `<button class="btn-mini verify-btn" onclick="markVerified('${t.qrCodeId}', this)">✅ Mark Verified</button>`}
+  `;
+  card.appendChild(actions);
+
+  new QRCode(qrBox, {
+    text: viewUrl, width: 76, height: 76,
+    colorDark: '#1A0A2E', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.M
+  });
+
+  return card;
+}
+
+function goGenPage(p){
+  genPage = p;
+  renderGenResults(filteredGenTickets);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+async function markVerified(qrCodeId, btn){
+  btn.disabled = true;
+  btn.textContent = 'Saving...';
+  try {
+    const resp = await fetch(WEBAPP_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: 'verifyGeneratedTicket', secret: API_SECRET, qrCodeId }),
+      mode: 'cors'
+    });
+    const data = await resp.json();
+    if(data.success){
+      const t = allGenTickets.find(x=>x.qrCodeId===qrCodeId);
+      if(t) t.status = 'Verified';
+      showToast('Ticket marked as Verified ✅');
+      updateGenStats();
+      doGenSearch();
+    } else {
+      showToast('Error: ' + (data.message||'Could not verify.'), true);
+      btn.disabled = false;
+      btn.textContent = '✅ Mark Verified';
+    }
+  } catch(e){
+    showToast('Demo mode: change shown here only (not saved).', true);
+    const t = allGenTickets.find(x=>x.qrCodeId===qrCodeId);
+    if(t) t.status = 'Verified';
+    updateGenStats();
+    doGenSearch();
+  }
 }
 </script>
 </body>
