@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0"/>
-<title>Lucky Draw — Generate Ticket (Seller)</title>
+<title>Roaring Raffle Draw — Generate Ticket</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
@@ -233,8 +233,8 @@
 <div class="pin-gate" id="pinGate">
   <div class="pin-card">
     <div class="icon">🔐</div>
-    <h2>Seller Access</h2>
-    <p>This page is for authorized members, sellers, and assistants only.<br/>Please enter the access PIN given to you by the raffle organizer.</p>
+    <h2>QCBELC Lions Club Member Access</h2>
+    <p>This page is for authorized lions club members, volunteers, and assistants only.<br/>Please enter the access PIN given to you by the raffle organizer.</p>
     <input type="password" id="pinInput" inputmode="numeric" maxlength="8" placeholder="• • • •" autocomplete="off"/>
     <button type="button" onclick="checkPin()">Unlock</button>
     <div class="pin-err" id="pinErr">Incorrect PIN. Please try again or ask the organizer.</div>
@@ -243,9 +243,9 @@
 
 <div class="page-wrap">
   <header>
-    <div class="logo-badge">🎟️ Seller / Assistant Tool</div>
+    <div class="logo-badge">🎟️ QCBELC Lion's Club Member / Volunteer Tool</div>
     <h1>Generate Raffle Ticket</h1>
-    <p>Fill this out for a buyer who paid you (or a member) for raffle tickets. Each ticket gets its own scannable QR code.</p>
+    <p>Fill this out for the Donor / Supporter who paid you (or a QCBELC Lion's Club member) for raffle tickets. Each ticket gets its own scannable QR code.</p>
   </header>
 
   <div class="form-card">
@@ -256,23 +256,23 @@
       <div class="section-label">Who Is Filling This Out</div>
 
       <div class="field-group">
-        <label>Your Full Name (Seller / Assistant) <span class="req">*</span></label>
+        <label>Your Full Name (Lion's Member Name / Volunteer) <span class="req">*</span></label>
         <input type="text" id="memberName" name="memberName" placeholder="e.g. Maria Santos" autocomplete="name"/>
-        <div class="field-hint">This is you — the member, seller, or assistant recording this sale. It will appear on the ticket so buyers know who to contact.</div>
+        <div class="field-hint">This is you — the Lion's member, volunteer, or assistant recording this sale. It will appear on the ticket so Donor / Supporter know who to contact.</div>
         <div class="field-error" id="memberNameErr">Please enter your full name.</div>
       </div>
 
-      <div class="section-label" style="margin-top:8px;">Ticket Buyer Details</div>
+      <div class="section-label" style="margin-top:8px;">Ticket Donor / Supporter Details</div>
 
       <div class="field-group">
-        <label>Buyer's Full Name <span class="req">*</span></label>
+        <label>Donor's Full Name <span class="req">*</span></label>
         <input type="text" id="donorName" name="donorName" placeholder="e.g. Juan Dela Cruz" autocomplete="off"/>
         <div class="field-hint">The person who will own this ticket / these tickets.</div>
-        <div class="field-error" id="donorNameErr">Please enter the buyer's full name.</div>
+        <div class="field-error" id="donorNameErr">Please enter the Donor / Supporter's full name.</div>
       </div>
 
       <div class="field-group">
-        <label>Buyer's Phone Number <span class="opt">Optional</span></label>
+        <label>Donor / Supporter's Phone Number <span class="opt">Optional</span></label>
         <input type="tel" id="donorPhone" name="donorPhone" placeholder="+63 912 345 6789" autocomplete="off"/>
       </div>
 
@@ -307,24 +307,24 @@
       <div class="field-group">
         <label>Transaction / Reference Number <span class="req">*</span></label>
         <input type="text" id="transactionNumberId" name="transactionNumberId" placeholder="e.g. GC-20250521-XXXX or OR #1234"/>
-        <div class="field-hint">Mandatory. This is the buyer's proof of payment — write the GCash/Maya/Bank reference number, or the Official Receipt / Cash Voucher number if paid in cash.</div>
+        <div class="field-hint">Mandatory. This is the Donor / Supporter's proof of payment — write the GCash/Maya/Bank reference number, or the Official Receipt / Cash Voucher number if paid in cash.</div>
         <div class="field-error" id="transactionErr">A transaction/reference number is required as proof of payment.</div>
       </div>
 
       <div class="fine-print">
         <strong>📋 Please read before submitting:</strong>
         <ul>
-          <li>By generating this ticket, you confirm that payment was actually received from the buyer named above.</li>
+          <li>By generating this ticket, you confirm that payment was actually received from the Donor / Supporter named above.</li>
           <li>The transaction/reference number entered will be used to verify this payment. False or missing proof of payment may cause the ticket to be voided.</li>
           <li>Tickets start as <strong>"Not Verified"</strong> and will be marked <strong>"Verified"</strong> once the organizer confirms the payment.</li>
           <li>Only <strong>verified</strong> tickets are eligible to claim prizes if drawn as a winner.</li>
-          <li>Please double-check the buyer's name and transaction number before submitting — corrections may take time.</li>
+          <li>Please double-check the Donor / Supporter's name and transaction number before submitting — corrections may take time.</li>
         </ul>
       </div>
 
       <div class="agree-row">
         <input type="checkbox" id="agreeCheck"/>
-        <label for="agreeCheck">I confirm the details above are accurate and that payment was received from the buyer.</label>
+        <label for="agreeCheck">I confirm the details above are accurate and that payment was received from the Donor / Supporter.</label>
       </div>
       <div class="field-error" id="agreeErr" style="margin-top:-14px; margin-bottom:18px;">Please confirm the checkbox above before submitting.</div>
 
@@ -342,19 +342,19 @@
       </div>
 
       <div class="screenshot-note">
-        📸 <strong>Please screenshot or save this screen for the buyer.</strong><br/>
-        Each ticket below has its own QR code — the buyer can scan it anytime to view or share their ticket.
+        📸 <strong>Please screenshot or save this screen for the Donor / Supporter.</strong><br/>
+        Each ticket below has its own QR code — the Donor / Supporter can scan it anytime to view or share their ticket.
       </div>
 
       <div class="screenshot-note" style="border-color: rgba(232,93,4,0.4); background: rgba(232,93,4,0.1);">
-        🔑 <strong>Important:</strong> If this ticket is ever given or sold to someone else later, they'll need the <strong>last 4 digits of the transaction number</strong> (<span id="transactionLast4"></span>) to update the ticket owner. Please share that with the buyer.
+        🔑 <strong>Important:</strong> If this ticket is ever given or sold to someone else later, they'll need the <strong>last 4 digits of the transaction number</strong> (<span id="transactionLast4"></span>) to update the ticket owner. Please share that with the Donor / Supporter.
       </div>
 
       <div id="ticketList"></div>
 
       <div class="nav-links">
         <a href="generate-ticket.html" onclick="resetForm(); return false;">＋ Generate More</a>
-        <a href="registration.html">🎫 Buyer Self-Registration</a>
+        <a href="registration.html">🎫 Donor / Supporter Self-Registration</a>
         <a href="admin.html">🔍 Admin Panel</a>
       </div>
     </div>
