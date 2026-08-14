@@ -133,6 +133,49 @@
   .nav-links a { color: var(--gold); text-decoration: none; font-weight: 700; font-size: 0.9rem; padding: 10px 20px; border: 1.5px solid rgba(212,160,23,0.3); border-radius: 50px; }
   .nav-links a:hover { background: rgba(212,160,23,0.1); }
 
+  /* ===== BUNDLE (OTHER TICKETS) BUTTON ===== */
+  .btn-bundle {
+    width: 100%; padding: 18px; margin-top: 14px; background: linear-gradient(135deg, var(--gold), var(--accent));
+    border: none; border-radius: 14px; color: #fff; font-weight: 800; font-size: 1.05rem; cursor: pointer;
+    font-family: 'Nunito', sans-serif; box-shadow: 0 8px 26px rgba(212,160,23,0.4);
+  }
+  .btn-bundle:hover { transform: translateY(-1px); }
+
+  /* ===== BUNDLE MODAL ===== */
+  .bundle-modal-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 2000;
+    align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(4px);
+  }
+  .bundle-modal-overlay.show { display: flex; }
+  .bundle-modal-box {
+    background: var(--deep2); border: 1px solid rgba(212,160,23,0.35); border-radius: 22px;
+    padding: 28px 22px; max-width: 440px; width: 100%; max-height: 82vh; overflow-y: auto;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+  }
+  .bundle-modal-box h3 { font-family: 'Playfair Display', serif; color: var(--gold-light); font-size: 1.3rem; margin-bottom: 6px; text-align: center; }
+  .bundle-modal-box p.sub { color: rgba(255,248,238,0.65); font-size: 0.9rem; text-align: center; margin-bottom: 20px; }
+
+  .bundle-item {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    background: rgba(255,255,255,0.05); border: 1.5px solid rgba(212,160,23,0.25); border-radius: 14px;
+    padding: 16px 18px; margin-bottom: 12px; flex-wrap: wrap;
+  }
+  .bundle-item .bi-left { flex: 1; min-width: 150px; }
+  .bundle-item .bi-id { font-family: 'Courier New', monospace; font-size: 1rem; font-weight: 700; color: var(--gold-light); word-break: break-all; }
+  .bundle-item .bi-status { display: inline-block; margin-top: 6px; padding: 4px 12px; border-radius: 50px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; }
+  .bundle-item .bi-status.verified { background: rgba(42,157,92,0.2); color: #7be3a6; border: 1px solid rgba(42,157,92,0.6); }
+  .bundle-item .bi-status.pending { background: rgba(232,93,4,0.2); color: #ffab6b; border: 1px solid rgba(232,93,4,0.6); }
+  .bundle-item .bi-status.loading { background: rgba(255,255,255,0.1); color: rgba(255,248,238,0.6); }
+  .bundle-item .bi-open {
+    padding: 12px 20px; border-radius: 10px; background: linear-gradient(135deg, var(--gold), var(--accent));
+    color: #fff; text-decoration: none; font-weight: 800; font-size: 0.95rem; text-align: center;
+  }
+
+  .bundle-modal-close {
+    width: 100%; padding: 15px; margin-top: 8px; background: rgba(255,255,255,0.08); border: none;
+    border-radius: 10px; color: var(--cream); font-weight: 800; font-size: 1rem; cursor: pointer; font-family: 'Nunito', sans-serif;
+  }
+
   /* ===== CHANGE OWNER MODAL ===== */
   .modal-overlay {
     display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 2000;
@@ -237,6 +280,7 @@
         </div>
 
         <div class="actions">
+          <button class="btn-bundle" id="bundleBtn" style="display:none;" onclick="openBundleModal()">🎟️ View My Other Tickets</button>
           <button class="btn-secondary" id="changeOwnerBtn" onclick="openModal()">🔄 This Ticket Was Given / Sold To Me</button>
         </div>
       </div>
@@ -268,6 +312,16 @@
   </div>
 </div>
 
+<!-- OTHER TICKETS (BUNDLE) MODAL -->
+<div class="bundle-modal-overlay" id="bundleModalOverlay">
+  <div class="bundle-modal-box">
+    <h3>🎟️ Your Other Tickets</h3>
+    <p class="sub">These tickets were bought together in the same purchase.</p>
+    <div id="bundleList"></div>
+    <button class="bundle-modal-close" onclick="closeBundleModal()">Close</button>
+  </div>
+</div>
+
 <div class="toast" id="toast">✓ Saved!</div>
 
 <script>
@@ -289,6 +343,10 @@
   // ====== GET QR PARAM ======
   const urlParams = new URLSearchParams(window.location.search);
   const qrCodeId = urlParams.get('qr');
+  const siblingIds = (urlParams.get('siblings') || '')
+    .split(',')
+    .map(s => s.trim())
+    .filter(Boolean);
 
   let currentTicket = null;
 
@@ -329,6 +387,12 @@
     }
 
     renderQR();
+
+    if(siblingIds.length > 0){
+      const btn = document.getElementById('bundleBtn');
+      btn.textContent = '🎟️ View My Other Tickets (' + siblingIds.length + ')';
+      btn.style.display = 'block';
+    }
   }
 
   function renderError(msg){
@@ -375,6 +439,71 @@
   }
   function closeModal(){
     document.getElementById('modalOverlay').classList.remove('show');
+  }
+
+  // ====== OTHER TICKETS (BUNDLE) MODAL ======
+  let bundleLoaded = false;
+
+  function bundleTicketUrl(siblingQrId){
+    const parts = window.location.href.split('?')[0].split('/');
+    return parts.join('/') === '' ? '' : (window.location.href.split('?')[0] + '?qr=' + encodeURIComponent(siblingQrId));
+  }
+
+  async function fetchSiblingTicket(siblingQrId){
+    try {
+      const resp = await fetch(WEBAPP_URL + '?action=getTicketByQR&qrCodeId=' + encodeURIComponent(siblingQrId));
+      const data = await resp.json();
+      if(data.success && data.ticket) return data.ticket;
+      return null;
+    } catch(e) {
+      return null; // demo mode / offline — will show as unavailable
+    }
+  }
+
+  function renderBundleItem(siblingQrId, ticket){
+    const row = document.createElement('div');
+    row.className = 'bundle-item';
+    const url = bundleTicketUrl(siblingQrId);
+
+    if(!ticket){
+      row.innerHTML = `
+        <div class="bi-left">
+          <div class="bi-id">Ticket unavailable</div>
+          <span class="bi-status loading">Could not load</span>
+        </div>
+      `;
+      return row;
+    }
+
+    const isVerified = (ticket.status || '').toLowerCase() === 'verified';
+    row.innerHTML = `
+      <div class="bi-left">
+        <div class="bi-id">${ticket.ticketId}</div>
+        <span class="bi-status ${isVerified ? 'verified' : 'pending'}">${isVerified ? '✅ Verified' : '⏳ Pending'}</span>
+      </div>
+      <a class="bi-open" href="${url}">Open</a>
+    `;
+    return row;
+  }
+
+  async function openBundleModal(){
+    document.getElementById('bundleModalOverlay').classList.add('show');
+    if(bundleLoaded) return; // don't re-fetch every time it's opened
+
+    const list = document.getElementById('bundleList');
+    list.innerHTML = '<p class="sub">Loading your other tickets...</p>';
+
+    const results = await Promise.all(siblingIds.map(id => fetchSiblingTicket(id)));
+
+    list.innerHTML = '';
+    siblingIds.forEach((id, idx) => {
+      list.appendChild(renderBundleItem(id, results[idx]));
+    });
+    bundleLoaded = true;
+  }
+
+  function closeBundleModal(){
+    document.getElementById('bundleModalOverlay').classList.remove('show');
   }
 
   async function submitNewHolder(){

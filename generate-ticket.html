@@ -679,7 +679,7 @@
     return parts.join('/') + '/view-ticket.html';
   }
 
-  function renderTicketCard(container, ticket, buyerName){
+  function renderTicketCard(container, ticket, buyerName, allTicketsInBatch){
     const card = document.createElement('div');
     card.className = 'ticket-card';
 
@@ -689,7 +689,11 @@
 
     const info = document.createElement('div');
     info.className = 'info';
-    const viewUrl = ticketOrigin() + '?qr=' + encodeURIComponent(ticket.qrCodeId);
+    const siblingIds = allTicketsInBatch
+      .map(t => t.qrCodeId)
+      .filter(id => id !== ticket.qrCodeId);
+    const siblingParam = siblingIds.length ? '&siblings=' + encodeURIComponent(siblingIds.join(',')) : '';
+    const viewUrl = ticketOrigin() + '?qr=' + encodeURIComponent(ticket.qrCodeId) + siblingParam;
     const shareMsg = `🎟️ Here's my Roaring Raffle Draw ticket (${ticket.ticketId})! Check it out:`;
     const fbShareUrl = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(viewUrl);
     const twShareUrl = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(shareMsg) + '&url=' + encodeURIComponent(viewUrl);
@@ -755,7 +759,7 @@
       const list = document.getElementById('ticketList');
       list.innerHTML = '';
       allGeneratedTicketLinks = [];
-      tickets.forEach(t => renderTicketCard(list, t, buyerName));
+      tickets.forEach(t => renderTicketCard(list, t, buyerName, tickets));
       updateShareAllBar(buyerName);
       ticketsUnsaved = true;
       showToast(demo ? 'Demo mode: backend not connected.' : (tickets.length + ' ticket(s) generated! 🎉'), demo);
