@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3.0"/>
+<title>Help & FAQ — Roaring Raffle Draw</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --gold: #D4A017;
+    --gold-light: #F5C842;
+    --gold-dark: #A07010;
+    --deep: #1A0A2E;
+    --deep2: #2D1B5E;
+    --accent: #E85D04;
+    --cream: #FFF8EE;
+    --green: #2A9D5C;
+    --red: #C0392B;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--deep);
+    min-height: 100vh;
+    color: var(--cream);
+    font-size: 19px;
+    line-height: 1.65;
+  }
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 10%, rgba(212,160,23,0.12) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 90%, rgba(232,93,4,0.1) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 50%, rgba(45,27,94,0.8) 0%, var(--deep) 100%);
+    z-index: 0; pointer-events: none;
+  }
+  .stars { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+  .star { position: absolute; background: #fff; border-radius: 50%; animation: twinkle var(--d, 3s) ease-in-out infinite var(--delay, 0s); }
+  @keyframes twinkle { 0%,100%{opacity:0.1;transform:scale(1);} 50%{opacity:0.8;transform:scale(1.4);} }
+
+  .page-wrap { position: relative; z-index: 1; max-width: 760px; margin: 0 auto; padding: 40px 20px 80px; }
+
+  header { text-align: center; margin-bottom: 30px; }
+  .logo-badge {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: linear-gradient(135deg, var(--gold), var(--accent));
+    padding: 10px 26px; border-radius: 100px;
+    font-family: 'Playfair Display', serif; font-size: 14px; letter-spacing: 2px; text-transform: uppercase;
+    color: #fff; margin-bottom: 20px; box-shadow: 0 4px 20px rgba(212,160,23,0.4);
+  }
+  header h1 {
+    font-family: 'Playfair Display', serif; font-size: clamp(2rem, 7vw, 2.8rem); font-weight: 800;
+    background: linear-gradient(135deg, var(--gold-light), var(--gold), #fff8);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    line-height: 1.2; margin-bottom: 14px;
+  }
+  header p { font-size: 1.15rem; color: rgba(255,248,238,0.8); max-width: 520px; margin: 0 auto; line-height: 1.6; }
+
+  /* ===== QUICK JUMP MENU ===== */
+  .jump-card {
+    background: rgba(255,255,255,0.055);
+    border: 1px solid rgba(212,160,23,0.3);
+    border-radius: 20px; padding: 24px; margin-bottom: 34px;
+  }
+  .jump-card h2 {
+    font-family: 'Playfair Display', serif; font-size: 1.15rem; color: var(--gold-light);
+    margin-bottom: 16px; text-align: center;
+  }
+  .jump-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media(max-width: 520px){ .jump-grid { grid-template-columns: 1fr; } }
+  .jump-btn {
+    display: flex; align-items: center; gap: 12px;
+    background: rgba(212,160,23,0.12); border: 1.5px solid rgba(212,160,23,0.3);
+    border-radius: 14px; padding: 16px 18px; text-decoration: none; color: var(--cream);
+    font-weight: 700; font-size: 1rem; transition: background 0.2s, transform 0.15s;
+  }
+  .jump-btn:hover { background: rgba(212,160,23,0.22); transform: translateY(-1px); }
+  .jump-btn .num {
+    flex-shrink: 0; width: 34px; height: 34px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold), var(--accent));
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Playfair Display', serif; font-weight: 800; color: #fff; font-size: 0.95rem;
+  }
+
+  /* ===== SECTIONS ===== */
+  section.faq-section { margin-bottom: 40px; scroll-margin-top: 20px; }
+  .section-head {
+    display: flex; align-items: center; gap: 14px; margin-bottom: 18px;
+    padding-bottom: 14px; border-bottom: 2px solid rgba(212,160,23,0.3);
+  }
+  .section-head .icon { font-size: 1.8rem; }
+  .section-head h2 {
+    font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--gold-light); font-weight: 800;
+  }
+
+  /* ===== ACCORDION ITEM ===== */
+  .faq-item {
+    background: rgba(255,255,255,0.045);
+    border: 1.5px solid rgba(212,160,23,0.2);
+    border-radius: 16px; margin-bottom: 14px; overflow: hidden;
+  }
+  .faq-q {
+    width: 100%; text-align: left; background: none; border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: space-between; gap: 14px;
+    padding: 20px 22px; font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 1.05rem;
+    color: var(--cream);
+  }
+  .faq-q:hover { background: rgba(212,160,23,0.06); }
+  .faq-q .plus {
+    flex-shrink: 0; width: 32px; height: 32px; border-radius: 50%;
+    background: rgba(212,160,23,0.2); border: 1.5px solid rgba(212,160,23,0.4);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem; font-weight: 800; color: var(--gold-light);
+    transition: transform 0.25s ease;
+  }
+  .faq-item.open .faq-q .plus { transform: rotate(45deg); }
+  .faq-a {
+    max-height: 0; overflow: hidden; transition: max-height 0.3s ease;
+  }
+  .faq-item.open .faq-a { max-height: 600px; }
+  .faq-a-inner {
+    padding: 0 22px 22px 22px; color: rgba(255,248,238,0.85); font-size: 1rem; line-height: 1.7;
+  }
+  .faq-a-inner p { margin-bottom: 10px; }
+  .faq-a-inner p:last-child { margin-bottom: 0; }
+  .faq-a-inner ul { margin: 8px 0 8px 22px; }
+  .faq-a-inner li { margin-bottom: 6px; }
+  .faq-a-inner strong { color: var(--gold-light); }
+
+  .callout {
+    background: rgba(232,93,4,0.1); border: 1.5px solid rgba(232,93,4,0.35);
+    border-radius: 12px; padding: 14px 16px; margin-top: 10px; font-size: 0.95rem;
+  }
+  .callout.good { background: rgba(42,157,92,0.1); border-color: rgba(42,157,92,0.35); }
+
+  /* ===== BACK TO TOP ===== */
+  .back-top {
+    position: fixed; bottom: 24px; right: 24px; z-index: 50;
+    width: 54px; height: 54px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold), var(--accent));
+    color: #fff; border: none; font-size: 1.4rem; cursor: pointer;
+    box-shadow: 0 8px 24px rgba(212,160,23,0.5);
+    display: none; align-items: center; justify-content: center;
+  }
+  .back-top.show { display: flex; }
+
+  footer { text-align: center; margin-top: 40px; color: rgba(255,248,238,0.5); font-size: 0.95rem; }
+
+  @media(max-width: 540px){
+    body { font-size: 18px; }
+    .page-wrap { padding: 28px 14px 70px; }
+    .faq-q { font-size: 1rem; padding: 18px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="stars" id="stars"></div>
+
+<div class="page-wrap">
+  <header>
+    <div class="logo-badge">🦁 QCBELC Lion's Club</div>
+    <h1>Help & Frequently Asked Questions</h1>
+    <p>Everything you need to know about the digital raffle ticket system — written in plain language for every volunteer.</p>
+  </header>
+
+  <div class="jump-card">
+    <h2>Jump to a section</h2>
+    <div class="jump-grid">
+      <a class="jump-btn" href="#sec1"><span class="num">1</span> Getting Started</a>
+      <a class="jump-btn" href="#sec2"><span class="num">2</span> Selling Tickets</a>
+      <a class="jump-btn" href="#sec3"><span class="num">3</span> Ticket IDs & Safety</a>
+      <a class="jump-btn" href="#sec4"><span class="num">4</span> Sharing Tickets</a>
+      <a class="jump-btn" href="#sec5"><span class="num">5</span> Leaving the Ticket Screen</a>
+      <a class="jump-btn" href="#sec6"><span class="num">6</span> Giving/Reselling a Ticket</a>
+      <a class="jump-btn" href="#sec7"><span class="num">7</span> Admin Panel</a>
+      <a class="jump-btn" href="#sec8"><span class="num">8</span> If Something Goes Wrong</a>
+    </div>
+  </div>
+
+  <!-- ============ SECTION 1 ============ -->
+  <section class="faq-section" id="sec1">
+    <div class="section-head"><span class="icon">🚀</span><h2>1. Getting Started</h2></div>
+
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleItem(this)">What is this system, in simple terms? <span class="plus">+</span></button>
+      <div class="faq-a"><div class="faq-a-inner">
+        <p>It's a digital ticketing tool for the raffle. A member or volunteer collects payment from a donor/supporter, then generates a digital ticket for them. Each ticket gets its own unique QR code that the donor can scan anytime to view or share it.</p>
+      </div></div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleItem(this)">Who is allowed to generate tickets? <span class="plus">+</span></button>
+      <div class="faq-a"><div class="faq-a-inner">
+        <p>Only QCBELC Lion's Club members, volunteers, and assistants who have been given the access PIN. The Generate Ticket page is locked with this PIN.</p>
+      </div></div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleItem(this)">Do I need to install anything on my phone? <span class="plus">+</span></button>
+      <div class="faq-a"><div class="faq-a-inner">
+        <p>No. Everything works right inside your phone or computer's web browser (like Chrome or Safari). There is nothing to download.</p>
+      </div></div>
+    </div>
+  </section>
+
+  <!-- ============ SECTION 2 ============ -->
+  <section class="faq-section" id="sec2">
+    <div class="section-head"><span class="icon">🎟️</span><h2>2. Selling & Generating Tickets</h2></div>
+
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleItem(this)">Do I need to stop at 20 tickets? <span class="plus">+</span></button>
+      <div class="faq-a"><div class="faq-a-inner">
+        <p>No, there is no total limit at all. You may notice each submission allows a maximum of 10 tickets — that is only there to prevent a mistake (like an accidental typo). It does not limit how many tickets you can sell in total.</p>
+      </div></div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleItem(this)">A donor wants to buy 100 tickets — what do I do? <span class="plus">+</span></button>
+      <div class="faq-a"><div class="faq-a-inner">
+        <p>Simply submit it in smaller batches. For example, 100 tickets could be entered as ten separate submissions of 10 tickets each. Each submission only takes a few seconds.</p>
+        <div class="callout good">💡 Tip: You can generate as many batches as needed, one right after another, for the same donor.</div>
+      </div></div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleItem(this)">Can I keep selling tickets after my first batch? <span class="plus">+</span></button>
+      <div class="faq-a"><div class="faq-a-inner">
+        <p>Yes. There is no "closing" or reset step. You can keep generating tickets for as long as the raffle is open — just keep using the same page and PIN.</p>
+      </div></div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleItem(this)">What happens to the receipt photo for a batch of tickets? <span class="plus">+</span></button>
+      <div class="faq-a"><div class="faq-a-inner">
+        <p>One receipt photo is saved and linked to the whole batch — you do not need to upload it again for each ticket, since all tickets in that batch share the same proof of payment.</p>
+      </div></div>
+    </div>
+  </section>
+
+  <!-- ============ SECTION 3 ============ -->
+  <section class="faq-section" id="sec3">
+    <div class="section-head"><span class="icon">🔒</span><h2>3. Ticket IDs & Safety</h2></div>
+
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleItem(this)">Could two tickets ever end up with the same ID? <span class="plus">+</span></button>
+      <div class="faq-a"><div class="faq-a-inner">
+        <p>No. Every new Ticket ID and QR code is automatically checked against every ticket that already exists before it is saved. If a duplicate is ever detected, the system quietly creates a fresh one instead — so a duplicate can never be saved.</p>
+      </div></div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleItem(this)">Is there a limit to how many tickets the system can handle? <span class="plus">+</span></button>
+      <div class="faq-a"><div class="faq-a-inner">
+        <p>For a raffle of this size (hundreds to a few thousand tickets), there is effectively no limit — the ID system supports millions of unique combinations.</p>
+      </div></div>
+    </div>
+  </section>
+
+  <!-- ============ SECTION 4 ============ -->
+  <section class="faq-section" id="sec4">
+    <div class="section-head"><span class="icon">📤</span><h2>4. Sharing Tickets</h2></div>
+
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleItem(this)">How does a donor view their own ticket? <span class="plus">+</span></button>
+      <div class="faq-a"><div class="faq-a-inner">
+        <p>They scan the QR code printed or shown on their ticket, or tap the "Open Full Digital Ticket" link that appears right after it's generated. This opens their ticket on their own phone.</p>
+      </div></div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleItem(this)">Can a ticket be shared on Facebook, X (Twitter), or Email? <span class="plus">+</span></button>
+      <div class="faq-a"><div class="faq-a-inner">
+        <p>Yes. Every generated ticket has simple share buttons for Facebook, X, and Email, plus a "Copy Link" option. There is also a "Share All" button to share every ticket in one batch together in a single message.</p>
+      </div></div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleItem(this)">If someone bought several tickets, can they see them all together? <span class="plus">+</span></button>
+      <div class="faq-a"><div class="faq-a-inner">
+        <p>Yes. When viewing any one of their tickets, a big <strong>"View My Other Tickets"</strong> button appears if that ticket was part of a multi-ticket purchase — tapping it shows the rest of their tickets and whether each one is Verified.</p>
+      </div></div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleItem(this)">What about tickets generated before this feature existed? <span class="plus">+</span></button>
+      <div class="faq-a"><div class="faq-a-inner">
+        <p>Older tickets still work perfectly for viewing, verifying, and transferring ownership. They just won't show the "View My Other Tickets" button, since that connection wasn't saved into their QR code at the time they were made.</p>
+      </div></div>
+    </div>
+  </section>
+
+  <!-- ============ SECTION 5 ============ -->
+  <section class="faq-section" id="sec5">
+    <div class="section-head"><span class="icon">🚪</span><h2>5. Leaving the Ticket Screen</h2></div>
+
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleItem(this)">Why does it ask me to confirm before I leave the ticket screen? <span class="plus">+</span></button>
+      <div class="faq-a"><div class="faq-a-inner">
+        <p>This is a safety check so that a ticket is not accidentally lost before it's been saved or shared with the donor. If you try to close the tab, refresh, or tap a navigation link while tickets are showing, a small pop-up will ask "Have you saved or shared this ticket?" before letting you continue.</p>
+      </div></div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleItem(this)">Will this pop-up appear while I'm still filling out the form? <span class="plus">+</span></button>
+      <div class="faq-a"><div class="faq-a-inner">
+        <p>No. It only appears after tickets have actually been generated and are showing on screen — never while you're still typing in the form.</p>
+      </div></div>
+    </div>
+  </section>
+
+  <!-- ============ SECTION 6 ============ -->
+  <section class="faq-section" id="sec6">
+    <div class="section-head"><span class="icon">🔄</span><h2>6. Giving or Reselling a Ticket</h2></div>
+
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleItem(this)">What if a ticket is given or resold to someone else? <span class="plus">+</span></button>
+      <div class="faq-a"><div class="faq-a-inner">
+        <p>The new owner can update this themselves, right from the ticket page, by entering their name and a 4-character verification code. This code is simply the <strong>last 4 digits of the original transaction/reference number</strong> — known only to the seller and the original buyer, which keeps a stranger from changing ownership just by seeing a QR code.</p>
+      </div></div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleItem(this)">Does changing the owner erase the original buyer's name? <span class="plus">+</span></button>
+      <div class="faq-a"><div class="faq-a-inner">
+        <p>No. The original donor's name always stays on record for our audit trail — only the "current holder" shown on the ticket updates.</p>
+      </div></div>
+    </div>
+  </section>
+
+  <!-- ============ SECTION 7 ============ -->
+  <section class="faq-section" id="sec7">
+    <div class="section-head"><span class="icon">🔍</span><h2>7. Admin Panel</h2></div>
+
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleItem(this)">What can the Admin Panel do? <span class="plus">+</span></button>
+      <div class="faq-a"><div class="faq-a-inner">
+        <p>It gives the raffle organizer a complete, searchable list of every ticket ever generated, along with:</p>
+        <ul>
+          <li>Total tickets generated, how many are Verified, how many are Pending, and total value raised</li>
+          <li>A search box to instantly find any ticket by buyer name, seller name, ticket ID, or transaction number</li>
+          <li>Filter tabs for "All", "✅ Verified", or "⏳ Pending" tickets</li>
+          <li>A "Reprint / View" button and QR code for every ticket, in case a donor needs it shown again</li>
+          <li>A "Mark Verified" button for any ticket still pending review</li>
+        </ul>
+      </div></div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleItem(this)">The search box wasn't finding tickets — is this fixed? <span class="plus">+</span></button>
+      <div class="faq-a"><div class="faq-a-inner">
+        <p>Yes, this has been fixed. The issue happened because some phone numbers and reference numbers were being stored as plain numbers instead of text, which quietly broke the search. The system now always treats these as text, so searching works reliably no matter what the buyer's phone or reference number looks like.</p>
+      </div></div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleItem(this)">What if the Admin Panel can't load the tickets? <span class="plus">+</span></button>
+      <div class="faq-a"><div class="faq-a-inner">
+        <p>You'll now see a clear message on screen saying the tickets could not be loaded, instead of silently showing fake sample data. If you see this, check your internet connection and try refreshing the page.</p>
+      </div></div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleItem(this)">Will the Admin Panel slow down as more tickets are sold? <span class="plus">+</span></button>
+      <div class="faq-a"><div class="faq-a-inner">
+        <p>At the scale of a typical Lion's Club raffle (hundreds to a few thousand tickets), it stays fast. It may feel slightly slower only if ticket counts grow into the tens of thousands — not something to worry about for a normal event.</p>
+      </div></div>
+    </div>
+  </section>
+
+  <!-- ============ SECTION 8 ============ -->
+  <section class="faq-section" id="sec8">
+    <div class="section-head"><span class="icon">🆘</span><h2>8. If Something Goes Wrong</h2></div>
+
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleItem(this)">A ticket won't load when scanned — what should I do? <span class="plus">+</span></button>
+      <div class="faq-a"><div class="faq-a-inner">
+        <p>First, make sure the QR code was scanned directly (not a screenshot of a screenshot, which can be blurry). If it still doesn't work, contact the raffle organizer — the Admin Panel can look up any ticket directly by name or ID.</p>
+      </div></div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleItem(this)">Who do I contact if my question isn't answered here? <span class="plus">+</span></button>
+      <div class="faq-a"><div class="faq-a-inner">
+        <p>Please reach out to your raffle committee lead or the volunteer coordinator who gave you your access PIN.</p>
+      </div></div>
+    </div>
+  </section>
+
+  <footer>Thank you for volunteering with QCBELC Lion's Club! 🦁</footer>
+</div>
+
+<button class="back-top" id="backTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Back to top">↑</button>
+
+<script>
+  // Stars background
+  (function(){
+    const container = document.getElementById('stars');
+    for(let i = 0; i < 70; i++){
+      const s = document.createElement('div');
+      s.className = 'star';
+      const size = Math.random() * 2.5 + 0.5;
+      s.style.cssText = `width:${size}px; height:${size}px; top:${Math.random()*100}%; left:${Math.random()*100}%; --d:${(Math.random()*3+2).toFixed(1)}s; --delay:-${(Math.random()*5).toFixed(1)}s;`;
+      container.appendChild(s);
+    }
+  })();
+
+  function toggleItem(btn){
+    const item = btn.closest('.faq-item');
+    item.classList.toggle('open');
+  }
+
+  // Back-to-top visibility
+  window.addEventListener('scroll', () => {
+    document.getElementById('backTop').classList.toggle('show', window.scrollY > 400);
+  });
+</script>
+</body>
+</html>
