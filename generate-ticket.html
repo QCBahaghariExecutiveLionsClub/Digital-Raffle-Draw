@@ -506,7 +506,7 @@
   function changeQty(delta){
     const inp = document.getElementById('ticketQty');
     let val = parseInt(inp.value) + delta;
-    val = Math.max(1, Math.min(10, val));
+    val = Math.max(1, Math.min(20, val));
     inp.value = val;
     document.getElementById('totalPrice').textContent = '₱' + (val * TICKET_PRICE).toLocaleString();
   }
