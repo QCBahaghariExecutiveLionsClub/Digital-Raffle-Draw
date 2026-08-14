@@ -218,6 +218,49 @@
     padding: 16px 18px; font-size: 0.92rem; text-align: center; color: rgba(255,248,238,0.85); margin: 20px 0; line-height: 1.6;
   }
 
+  /* ===== SHARE BUTTONS ===== */
+  .share-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+  .share-btn {
+    display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 50px;
+    font-size: 0.82rem; font-weight: 700; text-decoration: none; cursor: pointer; border: 1.5px solid transparent;
+    font-family: 'Nunito', sans-serif; transition: transform 0.15s, opacity 0.15s;
+  }
+  .share-btn:hover { transform: translateY(-1px); opacity: 0.92; }
+  .share-btn.fb { background: #1877F2; color: #fff; }
+  .share-btn.tw { background: #000; color: #fff; }
+  .share-btn.mail { background: rgba(255,248,238,0.12); color: var(--cream); border-color: rgba(212,160,23,0.4); }
+  .share-btn.copy { background: rgba(212,160,23,0.15); color: var(--gold-light); border-color: rgba(212,160,23,0.4); }
+  .share-btn.native { background: linear-gradient(135deg, var(--gold), var(--accent)); color: #fff; }
+
+  .share-all-bar {
+    background: rgba(212,160,23,0.08); border: 1px solid rgba(212,160,23,0.3); border-radius: 14px;
+    padding: 18px; margin-bottom: 20px; text-align: center;
+  }
+  .share-all-bar p { font-size: 0.88rem; color: rgba(255,248,238,0.7); margin-bottom: 12px; }
+  .share-all-bar .share-row { justify-content: center; }
+
+  /* ===== EXIT CONFIRM MODAL ===== */
+  .exit-modal-backdrop {
+    position: fixed; inset: 0; z-index: 3000; background: rgba(0,0,0,0.6);
+    display: none; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(4px);
+  }
+  .exit-modal-backdrop.show { display: flex; }
+  .exit-modal {
+    background: var(--deep2); border: 1px solid rgba(212,160,23,0.35); border-radius: 20px;
+    padding: 30px; max-width: 380px; width: 100%; text-align: center; box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+    animation: fadeUp 0.3s ease both;
+  }
+  .exit-modal .icon { font-size: 2.4rem; margin-bottom: 10px; }
+  .exit-modal h3 { font-family: 'Playfair Display', serif; color: var(--gold-light); font-size: 1.25rem; margin-bottom: 8px; }
+  .exit-modal p { color: rgba(255,248,238,0.75); font-size: 0.92rem; line-height: 1.5; margin-bottom: 22px; }
+  .exit-modal-actions { display: flex; gap: 10px; }
+  .exit-modal-actions button {
+    flex: 1; padding: 13px; border-radius: 10px; font-weight: 700; font-size: 0.95rem; cursor: pointer;
+    border: 1.5px solid rgba(212,160,23,0.4); font-family: 'Nunito', sans-serif;
+  }
+  .exit-modal-actions .btn-stay { background: linear-gradient(135deg, var(--gold), var(--accent)); color: #fff; border: none; }
+  .exit-modal-actions .btn-leave { background: transparent; color: rgba(255,248,238,0.7); }
+
   @media(max-width: 540px){
     .form-card { padding: 26px 18px; }
     .field-row { grid-template-columns: 1fr; }
@@ -386,12 +429,21 @@
         🔑 <strong>Important:</strong> If this ticket is ever given or sold to someone else later, they'll need the <strong>last 4 digits of the transaction number</strong> (<span id="transactionLast4"></span>) to update the ticket owner. Please share that with the donor/supporter.
       </div>
 
+      <div class="share-all-bar" id="shareAllBar">
+        <p>📤 Share all <strong id="shareAllCount">0</strong> ticket(s) with the donor/supporter at once:</p>
+        <div class="share-row">
+          <a class="share-btn tw" id="shareAllTwitter" target="_blank" rel="noopener">🐦 X / Twitter</a>
+          <a class="share-btn mail" id="shareAllEmail">✉️ Email</a>
+          <button type="button" class="share-btn copy" onclick="copyAllTicketLinks()">🔗 Copy All Links</button>
+        </div>
+      </div>
+
       <div id="ticketList"></div>
 
       <div class="nav-links">
-        <a href="generate-ticket.html" onclick="resetForm(); return false;">＋ Generate More</a>
-        <a href="registration.html">🎫 Donor / Supporter Self-Registration</a>
-        <a href="admin.html">🔍 Admin Panel</a>
+        <a href="generate-ticket.html" onclick="confirmLeave(function(){ resetForm(); }); return false;">＋ Generate More</a>
+        <a href="registration.html" onclick="return confirmLeave(function(){ window.location.href='registration.html'; });">🎫 Donor / Supporter Self-Registration</a>
+        <a href="admin.html" onclick="return confirmLeave(function(){ window.location.href='admin.html'; });">🔍 Admin Panel</a>
       </div>
     </div>
 
@@ -399,6 +451,19 @@
 </div>
 
 <div class="toast" id="toast">✓ Success!</div>
+
+<!-- ===== EXIT CONFIRM MODAL ===== -->
+<div class="exit-modal-backdrop" id="exitModalBackdrop">
+  <div class="exit-modal">
+    <div class="icon">🎟️</div>
+    <h3>Leave this screen?</h3>
+    <p>Make sure you've shared or screenshotted the ticket(s) for the donor/supporter first — this list won't be shown again after you leave.</p>
+    <div class="exit-modal-actions">
+      <button type="button" class="btn-stay" onclick="closeExitModal()">Stay</button>
+      <button type="button" class="btn-leave" onclick="proceedLeave()">Leave anyway</button>
+    </div>
+  </div>
+</div>
 
 <script>
   // ====== CONFIGURATION ======
@@ -450,6 +515,66 @@
   const REQUIRE_RECEIPT_PHOTO = false; // ← keep in sync with REQUIRE_RECEIPT_PHOTO in Code.gs
   let compressedReceiptBase64 = null;
   let receiptFileName = null;
+
+  // ====== SHARE / EXIT-CONFIRM STATE ======
+  let allGeneratedTicketLinks = [];
+  let ticketsUnsaved = false; // true once tickets exist and haven't been "left" yet
+  let pendingLeaveAction = null; // function to run if user confirms leaving
+
+  function copyTicketLink(url, btnEl){
+    navigator.clipboard.writeText(url).then(() => {
+      const original = btnEl.textContent;
+      btnEl.textContent = '✓ Copied!';
+      setTimeout(() => { btnEl.textContent = original; }, 1800);
+    }).catch(() => showToast('Could not copy link.', true));
+  }
+
+  function copyAllTicketLinks(){
+    const text = allGeneratedTicketLinks.map(t => `${t.id}: ${t.url}`).join('\n');
+    navigator.clipboard.writeText(text).then(() => {
+      showToast('All ticket links copied! 🔗');
+    }).catch(() => showToast('Could not copy links.', true));
+  }
+
+  function updateShareAllBar(buyerName){
+    document.getElementById('shareAllCount').textContent = allGeneratedTicketLinks.length;
+    const combinedText = `🎟️ Here are ${buyerName}'s Roaring Raffle Draw ticket(s):\n` +
+      allGeneratedTicketLinks.map(t => `${t.id}: ${t.url}`).join('\n');
+
+    document.getElementById('shareAllTwitter').href =
+      'https://twitter.com/intent/tweet?text=' + encodeURIComponent(combinedText);
+    document.getElementById('shareAllEmail').href =
+      'mailto:?subject=' + encodeURIComponent('Your Roaring Raffle Draw Tickets') +
+      '&body=' + encodeURIComponent(combinedText);
+  }
+
+  // ====== EXIT CONFIRMATION ======
+  function confirmLeave(leaveActionFn){
+    if(!ticketsUnsaved){
+      leaveActionFn();
+      return true;
+    }
+    pendingLeaveAction = leaveActionFn;
+    document.getElementById('exitModalBackdrop').classList.add('show');
+    return false;
+  }
+  function closeExitModal(){
+    document.getElementById('exitModalBackdrop').classList.remove('show');
+    pendingLeaveAction = null;
+  }
+  function proceedLeave(){
+    ticketsUnsaved = false;
+    document.getElementById('exitModalBackdrop').classList.remove('show');
+    if(pendingLeaveAction) pendingLeaveAction();
+    pendingLeaveAction = null;
+  }
+  window.addEventListener('beforeunload', function(e){
+    if(ticketsUnsaved){
+      e.preventDefault();
+      e.returnValue = '';
+      return '';
+    }
+  });
 
   function validateField(id, errId, test){
     const el = document.getElementById(id);
@@ -565,6 +690,10 @@
     const info = document.createElement('div');
     info.className = 'info';
     const viewUrl = ticketOrigin() + '?qr=' + encodeURIComponent(ticket.qrCodeId);
+    const shareMsg = `🎟️ Here's my Roaring Raffle Draw ticket (${ticket.ticketId})! Check it out:`;
+    const fbShareUrl = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(viewUrl);
+    const twShareUrl = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(shareMsg) + '&url=' + encodeURIComponent(viewUrl);
+    const mailShareUrl = 'mailto:?subject=' + encodeURIComponent('My Roaring Raffle Draw Ticket') + '&body=' + encodeURIComponent(shareMsg + '\n\n' + viewUrl);
     info.innerHTML = `
       <div class="tid">${ticket.ticketId}</div>
       <div class="buyer">${buyerName}</div>
@@ -572,9 +701,16 @@
       <div class="meta">QR ID: ${ticket.qrCodeId}</div>
       <span class="badge verified-badge">✅ Good as Sold</span><br/>
       <a class="view-link" href="${viewUrl}" target="_blank">🔗 Open Full Digital Ticket</a>
+      <div class="share-row">
+        <a class="share-btn fb" href="${fbShareUrl}" target="_blank" rel="noopener">📘 Facebook</a>
+        <a class="share-btn tw" href="${twShareUrl}" target="_blank" rel="noopener">🐦 X</a>
+        <a class="share-btn mail" href="${mailShareUrl}">✉️ Email</a>
+        <button type="button" class="share-btn copy" onclick="copyTicketLink('${viewUrl}', this)">🔗 Copy</button>
+      </div>
     `;
     card.appendChild(info);
     container.appendChild(card);
+    allGeneratedTicketLinks.push({ id: ticket.ticketId, url: viewUrl });
 
     // Generate QR code offline into qrBox, encoding the view-ticket URL
     new QRCode(qrBox, {
@@ -618,7 +754,10 @@
       document.getElementById('transactionLast4').textContent = txn ? txn.slice(-4).toUpperCase() : '----';
       const list = document.getElementById('ticketList');
       list.innerHTML = '';
+      allGeneratedTicketLinks = [];
       tickets.forEach(t => renderTicketCard(list, t, buyerName));
+      updateShareAllBar(buyerName);
+      ticketsUnsaved = true;
       showToast(demo ? 'Demo mode: backend not connected.' : (tickets.length + ' ticket(s) generated! 🎉'), demo);
     }
 
@@ -660,6 +799,8 @@
   }
 
   function resetForm(){
+    ticketsUnsaved = false;
+    allGeneratedTicketLinks = [];
     document.getElementById('generateForm').reset();
     document.getElementById('generateForm').style.display = '';
     document.getElementById('successScreen').classList.remove('show');
