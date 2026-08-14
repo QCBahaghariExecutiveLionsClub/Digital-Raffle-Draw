@@ -454,7 +454,7 @@ header p{font-size:1rem;color:rgba(255,248,238,.6);}
 
 <script>
 // ====== CONFIG ======
-const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbxIh_VTygREtOyBTGL_OFGPW1mQjpoJ-P2FM-hP6HHC5uRbzARIxw8dLkmGXj4Q384dGQ/exec';
+const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbxxG6lz5dbBf-l9V-BPK8ScJWlubVh4OMtYlNKPSsMbT6j4Po6Mz3t6CtBEs_syfhbdgg/exec';
 const API_SECRET = 'L10nsClvbQCBELC';
 const ADMIN_PIN = '4321';
 
@@ -747,29 +747,24 @@ async function loadGenerated(){
       allGenTickets = data.tickets || [];
     } else { throw new Error(data.message || 'Failed to load'); }
   } catch(e) {
-    allGenTickets = generateDemoGenTickets();
-    showToast('Demo mode: showing sample generated tickets', true);
+    allGenTickets = [];
+    document.getElementById('genResultsArea').innerHTML = `
+      <div class="state-box">
+        <span class="emoji">⚠️</span>
+        <p>Could not load generated tickets.<br/>${e.message ? String(e.message) : 'Please check your connection and try again.'}</p>
+      </div>`;
+    showToast('Could not load generated tickets. Please refresh and try again.', true);
+    updateGenStats();
+    return;
   }
   updateGenStats();
   filteredGenTickets = [...allGenTickets];
   renderGenResults(filteredGenTickets);
 }
 
-function generateDemoGenTickets(){
-  const names = ['Lola Batungbakal','Eduardo Villanueva','Carmen Flores'];
-  const sellers = ['Maria Santos','Jose Reyes'];
-  return names.map((name,i)=>({
-    qrCodeId: 'QR-DEMO000'+i, ticketId: 'TKT-DEMO-00'+i,
-    memberName: sellers[i%sellers.length], donorName: name, currentHolderName: name,
-    donorPhone: '+63 912 345 678'+i, transactionNumberId: 'GC-DEMO-XXX'+i,
-    paymentMethod: 'GCash', ticketQty: 1, priceEach: 100, totalAmount: 100,
-    status: i===0 ? 'Verified' : 'Not Verified', generatedAt: new Date().toISOString().slice(0,10),
-  }));
-}
-
 function updateGenStats(){
   const total = allGenTickets.length;
-  const verified = allGenTickets.filter(t=>(t.status||'').toLowerCase()==='verified').length;
+  const verified = allGenTickets.filter(t=>String(t.status||'').toLowerCase()==='verified').length;
   const revenue = allGenTickets.reduce((s,t)=>s+(Number(t.priceEach)||100),0);
   document.getElementById('genStatTotal').textContent = total;
   document.getElementById('genStatVerified').textContent = verified;
@@ -787,17 +782,17 @@ function doGenSearch(){
   const q = document.getElementById('genSearchInput').value.toLowerCase().trim();
   let results = allGenTickets;
 
-  if(genFilter === 'verified') results = results.filter(t=>(t.status||'').toLowerCase()==='verified');
-  else if(genFilter === 'pending') results = results.filter(t=>(t.status||'').toLowerCase()!=='verified');
+  if(genFilter === 'verified') results = results.filter(t=>String(t.status||'').toLowerCase()==='verified');
+  else if(genFilter === 'pending') results = results.filter(t=>String(t.status||'').toLowerCase()!=='verified');
 
   if(q){
     results = results.filter(t=>
-      (t.currentHolderName||'').toLowerCase().includes(q) ||
-      (t.donorName||'').toLowerCase().includes(q) ||
-      (t.memberName||'').toLowerCase().includes(q) ||
-      (t.ticketId||'').toLowerCase().includes(q) ||
-      (t.transactionNumberId||'').toLowerCase().includes(q) ||
-      (t.donorPhone||'').toLowerCase().includes(q)
+      String(t.currentHolderName||'').toLowerCase().includes(q) ||
+      String(t.donorName||'').toLowerCase().includes(q) ||
+      String(t.memberName||'').toLowerCase().includes(q) ||
+      String(t.ticketId||'').toLowerCase().includes(q) ||
+      String(t.transactionNumberId||'').toLowerCase().includes(q) ||
+      String(t.donorPhone||'').toLowerCase().includes(q)
     );
   }
 
@@ -857,9 +852,9 @@ function renderGenResults(tickets){
 }
 
 function renderGenCard(t){
-  const isVerified = (t.status||'').toLowerCase() === 'verified';
+  const isVerified = String(t.status||'').toLowerCase() === 'verified';
   const viewUrl = ticketViewUrl(t.qrCodeId);
-  const resold = t.currentHolderName && t.currentHolderName !== t.donorName;
+  const resold = t.currentHolderName && String(t.currentHolderName) !== String(t.donorName);
 
   const card = document.createElement('div');
   card.className = 'gen-card' + (isVerified ? ' verified' : '');
@@ -871,13 +866,13 @@ function renderGenCard(t){
   const info = document.createElement('div');
   info.className = 'gen-info';
   info.innerHTML = `
-    <div class="gen-tid">${t.ticketId}</div>
-    <div class="gen-holder">${t.currentHolderName || t.donorName}</div>
-    ${resold ? `<div class="gen-meta">Originally bought by: ${t.donorName}</div>` : ''}
+    <div class="gen-tid">${String(t.ticketId||'—')}</div>
+    <div class="gen-holder">${String(t.currentHolderName || t.donorName || '—')}</div>
+    ${resold ? `<div class="gen-meta">Originally bought by: ${String(t.donorName||'—')}</div>` : ''}
     <div class="gen-meta">
-      Sold by: ${t.memberName || '—'}<br/>
-      Txn Ref: ${t.transactionNumberId || '—'} · ${t.paymentMethod || '—'}<br/>
-      Phone: ${t.donorPhone || '—'} · Issued: ${t.generatedAt ? String(t.generatedAt).split(' ')[0] : '—'}
+      Sold by: ${String(t.memberName || '—')}<br/>
+      Txn Ref: ${String(t.transactionNumberId || '—')} · ${String(t.paymentMethod || '—')}<br/>
+      Phone: ${String(t.donorPhone || '—')} · Issued: ${t.generatedAt ? String(t.generatedAt).split(' ')[0] : '—'}
     </div>
     <span class="chip ${isVerified ? 'chip-green' : 'chip-gold'}" style="margin-top:6px;display:inline-block;">
       ${isVerified ? '✅ Verified' : '⏳ Not Verified'}
@@ -931,11 +926,9 @@ async function markVerified(qrCodeId, btn){
       btn.textContent = '✅ Mark Verified';
     }
   } catch(e){
-    showToast('Demo mode: change shown here only (not saved).', true);
-    const t = allGenTickets.find(x=>x.qrCodeId===qrCodeId);
-    if(t) t.status = 'Verified';
-    updateGenStats();
-    doGenSearch();
+    showToast('Could not save. Please check your connection and try again.', true);
+    btn.disabled = false;
+    btn.textContent = '✅ Mark Verified';
   }
 }
 </script>
