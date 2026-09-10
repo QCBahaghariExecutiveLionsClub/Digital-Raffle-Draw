@@ -731,10 +731,29 @@ let genFilter = 'all';
 let genPage = 1;
 const GEN_PAGE_SIZE = 10;
 
-function ticketViewUrl(qrCodeId){
+function ticketViewUrl(qrCodeId, siblingIds){
   const parts = window.location.href.split('/');
   parts.pop();
-  return parts.join('/') + '/view-ticket.html?qr=' + encodeURIComponent(qrCodeId);
+  let url = parts.join('/') + '/view-ticket.html?qr=' + encodeURIComponent(qrCodeId);
+  if (siblingIds && siblingIds.length) {
+    url += '&siblings=' + encodeURIComponent(siblingIds.join(','));
+  }
+  return url;
+}
+
+/**
+ * Find the other tickets generated in the same batch as `t`, so a reprint
+ * can show the donor's whole bundle instead of just one ticket.
+ * A batch = same TransactionNumberId + same GeneratedAt timestamp (both are
+ * written identically for every row in one generateTicket() call).
+ */
+function findBatchSiblings(t){
+  if (!t.transactionNumberId || !t.generatedAt) return []; // nothing reliable to group on
+  return allGenTickets.filter(x =>
+    x.qrCodeId !== t.qrCodeId &&
+    x.transactionNumberId === t.transactionNumberId &&
+    x.generatedAt === t.generatedAt
+  );
 }
 
 async function loadGenerated(){
@@ -853,7 +872,9 @@ function renderGenResults(tickets){
 
 function renderGenCard(t){
   const isVerified = String(t.status||'').toLowerCase() === 'verified';
-  const viewUrl = ticketViewUrl(t.qrCodeId);
+  const siblings = findBatchSiblings(t);
+  const siblingIds = siblings.map(s => s.qrCodeId);
+  const viewUrl = ticketViewUrl(t.qrCodeId, siblingIds);
   const resold = t.currentHolderName && String(t.currentHolderName) !== String(t.donorName);
 
   const card = document.createElement('div');
@@ -883,7 +904,7 @@ function renderGenCard(t){
   const actions = document.createElement('div');
   actions.className = 'gen-actions';
   actions.innerHTML = `
-    <a class="btn-mini" href="${viewUrl}" target="_blank">🖨️ Reprint / View</a>
+    <a class="btn-mini" href="${viewUrl}" target="_blank">🖨️ ${siblingIds.length ? `Reprint / View Bundle (${siblingIds.length + 1})` : 'Reprint / View'}</a>
     ${t.receiptLink ? `<a class="btn-mini" href="${t.receiptLink}" target="_blank">🧾 View Receipt</a>` : ''}
     ${isVerified ? '' : `<button class="btn-mini verify-btn" onclick="markVerified('${t.qrCodeId}', this)">✅ Mark Verified</button>`}
   `;
