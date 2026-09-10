@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0"/>
+<title>QCBELC — Home</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --gold: #D4A017;
+    --gold-light: #F5C842;
+    --deep: #16215C;
+    --deep2: #2D1B5E;
+    --cream: #FFF8EE;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--deep);
+    min-height: 100vh;
+    color: var(--cream);
+    font-size: 17px;
+  }
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 20%, rgba(212,160,23,0.12) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba(45,27,94,0.6) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 50%, rgba(45,27,94,0.8) 0%, var(--deep) 100%);
+    z-index: 0; pointer-events: none;
+  }
+  .page-wrap {
+    position: relative; z-index: 1;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 48px 20px 60px; min-height: 100vh;
+  }
+  header { text-align: center; margin-bottom: 34px; }
+  .logo-badge {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: linear-gradient(135deg, var(--gold), #E85D04);
+    padding: 9px 24px; border-radius: 100px;
+    font-family: 'Playfair Display', serif; font-size: 13px; letter-spacing: 3px; text-transform: uppercase;
+    color: #fff; margin-bottom: 18px; box-shadow: 0 4px 20px rgba(212,160,23,0.4);
+  }
+  header h1 {
+    font-family: 'Playfair Display', serif; font-size: clamp(1.8rem, 6vw, 2.8rem); font-weight: 800;
+    background: linear-gradient(135deg, var(--gold-light), var(--gold), #fff8);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    line-height: 1.2; margin-bottom: 10px;
+  }
+  header p { font-size: 1rem; color: rgba(255,248,238,0.75); max-width: 460px; margin: 0 auto; line-height: 1.6; }
+
+  .menu-card {
+    background: rgba(255,255,255,0.055);
+    border: 1px solid rgba(212,160,23,0.25);
+    border-radius: 24px; padding: 28px; width: 100%; max-width: 460px;
+    backdrop-filter: blur(16px);
+    box-shadow: 0 0 0 1px rgba(212,160,23,0.08), 0 30px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+  }
+
+  .menu-link {
+    display: flex; align-items: center; gap: 16px;
+    background: rgba(255,255,255,0.06);
+    border: 1.5px solid rgba(212,160,23,0.2);
+    border-radius: 14px;
+    padding: 18px 20px;
+    margin-bottom: 14px;
+    text-decoration: none;
+    color: var(--cream);
+    transition: border-color 0.2s, background 0.2s, transform 0.2s;
+  }
+  .menu-link:last-child { margin-bottom: 0; }
+  .menu-link:hover { border-color: var(--gold); background: rgba(212,160,23,0.1); transform: translateY(-2px); }
+
+  .menu-icon {
+    width: 46px; height: 46px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, var(--gold), #E85D04);
+    border-radius: 12px; font-size: 1.4rem;
+  }
+  .menu-text { flex: 1; }
+  .menu-title { font-weight: 800; font-size: 1.05rem; color: var(--gold-light); }
+  .menu-sub { font-size: 0.85rem; color: rgba(255,248,238,0.6); margin-top: 2px; }
+  .menu-arrow { font-size: 1.2rem; color: rgba(255,248,238,0.4); }
+
+  footer { margin-top: 34px; text-align: center; font-size: 0.8rem; color: rgba(255,248,238,0.4); }
+</style>
+</head>
+<body>
+<div class="page-wrap">
+  <header>
+    <div class="logo-badge">🦁 QCBELC</div>
+    <h1>Quezon City Bahaghari<br/>Executive Lions Club</h1>
+    <p>Everything the raffle team needs, in one place.</p>
+  </header>
+
+  <div class="menu-card">
+    <!-- PLACEHOLDER LINKS — point these at your real hosted pages -->
+    <a class="menu-link" href="generate-ticket.html">
+      <div class="menu-icon">🎟️</div>
+      <div class="menu-text">
+        <div class="menu-title">Generate Ticket</div>
+        <div class="menu-sub">For members &amp; volunteers</div>
+      </div>
+      <div class="menu-arrow">›</div>
+    </a>
+
+    <a class="menu-link" href="admin.html">
+      <div class="menu-icon">🔍</div>
+      <div class="menu-text">
+        <div class="menu-title">Admin Panel</div>
+        <div class="menu-sub">Search, verify &amp; reprint tickets</div>
+      </div>
+      <div class="menu-arrow">›</div>
+    </a>
+
+    <a class="menu-link" href="view-ticket.html">
+      <div class="menu-icon">📄</div>
+      <div class="menu-text">
+        <div class="menu-title">View My Ticket</div>
+        <div class="menu-sub">For donors &amp; supporters</div>
+      </div>
+      <div class="menu-arrow">›</div>
+    </a>
+  </div>
+
+  <footer>Lions Club International · Est. 1993</footer>
+</div>
+</body>
+</html>
