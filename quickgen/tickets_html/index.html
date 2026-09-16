@@ -3,86 +3,394 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Roaring Raffle Draw - All Ticket Pages</title>
+<title>Roaring Raffle Draw - Find Your Tickets</title>
 <style>
-  body { font-family: -apple-system, Segoe UI, Roboto, Arial, sans-serif; background:#fdf6e9; padding:24px; }
-  h1 { color:#8a1f11; }
-  ul { font-size: 18px; line-height: 2; }
-  a { color:#1565c0; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 20px 12px 60px;
+    background: #fdf6e9;
+    font-family: -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    color: #222;
+    font-size: 19px;
+    line-height: 1.5;
+  }
+  .wrap { max-width: 520px; margin: 0 auto; }
+  h1 {
+    text-align: center;
+    font-size: 26px;
+    margin: 0 0 4px;
+    color: #8a1f11;
+  }
+  h2 {
+    text-align: center;
+    font-size: 20px;
+    margin: 0 0 20px;
+    color: #333;
+    font-weight: normal;
+  }
+  .howto {
+    background: #fff7e0;
+    border: 2px solid #f0d896;
+    border-radius: 14px;
+    padding: 14px 18px;
+    margin-bottom: 20px;
+    font-size: 18px;
+    text-align: center;
+  }
+  #search {
+    display: block;
+    width: 100%;
+    padding: 16px;
+    font-size: 20px;
+    border: 3px solid #c9302c;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    background: #fff;
+  }
+  #search:focus { outline: 3px solid #f0b6ac; }
+  .name-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #ffffff;
+    border: 3px solid #c9302c;
+    border-radius: 16px;
+    padding: 18px 20px;
+    margin-bottom: 14px;
+    text-decoration: none;
+    color: #222;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+  }
+  .name-text {
+    font-size: 21px;
+    font-weight: 700;
+    color: #8a1f11;
+  }
+  .ticket-count {
+    font-size: 16px;
+    color: #666;
+    white-space: nowrap;
+    margin-left: 12px;
+  }
+  #no-results {
+    display: none;
+    text-align: center;
+    font-size: 18px;
+    color: #777;
+    margin-top: 20px;
+  }
+  footer {
+    text-align: center;
+    font-size: 14px;
+    color: #999;
+    margin-top: 30px;
+  }
 </style>
 </head>
 <body>
-  <h1>&#127917; Roaring Raffle Draw &mdash; All Ticket Pages</h1>
-  <p>(This index is for your own reference - it's not meant to be shared with buyers.)</p>
-  <ul>
-  <li><a href="Alan_Clamen_Ortiz_20_Tickets.html">ALAN CLAMEN ORTIZ (20 tickets)</a></li>
-<li><a href="Ana_Liza_Lolong_20_Tickets.html">Ana Liza Lolong (20 tickets)</a></li>
-<li><a href="Arnold_Tolentino_20_Tickets.html">Arnold Tolentino (20 tickets)</a></li>
-<li><a href="Arthur_Abary_20_Tickets.html">Arthur Abary (20 tickets)</a></li>
-<li><a href="Atty_Neil_Hernaez_20_Tickets.html">Atty NEIL HERNAEZ (20 tickets)</a></li>
-<li><a href="Augustine_Noble_20_Tickets.html">Augustine Noble (20 tickets)</a></li>
-<li><a href="Benjamin_Jr_Dolindo_20_Tickets.html">Benjamin Jr. Dolindo (20 tickets)</a></li>
-<li><a href="Cherie_Rachell_Santos_20_Tickets.html">CHERIE RACHELL SANTOS (20 tickets)</a></li>
-<li><a href="Christian_Desiderio_Barros_20_Tickets.html">CHRISTIAN DESIDERIO BARROS (20 tickets)</a></li>
-<li><a href="Cindy_Catapang_20_Tickets.html">Cindy Catapang (20 tickets)</a></li>
-<li><a href="Conrado_Jr_Villamayor_20_Tickets.html">CONRADO JR. VILLAMAYOR (20 tickets)</a></li>
-<li><a href="Dexter_Reblora_20_Tickets.html">DEXTER REBLORA (20 tickets)</a></li>
-<li><a href="Dina_Barros_20_Tickets.html">DINA BARROS (20 tickets)</a></li>
-<li><a href="Dulcinea_Maria_Allena_20_Tickets.html">DULCINEA MARIA ALLENA (20 tickets)</a></li>
-<li><a href="Earth_Burgos_20_Tickets.html">EARTH BURGOS (20 tickets)</a></li>
-<li><a href="Edgar_Zulueta_20_Tickets.html">Edgar Zulueta (20 tickets)</a></li>
-<li><a href="Elvira_Alcantara_Resare_20_Tickets.html">Elvira Alcantara-Resare (20 tickets)</a></li>
-<li><a href="Emma_Bacolcol_20_Tickets.html">Emma Bacolcol (20 tickets)</a></li>
-<li><a href="Emmanuel_Marciano_20_Tickets.html">Emmanuel Marciano (20 tickets)</a></li>
-<li><a href="Ernesto_Francisco_20_Tickets.html">Ernesto Francisco (20 tickets)</a></li>
-<li><a href="Esmeraldo_Bacuyag_20_Tickets.html">Esmeraldo Bacuyag (20 tickets)</a></li>
-<li><a href="Francis_Paolo_Lazaro_20_Tickets.html">FRANCIS PAOLO LAZARO (20 tickets)</a></li>
-<li><a href="Glenn_Calabio_20_Tickets.html">GLENN CALABIO (20 tickets)</a></li>
-<li><a href="Guillermo_Urbano_20_Tickets.html">Guillermo Urbano (20 tickets)</a></li>
-<li><a href="Harley_Davidson_Tobias_20_Tickets.html">HARLEY DAVIDSON TOBIAS (20 tickets)</a></li>
-<li><a href="Heide_Velasquez_20_Tickets.html">Heide Velasquez (20 tickets)</a></li>
-<li><a href="Helen_Navarro_20_Tickets.html">HELEN NAVARRO (20 tickets)</a></li>
-<li><a href="Jan_Michelle_Enrile_20_Tickets.html">Jan Michelle Enrile (20 tickets)</a></li>
-<li><a href="Jean_Lagrada_20_Tickets.html">Jean Lagrada (20 tickets)</a></li>
-<li><a href="Jenny_Bobiles_20_Tickets.html">Jenny Bobiles (20 tickets)</a></li>
-<li><a href="Jesus_Dimaandal_20_Tickets.html">JESUS DIMAANDAL (20 tickets)</a></li>
-<li><a href="Jimmy_Sta_Ana_20_Tickets.html">JIMMY STA. ANA (20 tickets)</a></li>
-<li><a href="Joel_Factora_20_Tickets.html">JOEL FACTORA (20 tickets)</a></li>
-<li><a href="Johnsy_Mangundayao_20_Tickets.html">Johnsy Mangundayao (20 tickets)</a></li>
-<li><a href="Jose_Ranil_Ugaddan_20_Tickets.html">JOSE RANIL UGADDAN (20 tickets)</a></li>
-<li><a href="Jose_Voltaire_Castillo_20_Tickets.html">JOSE VOLTAIRE CASTILLO (20 tickets)</a></li>
-<li><a href="Lino_Jr_Lumbao_20_Tickets.html">Lino, Jr. Lumbao (20 tickets)</a></li>
-<li><a href="Ma_Lourdes_Flores_20_Tickets.html">Ma Lourdes Flores (20 tickets)</a></li>
-<li><a href="Ma_Nympha_Ragel_20_Tickets.html">Ma. Nympha Ragel (20 tickets)</a></li>
-<li><a href="Maria_Luisa_Aguada_20_Tickets.html">Maria Luisa Aguada (20 tickets)</a></li>
-<li><a href="Marie_Jean_Dimaandal_20_Tickets.html">MARIE JEAN DIMAANDAL (20 tickets)</a></li>
-<li><a href="Maryvic_Gonzales_20_Tickets.html">Maryvic Gonzales (20 tickets)</a></li>
-<li><a href="Mirasol_Guilas_20_Tickets.html">Mirasol Guilas (20 tickets)</a></li>
-<li><a href="Mr_Matthew_Miles_Gonzales_20_Tickets.html">Mr. Matthew Miles Gonzales (20 tickets)</a></li>
-<li><a href="Mr_Sylvester_Lumbao_20_Tickets.html">Mr. Sylvester Lumbao (20 tickets)</a></li>
-<li><a href="Ms_Reb_Laya_Bajas_20_Tickets.html">Ms Reb Laya Bajas (20 tickets)</a></li>
-<li><a href="Nicolas_Arac_20_Tickets.html">Nicolas Arac (20 tickets)</a></li>
-<li><a href="Nolan_Cleofe_20_Tickets.html">Nolan Cleofe (20 tickets)</a></li>
-<li><a href="Normita_Doctor_20_Tickets.html">Normita Doctor (20 tickets)</a></li>
-<li><a href="Obdulia_Calumarde_20_Tickets.html">Obdulia Calumarde (20 tickets)</a></li>
-<li><a href="Orlando_Kong_Jr_20_Tickets.html">ORLANDO KONG JR (20 tickets)</a></li>
-<li><a href="Paul_Emmanuel_Somera_20_Tickets.html">PAUL EMMANUEL SOMERA (20 tickets)</a></li>
-<li><a href="Pearl_Hazel_Godes_20_Tickets.html">Pearl Hazel Godes (20 tickets)</a></li>
-<li><a href="Princess_Ann_Cabacungan_20_Tickets.html">Princess Ann Cabacungan (20 tickets)</a></li>
-<li><a href="Prosecutor_Claro_Recto_20_Tickets.html">Prosecutor Claro Recto (20 tickets)</a></li>
-<li><a href="Ramil_Resare_20_Tickets.html">Ramil Resare (20 tickets)</a></li>
-<li><a href="Raphael_Maria_Raymond_Pena_20_Tickets.html">Raphael Maria Raymond Pena (20 tickets)</a></li>
-<li><a href="Ritchie_Levy_Godes_20_Tickets.html">Ritchie Levy Godes (20 tickets)</a></li>
-<li><a href="Roberto_Putong_20_Tickets.html">Roberto Putong (20 tickets)</a></li>
-<li><a href="Roberto_Roldan_20_Tickets.html">ROBERTO ROLDAN (20 tickets)</a></li>
-<li><a href="Ronaldo_Mackay_20_Tickets.html">Ronaldo Mackay (20 tickets)</a></li>
-<li><a href="Ronaldo_Recio_20_Tickets.html">RONALDO RECIO (20 tickets)</a></li>
-<li><a href="Rosalyn_Condat_20_Tickets.html">ROSALYN CONDAT (20 tickets)</a></li>
-<li><a href="Ruth_Bajas_20_Tickets.html">Ruth Bajas (20 tickets)</a></li>
-<li><a href="Shirley_Perez_20_Tickets.html">SHIRLEY PEREZ (20 tickets)</a></li>
-<li><a href="Susan_Barawidan_20_Tickets.html">Susan Barawidan (20 tickets)</a></li>
-<li><a href="Victorina_Carlos_20_Tickets.html">Victorina Carlos (20 tickets)</a></li>
-<li><a href="Zosimo_Borlaza_20_Tickets.html">Zosimo Borlaza (20 tickets)</a></li>
-  </ul>
+  <div class="wrap">
+    <h1>&#127917; Roaring Raffle Draw</h1>
+    <h2>Find Your Tickets</h2>
+
+    <div class="howto">
+      Type your name below, then tap it to see your tickets.
+    </div>
+
+    <input type="text" id="search" placeholder="Type your name here..." autocomplete="off" oninput="filterNames()">
+
+    <div id="name-list">
+    <a class="name-card" href="Alan_Clamen_Ortiz_20_Tickets.html" data-name="alan clamen ortiz">
+          <span class="name-text">ALAN CLAMEN ORTIZ</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+<a class="name-card" href="Ana_Liza_Lolong_20_Tickets.html" data-name="ana liza lolong">
+          <span class="name-text">Ana Liza Lolong</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+<a class="name-card" href="Arnold_Tolentino_20_Tickets.html" data-name="arnold tolentino">
+          <span class="name-text">Arnold Tolentino</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+<a class="name-card" href="Arthur_Abary_20_Tickets.html" data-name="arthur abary">
+          <span class="name-text">Arthur Abary</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+<a class="name-card" href="Atty_Neil_Hernaez_20_Tickets.html" data-name="atty neil hernaez">
+          <span class="name-text">Atty NEIL HERNAEZ</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+<a class="name-card" href="Augustine_Noble_20_Tickets.html" data-name="augustine noble">
+          <span class="name-text">Augustine Noble</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+<a class="name-card" href="Benjamin_Jr_Dolindo_20_Tickets.html" data-name="benjamin jr. dolindo">
+          <span class="name-text">Benjamin Jr. Dolindo</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+<a class="name-card" href="Cherie_Rachell_Santos_20_Tickets.html" data-name="cherie rachell santos">
+          <span class="name-text">CHERIE RACHELL SANTOS</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+<a class="name-card" href="Christian_Desiderio_Barros_20_Tickets.html" data-name="christian desiderio barros">
+          <span class="name-text">CHRISTIAN DESIDERIO BARROS</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+<a class="name-card" href="Cindy_Catapang_20_Tickets.html" data-name="cindy catapang">
+          <span class="name-text">Cindy Catapang</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+<a class="name-card" href="Conrado_Jr_Villamayor_20_Tickets.html" data-name="conrado jr. villamayor">
+          <span class="name-text">CONRADO JR. VILLAMAYOR</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+<a class="name-card" href="Dexter_Reblora_20_Tickets.html" data-name="dexter reblora">
+          <span class="name-text">DEXTER REBLORA</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+<a class="name-card" href="Dina_Barros_20_Tickets.html" data-name="dina barros">
+          <span class="name-text">DINA BARROS</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+<a class="name-card" href="Dulcinea_Maria_Allena_20_Tickets.html" data-name="dulcinea maria allena">
+          <span class="name-text">DULCINEA MARIA ALLENA</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+<a class="name-card" href="Earth_Burgos_20_Tickets.html" data-name="earth burgos">
+          <span class="name-text">EARTH BURGOS</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+<a class="name-card" href="Edgar_Zulueta_20_Tickets.html" data-name="edgar zulueta">
+          <span class="name-text">Edgar Zulueta</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+<a class="name-card" href="Elvira_Alcantara_Resare_20_Tickets.html" data-name="elvira alcantara-resare">
+          <span class="name-text">Elvira Alcantara-Resare</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+<a class="name-card" href="Emma_Bacolcol_20_Tickets.html" data-name="emma bacolcol">
+          <span class="name-text">Emma Bacolcol</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+<a class="name-card" href="Emmanuel_Marciano_20_Tickets.html" data-name="emmanuel marciano">
+          <span class="name-text">Emmanuel Marciano</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+<a class="name-card" href="Ernesto_Francisco_20_Tickets.html" data-name="ernesto francisco">
+          <span class="name-text">Ernesto Francisco</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+<a class="name-card" href="Esmeraldo_Bacuyag_20_Tickets.html" data-name="esmeraldo bacuyag">
+          <span class="name-text">Esmeraldo Bacuyag</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+<a class="name-card" href="Francis_Paolo_Lazaro_20_Tickets.html" data-name="francis paolo lazaro">
+          <span class="name-text">FRANCIS PAOLO LAZARO</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+<a class="name-card" href="Glenn_Calabio_20_Tickets.html" data-name="glenn calabio">
+          <span class="name-text">GLENN CALABIO</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+<a class="name-card" href="Guillermo_Urbano_20_Tickets.html" data-name="guillermo urbano">
+          <span class="name-text">Guillermo Urbano</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+<a class="name-card" href="Harley_Davidson_Tobias_20_Tickets.html" data-name="harley davidson tobias">
+          <span class="name-text">HARLEY DAVIDSON TOBIAS</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+<a class="name-card" href="Heide_Velasquez_20_Tickets.html" data-name="heide velasquez">
+          <span class="name-text">Heide Velasquez</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+<a class="name-card" href="Helen_Navarro_20_Tickets.html" data-name="helen navarro">
+          <span class="name-text">HELEN NAVARRO</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+<a class="name-card" href="Jan_Michelle_Enrile_20_Tickets.html" data-name="jan michelle enrile">
+          <span class="name-text">Jan Michelle Enrile</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+<a class="name-card" href="Jean_Lagrada_20_Tickets.html" data-name="jean lagrada">
+          <span class="name-text">Jean Lagrada</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+<a class="name-card" href="Jenny_Bobiles_20_Tickets.html" data-name="jenny bobiles">
+          <span class="name-text">Jenny Bobiles</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+<a class="name-card" href="Jesus_Dimaandal_20_Tickets.html" data-name="jesus dimaandal">
+          <span class="name-text">JESUS DIMAANDAL</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+<a class="name-card" href="Jimmy_Sta_Ana_20_Tickets.html" data-name="jimmy sta. ana">
+          <span class="name-text">JIMMY STA. ANA</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+<a class="name-card" href="Joel_Factora_20_Tickets.html" data-name="joel factora">
+          <span class="name-text">JOEL FACTORA</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+<a class="name-card" href="Johnsy_Mangundayao_20_Tickets.html" data-name="johnsy mangundayao">
+          <span class="name-text">Johnsy Mangundayao</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+<a class="name-card" href="Jose_Ranil_Ugaddan_20_Tickets.html" data-name="jose ranil ugaddan">
+          <span class="name-text">JOSE RANIL UGADDAN</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+<a class="name-card" href="Jose_Voltaire_Castillo_20_Tickets.html" data-name="jose voltaire castillo">
+          <span class="name-text">JOSE VOLTAIRE CASTILLO</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+<a class="name-card" href="Lino_Jr_Lumbao_20_Tickets.html" data-name="lino, jr. lumbao">
+          <span class="name-text">Lino, Jr. Lumbao</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+<a class="name-card" href="Ma_Lourdes_Flores_20_Tickets.html" data-name="ma lourdes flores">
+          <span class="name-text">Ma Lourdes Flores</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+<a class="name-card" href="Ma_Nympha_Ragel_20_Tickets.html" data-name="ma. nympha ragel">
+          <span class="name-text">Ma. Nympha Ragel</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+<a class="name-card" href="Maria_Luisa_Aguada_20_Tickets.html" data-name="maria luisa aguada">
+          <span class="name-text">Maria Luisa Aguada</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+<a class="name-card" href="Marie_Jean_Dimaandal_20_Tickets.html" data-name="marie jean dimaandal">
+          <span class="name-text">MARIE JEAN DIMAANDAL</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+<a class="name-card" href="Maryvic_Gonzales_20_Tickets.html" data-name="maryvic gonzales">
+          <span class="name-text">Maryvic Gonzales</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+<a class="name-card" href="Mirasol_Guilas_20_Tickets.html" data-name="mirasol guilas">
+          <span class="name-text">Mirasol Guilas</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+<a class="name-card" href="Mr_Matthew_Miles_Gonzales_20_Tickets.html" data-name="mr. matthew miles gonzales">
+          <span class="name-text">Mr. Matthew Miles Gonzales</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+<a class="name-card" href="Mr_Sylvester_Lumbao_20_Tickets.html" data-name="mr. sylvester lumbao">
+          <span class="name-text">Mr. Sylvester Lumbao</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+<a class="name-card" href="Ms_Reb_Laya_Bajas_20_Tickets.html" data-name="ms reb laya bajas">
+          <span class="name-text">Ms Reb Laya Bajas</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+<a class="name-card" href="Nicolas_Arac_20_Tickets.html" data-name="nicolas arac">
+          <span class="name-text">Nicolas Arac</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+<a class="name-card" href="Nolan_Cleofe_20_Tickets.html" data-name="nolan cleofe">
+          <span class="name-text">Nolan Cleofe</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+<a class="name-card" href="Normita_Doctor_20_Tickets.html" data-name="normita doctor">
+          <span class="name-text">Normita Doctor</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+<a class="name-card" href="Obdulia_Calumarde_20_Tickets.html" data-name="obdulia calumarde">
+          <span class="name-text">Obdulia Calumarde</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+<a class="name-card" href="Orlando_Kong_Jr_20_Tickets.html" data-name="orlando kong jr">
+          <span class="name-text">ORLANDO KONG JR</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+<a class="name-card" href="Paul_Emmanuel_Somera_20_Tickets.html" data-name="paul emmanuel somera">
+          <span class="name-text">PAUL EMMANUEL SOMERA</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+<a class="name-card" href="Pearl_Hazel_Godes_20_Tickets.html" data-name="pearl hazel godes">
+          <span class="name-text">Pearl Hazel Godes</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+<a class="name-card" href="Princess_Ann_Cabacungan_20_Tickets.html" data-name="princess ann cabacungan">
+          <span class="name-text">Princess Ann Cabacungan</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+<a class="name-card" href="Prosecutor_Claro_Recto_20_Tickets.html" data-name="prosecutor claro recto">
+          <span class="name-text">Prosecutor Claro Recto</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+<a class="name-card" href="Ramil_Resare_20_Tickets.html" data-name="ramil resare">
+          <span class="name-text">Ramil Resare</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+<a class="name-card" href="Raphael_Maria_Raymond_Pena_20_Tickets.html" data-name="raphael maria raymond pena">
+          <span class="name-text">Raphael Maria Raymond Pena</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+<a class="name-card" href="Ritchie_Levy_Godes_20_Tickets.html" data-name="ritchie levy godes">
+          <span class="name-text">Ritchie Levy Godes</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+<a class="name-card" href="Roberto_Putong_20_Tickets.html" data-name="roberto putong">
+          <span class="name-text">Roberto Putong</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+<a class="name-card" href="Roberto_Roldan_20_Tickets.html" data-name="roberto roldan">
+          <span class="name-text">ROBERTO ROLDAN</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+<a class="name-card" href="Ronaldo_Mackay_20_Tickets.html" data-name="ronaldo mackay">
+          <span class="name-text">Ronaldo Mackay</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+<a class="name-card" href="Ronaldo_Recio_20_Tickets.html" data-name="ronaldo recio">
+          <span class="name-text">RONALDO RECIO</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+<a class="name-card" href="Rosalyn_Condat_20_Tickets.html" data-name="rosalyn condat">
+          <span class="name-text">ROSALYN CONDAT</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+<a class="name-card" href="Ruth_Bajas_20_Tickets.html" data-name="ruth bajas">
+          <span class="name-text">Ruth Bajas</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+<a class="name-card" href="Shirley_Perez_20_Tickets.html" data-name="shirley perez">
+          <span class="name-text">SHIRLEY PEREZ</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+<a class="name-card" href="Susan_Barawidan_20_Tickets.html" data-name="susan barawidan">
+          <span class="name-text">Susan Barawidan</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+<a class="name-card" href="Victorina_Carlos_20_Tickets.html" data-name="victorina carlos">
+          <span class="name-text">Victorina Carlos</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+<a class="name-card" href="Zosimo_Borlaza_20_Tickets.html" data-name="zosimo borlaza">
+          <span class="name-text">Zosimo Borlaza</span>
+          <span class="ticket-count">20 ticket(s) &rsaquo;</span>
+        </a>
+    </div>
+
+    <div id="no-results">No names matched. Check the spelling, or contact the organizer.</div>
+
+    <footer>68 people &middot; Roaring Raffle Draw</footer>
+  </div>
+
+<script>
+function filterNames() {
+  var q = document.getElementById('search').value.trim().toLowerCase();
+  var cards = document.querySelectorAll('.name-card');
+  var visibleCount = 0;
+  cards.forEach(function(card) {
+    var match = card.getAttribute('data-name').indexOf(q) !== -1;
+    card.style.display = match ? 'flex' : 'none';
+    if (match) visibleCount++;
+  });
+  document.getElementById('no-results').style.display = (visibleCount === 0) ? 'block' : 'none';
+}
+</script>
 </body>
 </html>
