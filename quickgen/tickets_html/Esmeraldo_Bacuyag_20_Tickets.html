@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Esmeraldo Bacuyag - Your Raffle Tickets</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 20px 12px 60px;
+    background: #fdf6e9;
+    font-family: -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    color: #222;
+    font-size: 19px;
+    line-height: 1.5;
+  }
+  .wrap { max-width: 520px; margin: 0 auto; }
+  h1 {
+    text-align: center;
+    font-size: 26px;
+    margin: 0 0 4px;
+    color: #8a1f11;
+  }
+  h2 {
+    text-align: center;
+    font-size: 22px;
+    margin: 0 0 18px;
+    color: #333;
+  }
+  .info-box {
+    background: #ffffff;
+    border: 2px solid #e6d9b8;
+    border-radius: 14px;
+    padding: 14px 18px;
+    margin-bottom: 22px;
+    font-size: 17px;
+  }
+  .info-box div { margin: 3px 0; }
+  .howto {
+    background: #fff7e0;
+    border: 2px solid #f0d896;
+    border-radius: 14px;
+    padding: 14px 18px;
+    margin-bottom: 26px;
+    font-size: 18px;
+  }
+  .howto b { display: block; margin-bottom: 6px; }
+  .ticket-card {
+    background: #ffffff;
+    border: 3px solid #c9302c;
+    border-radius: 18px;
+    padding: 18px;
+    margin-bottom: 24px;
+    text-align: center;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+  }
+  .ticket-label {
+    font-size: 22px;
+    font-weight: 700;
+    color: #8a1f11;
+    margin-bottom: 4px;
+  }
+  .ticket-id {
+    font-size: 15px;
+    color: #777;
+    margin-bottom: 14px;
+    word-break: break-all;
+  }
+  .btn {
+    display: block;
+    width: 100%;
+    padding: 16px;
+    margin: 10px 0;
+    border-radius: 12px;
+    border: none;
+    font-size: 20px;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+    color: #fff;
+  }
+  .btn-view { background: #1e8f4e; }
+  .btn-copy { background: #1565c0; }
+  .btn-copy.copied { background: #2e7d32; }
+  .btn-share { background: #7b1fa2; }
+  .fallback-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .icon-btn {
+    flex: 1;
+    padding: 10px 4px;
+    border-radius: 10px;
+    background: #eee;
+    color: #333;
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 600;
+  }
+  footer {
+    text-align: center;
+    font-size: 14px;
+    color: #999;
+    margin-top: 30px;
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>&#127917; Roaring Raffle Draw</h1>
+    <h2>Esmeraldo Bacuyag &mdash; 20 ticket(s)</h2>
+
+    <div class="howto">
+      <b>How to view your ticket:</b>
+      Tap the green button on each ticket below to see it.
+      To send a ticket to someone, tap the purple "Share" button,
+      or tap "Copy Link" and paste it into a message.
+    </div>
+
+    <div class="info-box">
+      <div><b>Sold by:</b> Bulk Generator</div>
+      <div><b>Payment method:</b> Cash</div>
+      <div><b>Transaction number:</b> 1234 (PIN: 1234)</div>
+      <div><b>Status:</b> Verified</div>
+    </div>
+
+    
+    <div class="ticket-card">
+      <div class="ticket-label">Ticket 1 of 20</div>
+      <div class="ticket-id">Ticket ID: TKT-20260916-SESWN4</div>
+
+      <a class="btn btn-view" href="https://qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html?qr=QR-5A2D63DE36&amp;siblings=QR-60ED2D5D62,QR-F7B059F50F,QR-5757B2C68D,QR-3822135121,QR-76AC8F191B,QR-DD8653DF9A,QR-4075C4ADE5,QR-D0CB722A9A,QR-86AF8199EF,QR-7D56A50796,QR-B9A22387BA,QR-FB5B12DA7A,QR-3CCCBC4795,QR-C4D6C9094F,QR-EAB427074E,QR-4949F1EFBC,QR-9614C49242,QR-1AB1AAA90D,QR-8E92111987" target="_blank" rel="noopener">
+        &#128065;&nbsp; View My Ticket
+      </a>
+
+      <button class="btn btn-copy" onclick="copyLink(this, 'https://qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html?qr=QR-5A2D63DE36&siblings=QR-60ED2D5D62,QR-F7B059F50F,QR-5757B2C68D,QR-3822135121,QR-76AC8F191B,QR-DD8653DF9A,QR-4075C4ADE5,QR-D0CB722A9A,QR-86AF8199EF,QR-7D56A50796,QR-B9A22387BA,QR-FB5B12DA7A,QR-3CCCBC4795,QR-C4D6C9094F,QR-EAB427074E,QR-4949F1EFBC,QR-9614C49242,QR-1AB1AAA90D,QR-8E92111987')">
+        &#128203;&nbsp; Copy Link
+      </button>
+
+      <button class="btn btn-share" onclick="shareLink('https://qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html?qr=QR-5A2D63DE36&siblings=QR-60ED2D5D62,QR-F7B059F50F,QR-5757B2C68D,QR-3822135121,QR-76AC8F191B,QR-DD8653DF9A,QR-4075C4ADE5,QR-D0CB722A9A,QR-86AF8199EF,QR-7D56A50796,QR-B9A22387BA,QR-FB5B12DA7A,QR-3CCCBC4795,QR-C4D6C9094F,QR-EAB427074E,QR-4949F1EFBC,QR-9614C49242,QR-1AB1AAA90D,QR-8E92111987', 1)">
+        &#128228;&nbsp; Share
+      </button>
+
+      <div class="fallback-row">
+        <a class="icon-btn" href="https://www.facebook.com/sharer/sharer.php?u=https%3A//qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html%3Fqr%3DQR-5A2D63DE36%26siblings%3DQR-60ED2D5D62%2CQR-F7B059F50F%2CQR-5757B2C68D%2CQR-3822135121%2CQR-76AC8F191B%2CQR-DD8653DF9A%2CQR-4075C4ADE5%2CQR-D0CB722A9A%2CQR-86AF8199EF%2CQR-7D56A50796%2CQR-B9A22387BA%2CQR-FB5B12DA7A%2CQR-3CCCBC4795%2CQR-C4D6C9094F%2CQR-EAB427074E%2CQR-4949F1EFBC%2CQR-9614C49242%2CQR-1AB1AAA90D%2CQR-8E92111987" target="_blank" rel="noopener" title="Share on Facebook">Facebook</a>
+        <a class="icon-btn" href="mailto:?subject=My%20Raffle%20Ticket%20%231&body=Here%20is%20my%20raffle%20ticket%20link%3A%0Ahttps%3A//qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html%3Fqr%3DQR-5A2D63DE36%26siblings%3DQR-60ED2D5D62%2CQR-F7B059F50F%2CQR-5757B2C68D%2CQR-3822135121%2CQR-76AC8F191B%2CQR-DD8653DF9A%2CQR-4075C4ADE5%2CQR-D0CB722A9A%2CQR-86AF8199EF%2CQR-7D56A50796%2CQR-B9A22387BA%2CQR-FB5B12DA7A%2CQR-3CCCBC4795%2CQR-C4D6C9094F%2CQR-EAB427074E%2CQR-4949F1EFBC%2CQR-9614C49242%2CQR-1AB1AAA90D%2CQR-8E92111987" title="Share by Email">Email</a>
+        <a class="icon-btn" href="sms:?body=Here%20is%20my%20raffle%20ticket%20link%3A%20https%3A//qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html%3Fqr%3DQR-5A2D63DE36%26siblings%3DQR-60ED2D5D62%2CQR-F7B059F50F%2CQR-5757B2C68D%2CQR-3822135121%2CQR-76AC8F191B%2CQR-DD8653DF9A%2CQR-4075C4ADE5%2CQR-D0CB722A9A%2CQR-86AF8199EF%2CQR-7D56A50796%2CQR-B9A22387BA%2CQR-FB5B12DA7A%2CQR-3CCCBC4795%2CQR-C4D6C9094F%2CQR-EAB427074E%2CQR-4949F1EFBC%2CQR-9614C49242%2CQR-1AB1AAA90D%2CQR-8E92111987" title="Share by Text Message">Text</a>
+      </div>
+    </div>
+    
+
+    <div class="ticket-card">
+      <div class="ticket-label">Ticket 2 of 20</div>
+      <div class="ticket-id">Ticket ID: TKT-20260916-TFLM48</div>
+
+      <a class="btn btn-view" href="https://qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html?qr=QR-60ED2D5D62&amp;siblings=QR-5A2D63DE36,QR-F7B059F50F,QR-5757B2C68D,QR-3822135121,QR-76AC8F191B,QR-DD8653DF9A,QR-4075C4ADE5,QR-D0CB722A9A,QR-86AF8199EF,QR-7D56A50796,QR-B9A22387BA,QR-FB5B12DA7A,QR-3CCCBC4795,QR-C4D6C9094F,QR-EAB427074E,QR-4949F1EFBC,QR-9614C49242,QR-1AB1AAA90D,QR-8E92111987" target="_blank" rel="noopener">
+        &#128065;&nbsp; View My Ticket
+      </a>
+
+      <button class="btn btn-copy" onclick="copyLink(this, 'https://qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html?qr=QR-60ED2D5D62&siblings=QR-5A2D63DE36,QR-F7B059F50F,QR-5757B2C68D,QR-3822135121,QR-76AC8F191B,QR-DD8653DF9A,QR-4075C4ADE5,QR-D0CB722A9A,QR-86AF8199EF,QR-7D56A50796,QR-B9A22387BA,QR-FB5B12DA7A,QR-3CCCBC4795,QR-C4D6C9094F,QR-EAB427074E,QR-4949F1EFBC,QR-9614C49242,QR-1AB1AAA90D,QR-8E92111987')">
+        &#128203;&nbsp; Copy Link
+      </button>
+
+      <button class="btn btn-share" onclick="shareLink('https://qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html?qr=QR-60ED2D5D62&siblings=QR-5A2D63DE36,QR-F7B059F50F,QR-5757B2C68D,QR-3822135121,QR-76AC8F191B,QR-DD8653DF9A,QR-4075C4ADE5,QR-D0CB722A9A,QR-86AF8199EF,QR-7D56A50796,QR-B9A22387BA,QR-FB5B12DA7A,QR-3CCCBC4795,QR-C4D6C9094F,QR-EAB427074E,QR-4949F1EFBC,QR-9614C49242,QR-1AB1AAA90D,QR-8E92111987', 2)">
+        &#128228;&nbsp; Share
+      </button>
+
+      <div class="fallback-row">
+        <a class="icon-btn" href="https://www.facebook.com/sharer/sharer.php?u=https%3A//qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html%3Fqr%3DQR-60ED2D5D62%26siblings%3DQR-5A2D63DE36%2CQR-F7B059F50F%2CQR-5757B2C68D%2CQR-3822135121%2CQR-76AC8F191B%2CQR-DD8653DF9A%2CQR-4075C4ADE5%2CQR-D0CB722A9A%2CQR-86AF8199EF%2CQR-7D56A50796%2CQR-B9A22387BA%2CQR-FB5B12DA7A%2CQR-3CCCBC4795%2CQR-C4D6C9094F%2CQR-EAB427074E%2CQR-4949F1EFBC%2CQR-9614C49242%2CQR-1AB1AAA90D%2CQR-8E92111987" target="_blank" rel="noopener" title="Share on Facebook">Facebook</a>
+        <a class="icon-btn" href="mailto:?subject=My%20Raffle%20Ticket%20%232&body=Here%20is%20my%20raffle%20ticket%20link%3A%0Ahttps%3A//qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html%3Fqr%3DQR-60ED2D5D62%26siblings%3DQR-5A2D63DE36%2CQR-F7B059F50F%2CQR-5757B2C68D%2CQR-3822135121%2CQR-76AC8F191B%2CQR-DD8653DF9A%2CQR-4075C4ADE5%2CQR-D0CB722A9A%2CQR-86AF8199EF%2CQR-7D56A50796%2CQR-B9A22387BA%2CQR-FB5B12DA7A%2CQR-3CCCBC4795%2CQR-C4D6C9094F%2CQR-EAB427074E%2CQR-4949F1EFBC%2CQR-9614C49242%2CQR-1AB1AAA90D%2CQR-8E92111987" title="Share by Email">Email</a>
+        <a class="icon-btn" href="sms:?body=Here%20is%20my%20raffle%20ticket%20link%3A%20https%3A//qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html%3Fqr%3DQR-60ED2D5D62%26siblings%3DQR-5A2D63DE36%2CQR-F7B059F50F%2CQR-5757B2C68D%2CQR-3822135121%2CQR-76AC8F191B%2CQR-DD8653DF9A%2CQR-4075C4ADE5%2CQR-D0CB722A9A%2CQR-86AF8199EF%2CQR-7D56A50796%2CQR-B9A22387BA%2CQR-FB5B12DA7A%2CQR-3CCCBC4795%2CQR-C4D6C9094F%2CQR-EAB427074E%2CQR-4949F1EFBC%2CQR-9614C49242%2CQR-1AB1AAA90D%2CQR-8E92111987" title="Share by Text Message">Text</a>
+      </div>
+    </div>
+    
+
+    <div class="ticket-card">
+      <div class="ticket-label">Ticket 3 of 20</div>
+      <div class="ticket-id">Ticket ID: TKT-20260916-02JS6C</div>
+
+      <a class="btn btn-view" href="https://qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html?qr=QR-F7B059F50F&amp;siblings=QR-5A2D63DE36,QR-60ED2D5D62,QR-5757B2C68D,QR-3822135121,QR-76AC8F191B,QR-DD8653DF9A,QR-4075C4ADE5,QR-D0CB722A9A,QR-86AF8199EF,QR-7D56A50796,QR-B9A22387BA,QR-FB5B12DA7A,QR-3CCCBC4795,QR-C4D6C9094F,QR-EAB427074E,QR-4949F1EFBC,QR-9614C49242,QR-1AB1AAA90D,QR-8E92111987" target="_blank" rel="noopener">
+        &#128065;&nbsp; View My Ticket
+      </a>
+
+      <button class="btn btn-copy" onclick="copyLink(this, 'https://qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html?qr=QR-F7B059F50F&siblings=QR-5A2D63DE36,QR-60ED2D5D62,QR-5757B2C68D,QR-3822135121,QR-76AC8F191B,QR-DD8653DF9A,QR-4075C4ADE5,QR-D0CB722A9A,QR-86AF8199EF,QR-7D56A50796,QR-B9A22387BA,QR-FB5B12DA7A,QR-3CCCBC4795,QR-C4D6C9094F,QR-EAB427074E,QR-4949F1EFBC,QR-9614C49242,QR-1AB1AAA90D,QR-8E92111987')">
+        &#128203;&nbsp; Copy Link
+      </button>
+
+      <button class="btn btn-share" onclick="shareLink('https://qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html?qr=QR-F7B059F50F&siblings=QR-5A2D63DE36,QR-60ED2D5D62,QR-5757B2C68D,QR-3822135121,QR-76AC8F191B,QR-DD8653DF9A,QR-4075C4ADE5,QR-D0CB722A9A,QR-86AF8199EF,QR-7D56A50796,QR-B9A22387BA,QR-FB5B12DA7A,QR-3CCCBC4795,QR-C4D6C9094F,QR-EAB427074E,QR-4949F1EFBC,QR-9614C49242,QR-1AB1AAA90D,QR-8E92111987', 3)">
+        &#128228;&nbsp; Share
+      </button>
+
+      <div class="fallback-row">
+        <a class="icon-btn" href="https://www.facebook.com/sharer/sharer.php?u=https%3A//qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html%3Fqr%3DQR-F7B059F50F%26siblings%3DQR-5A2D63DE36%2CQR-60ED2D5D62%2CQR-5757B2C68D%2CQR-3822135121%2CQR-76AC8F191B%2CQR-DD8653DF9A%2CQR-4075C4ADE5%2CQR-D0CB722A9A%2CQR-86AF8199EF%2CQR-7D56A50796%2CQR-B9A22387BA%2CQR-FB5B12DA7A%2CQR-3CCCBC4795%2CQR-C4D6C9094F%2CQR-EAB427074E%2CQR-4949F1EFBC%2CQR-9614C49242%2CQR-1AB1AAA90D%2CQR-8E92111987" target="_blank" rel="noopener" title="Share on Facebook">Facebook</a>
+        <a class="icon-btn" href="mailto:?subject=My%20Raffle%20Ticket%20%233&body=Here%20is%20my%20raffle%20ticket%20link%3A%0Ahttps%3A//qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html%3Fqr%3DQR-F7B059F50F%26siblings%3DQR-5A2D63DE36%2CQR-60ED2D5D62%2CQR-5757B2C68D%2CQR-3822135121%2CQR-76AC8F191B%2CQR-DD8653DF9A%2CQR-4075C4ADE5%2CQR-D0CB722A9A%2CQR-86AF8199EF%2CQR-7D56A50796%2CQR-B9A22387BA%2CQR-FB5B12DA7A%2CQR-3CCCBC4795%2CQR-C4D6C9094F%2CQR-EAB427074E%2CQR-4949F1EFBC%2CQR-9614C49242%2CQR-1AB1AAA90D%2CQR-8E92111987" title="Share by Email">Email</a>
+        <a class="icon-btn" href="sms:?body=Here%20is%20my%20raffle%20ticket%20link%3A%20https%3A//qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html%3Fqr%3DQR-F7B059F50F%26siblings%3DQR-5A2D63DE36%2CQR-60ED2D5D62%2CQR-5757B2C68D%2CQR-3822135121%2CQR-76AC8F191B%2CQR-DD8653DF9A%2CQR-4075C4ADE5%2CQR-D0CB722A9A%2CQR-86AF8199EF%2CQR-7D56A50796%2CQR-B9A22387BA%2CQR-FB5B12DA7A%2CQR-3CCCBC4795%2CQR-C4D6C9094F%2CQR-EAB427074E%2CQR-4949F1EFBC%2CQR-9614C49242%2CQR-1AB1AAA90D%2CQR-8E92111987" title="Share by Text Message">Text</a>
+      </div>
+    </div>
+    
+
+    <div class="ticket-card">
+      <div class="ticket-label">Ticket 4 of 20</div>
+      <div class="ticket-id">Ticket ID: TKT-20260916-U67U8S</div>
+
+      <a class="btn btn-view" href="https://qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html?qr=QR-5757B2C68D&amp;siblings=QR-5A2D63DE36,QR-60ED2D5D62,QR-F7B059F50F,QR-3822135121,QR-76AC8F191B,QR-DD8653DF9A,QR-4075C4ADE5,QR-D0CB722A9A,QR-86AF8199EF,QR-7D56A50796,QR-B9A22387BA,QR-FB5B12DA7A,QR-3CCCBC4795,QR-C4D6C9094F,QR-EAB427074E,QR-4949F1EFBC,QR-9614C49242,QR-1AB1AAA90D,QR-8E92111987" target="_blank" rel="noopener">
+        &#128065;&nbsp; View My Ticket
+      </a>
+
+      <button class="btn btn-copy" onclick="copyLink(this, 'https://qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html?qr=QR-5757B2C68D&siblings=QR-5A2D63DE36,QR-60ED2D5D62,QR-F7B059F50F,QR-3822135121,QR-76AC8F191B,QR-DD8653DF9A,QR-4075C4ADE5,QR-D0CB722A9A,QR-86AF8199EF,QR-7D56A50796,QR-B9A22387BA,QR-FB5B12DA7A,QR-3CCCBC4795,QR-C4D6C9094F,QR-EAB427074E,QR-4949F1EFBC,QR-9614C49242,QR-1AB1AAA90D,QR-8E92111987')">
+        &#128203;&nbsp; Copy Link
+      </button>
+
+      <button class="btn btn-share" onclick="shareLink('https://qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html?qr=QR-5757B2C68D&siblings=QR-5A2D63DE36,QR-60ED2D5D62,QR-F7B059F50F,QR-3822135121,QR-76AC8F191B,QR-DD8653DF9A,QR-4075C4ADE5,QR-D0CB722A9A,QR-86AF8199EF,QR-7D56A50796,QR-B9A22387BA,QR-FB5B12DA7A,QR-3CCCBC4795,QR-C4D6C9094F,QR-EAB427074E,QR-4949F1EFBC,QR-9614C49242,QR-1AB1AAA90D,QR-8E92111987', 4)">
+        &#128228;&nbsp; Share
+      </button>
+
+      <div class="fallback-row">
+        <a class="icon-btn" href="https://www.facebook.com/sharer/sharer.php?u=https%3A//qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html%3Fqr%3DQR-5757B2C68D%26siblings%3DQR-5A2D63DE36%2CQR-60ED2D5D62%2CQR-F7B059F50F%2CQR-3822135121%2CQR-76AC8F191B%2CQR-DD8653DF9A%2CQR-4075C4ADE5%2CQR-D0CB722A9A%2CQR-86AF8199EF%2CQR-7D56A50796%2CQR-B9A22387BA%2CQR-FB5B12DA7A%2CQR-3CCCBC4795%2CQR-C4D6C9094F%2CQR-EAB427074E%2CQR-4949F1EFBC%2CQR-9614C49242%2CQR-1AB1AAA90D%2CQR-8E92111987" target="_blank" rel="noopener" title="Share on Facebook">Facebook</a>
+        <a class="icon-btn" href="mailto:?subject=My%20Raffle%20Ticket%20%234&body=Here%20is%20my%20raffle%20ticket%20link%3A%0Ahttps%3A//qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html%3Fqr%3DQR-5757B2C68D%26siblings%3DQR-5A2D63DE36%2CQR-60ED2D5D62%2CQR-F7B059F50F%2CQR-3822135121%2CQR-76AC8F191B%2CQR-DD8653DF9A%2CQR-4075C4ADE5%2CQR-D0CB722A9A%2CQR-86AF8199EF%2CQR-7D56A50796%2CQR-B9A22387BA%2CQR-FB5B12DA7A%2CQR-3CCCBC4795%2CQR-C4D6C9094F%2CQR-EAB427074E%2CQR-4949F1EFBC%2CQR-9614C49242%2CQR-1AB1AAA90D%2CQR-8E92111987" title="Share by Email">Email</a>
+        <a class="icon-btn" href="sms:?body=Here%20is%20my%20raffle%20ticket%20link%3A%20https%3A//qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html%3Fqr%3DQR-5757B2C68D%26siblings%3DQR-5A2D63DE36%2CQR-60ED2D5D62%2CQR-F7B059F50F%2CQR-3822135121%2CQR-76AC8F191B%2CQR-DD8653DF9A%2CQR-4075C4ADE5%2CQR-D0CB722A9A%2CQR-86AF8199EF%2CQR-7D56A50796%2CQR-B9A22387BA%2CQR-FB5B12DA7A%2CQR-3CCCBC4795%2CQR-C4D6C9094F%2CQR-EAB427074E%2CQR-4949F1EFBC%2CQR-9614C49242%2CQR-1AB1AAA90D%2CQR-8E92111987" title="Share by Text Message">Text</a>
+      </div>
+    </div>
+    
+
+    <div class="ticket-card">
+      <div class="ticket-label">Ticket 5 of 20</div>
+      <div class="ticket-id">Ticket ID: TKT-20260916-KMFJM9</div>
+
+      <a class="btn btn-view" href="https://qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html?qr=QR-3822135121&amp;siblings=QR-5A2D63DE36,QR-60ED2D5D62,QR-F7B059F50F,QR-5757B2C68D,QR-76AC8F191B,QR-DD8653DF9A,QR-4075C4ADE5,QR-D0CB722A9A,QR-86AF8199EF,QR-7D56A50796,QR-B9A22387BA,QR-FB5B12DA7A,QR-3CCCBC4795,QR-C4D6C9094F,QR-EAB427074E,QR-4949F1EFBC,QR-9614C49242,QR-1AB1AAA90D,QR-8E92111987" target="_blank" rel="noopener">
+        &#128065;&nbsp; View My Ticket
+      </a>
+
+      <button class="btn btn-copy" onclick="copyLink(this, 'https://qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html?qr=QR-3822135121&siblings=QR-5A2D63DE36,QR-60ED2D5D62,QR-F7B059F50F,QR-5757B2C68D,QR-76AC8F191B,QR-DD8653DF9A,QR-4075C4ADE5,QR-D0CB722A9A,QR-86AF8199EF,QR-7D56A50796,QR-B9A22387BA,QR-FB5B12DA7A,QR-3CCCBC4795,QR-C4D6C9094F,QR-EAB427074E,QR-4949F1EFBC,QR-9614C49242,QR-1AB1AAA90D,QR-8E92111987')">
+        &#128203;&nbsp; Copy Link
+      </button>
+
+      <button class="btn btn-share" onclick="shareLink('https://qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html?qr=QR-3822135121&siblings=QR-5A2D63DE36,QR-60ED2D5D62,QR-F7B059F50F,QR-5757B2C68D,QR-76AC8F191B,QR-DD8653DF9A,QR-4075C4ADE5,QR-D0CB722A9A,QR-86AF8199EF,QR-7D56A50796,QR-B9A22387BA,QR-FB5B12DA7A,QR-3CCCBC4795,QR-C4D6C9094F,QR-EAB427074E,QR-4949F1EFBC,QR-9614C49242,QR-1AB1AAA90D,QR-8E92111987', 5)">
+        &#128228;&nbsp; Share
+      </button>
+
+      <div class="fallback-row">
+        <a class="icon-btn" href="https://www.facebook.com/sharer/sharer.php?u=https%3A//qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html%3Fqr%3DQR-3822135121%26siblings%3DQR-5A2D63DE36%2CQR-60ED2D5D62%2CQR-F7B059F50F%2CQR-5757B2C68D%2CQR-76AC8F191B%2CQR-DD8653DF9A%2CQR-4075C4ADE5%2CQR-D0CB722A9A%2CQR-86AF8199EF%2CQR-7D56A50796%2CQR-B9A22387BA%2CQR-FB5B12DA7A%2CQR-3CCCBC4795%2CQR-C4D6C9094F%2CQR-EAB427074E%2CQR-4949F1EFBC%2CQR-9614C49242%2CQR-1AB1AAA90D%2CQR-8E92111987" target="_blank" rel="noopener" title="Share on Facebook">Facebook</a>
+        <a class="icon-btn" href="mailto:?subject=My%20Raffle%20Ticket%20%235&body=Here%20is%20my%20raffle%20ticket%20link%3A%0Ahttps%3A//qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html%3Fqr%3DQR-3822135121%26siblings%3DQR-5A2D63DE36%2CQR-60ED2D5D62%2CQR-F7B059F50F%2CQR-5757B2C68D%2CQR-76AC8F191B%2CQR-DD8653DF9A%2CQR-4075C4ADE5%2CQR-D0CB722A9A%2CQR-86AF8199EF%2CQR-7D56A50796%2CQR-B9A22387BA%2CQR-FB5B12DA7A%2CQR-3CCCBC4795%2CQR-C4D6C9094F%2CQR-EAB427074E%2CQR-4949F1EFBC%2CQR-9614C49242%2CQR-1AB1AAA90D%2CQR-8E92111987" title="Share by Email">Email</a>
+        <a class="icon-btn" href="sms:?body=Here%20is%20my%20raffle%20ticket%20link%3A%20https%3A//qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html%3Fqr%3DQR-3822135121%26siblings%3DQR-5A2D63DE36%2CQR-60ED2D5D62%2CQR-F7B059F50F%2CQR-5757B2C68D%2CQR-76AC8F191B%2CQR-DD8653DF9A%2CQR-4075C4ADE5%2CQR-D0CB722A9A%2CQR-86AF8199EF%2CQR-7D56A50796%2CQR-B9A22387BA%2CQR-FB5B12DA7A%2CQR-3CCCBC4795%2CQR-C4D6C9094F%2CQR-EAB427074E%2CQR-4949F1EFBC%2CQR-9614C49242%2CQR-1AB1AAA90D%2CQR-8E92111987" title="Share by Text Message">Text</a>
+      </div>
+    </div>
+    
+
+    <div class="ticket-card">
+      <div class="ticket-label">Ticket 6 of 20</div>
+      <div class="ticket-id">Ticket ID: TKT-20260916-754WXO</div>
+
+      <a class="btn btn-view" href="https://qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html?qr=QR-76AC8F191B&amp;siblings=QR-5A2D63DE36,QR-60ED2D5D62,QR-F7B059F50F,QR-5757B2C68D,QR-3822135121,QR-DD8653DF9A,QR-4075C4ADE5,QR-D0CB722A9A,QR-86AF8199EF,QR-7D56A50796,QR-B9A22387BA,QR-FB5B12DA7A,QR-3CCCBC4795,QR-C4D6C9094F,QR-EAB427074E,QR-4949F1EFBC,QR-9614C49242,QR-1AB1AAA90D,QR-8E92111987" target="_blank" rel="noopener">
+        &#128065;&nbsp; View My Ticket
+      </a>
+
+      <button class="btn btn-copy" onclick="copyLink(this, 'https://qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html?qr=QR-76AC8F191B&siblings=QR-5A2D63DE36,QR-60ED2D5D62,QR-F7B059F50F,QR-5757B2C68D,QR-3822135121,QR-DD8653DF9A,QR-4075C4ADE5,QR-D0CB722A9A,QR-86AF8199EF,QR-7D56A50796,QR-B9A22387BA,QR-FB5B12DA7A,QR-3CCCBC4795,QR-C4D6C9094F,QR-EAB427074E,QR-4949F1EFBC,QR-9614C49242,QR-1AB1AAA90D,QR-8E92111987')">
+        &#128203;&nbsp; Copy Link
+      </button>
+
+      <button class="btn btn-share" onclick="shareLink('https://qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html?qr=QR-76AC8F191B&siblings=QR-5A2D63DE36,QR-60ED2D5D62,QR-F7B059F50F,QR-5757B2C68D,QR-3822135121,QR-DD8653DF9A,QR-4075C4ADE5,QR-D0CB722A9A,QR-86AF8199EF,QR-7D56A50796,QR-B9A22387BA,QR-FB5B12DA7A,QR-3CCCBC4795,QR-C4D6C9094F,QR-EAB427074E,QR-4949F1EFBC,QR-9614C49242,QR-1AB1AAA90D,QR-8E92111987', 6)">
+        &#128228;&nbsp; Share
+      </button>
+
+      <div class="fallback-row">
+        <a class="icon-btn" href="https://www.facebook.com/sharer/sharer.php?u=https%3A//qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html%3Fqr%3DQR-76AC8F191B%26siblings%3DQR-5A2D63DE36%2CQR-60ED2D5D62%2CQR-F7B059F50F%2CQR-5757B2C68D%2CQR-3822135121%2CQR-DD8653DF9A%2CQR-4075C4ADE5%2CQR-D0CB722A9A%2CQR-86AF8199EF%2CQR-7D56A50796%2CQR-B9A22387BA%2CQR-FB5B12DA7A%2CQR-3CCCBC4795%2CQR-C4D6C9094F%2CQR-EAB427074E%2CQR-4949F1EFBC%2CQR-9614C49242%2CQR-1AB1AAA90D%2CQR-8E92111987" target="_blank" rel="noopener" title="Share on Facebook">Facebook</a>
+        <a class="icon-btn" href="mailto:?subject=My%20Raffle%20Ticket%20%236&body=Here%20is%20my%20raffle%20ticket%20link%3A%0Ahttps%3A//qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html%3Fqr%3DQR-76AC8F191B%26siblings%3DQR-5A2D63DE36%2CQR-60ED2D5D62%2CQR-F7B059F50F%2CQR-5757B2C68D%2CQR-3822135121%2CQR-DD8653DF9A%2CQR-4075C4ADE5%2CQR-D0CB722A9A%2CQR-86AF8199EF%2CQR-7D56A50796%2CQR-B9A22387BA%2CQR-FB5B12DA7A%2CQR-3CCCBC4795%2CQR-C4D6C9094F%2CQR-EAB427074E%2CQR-4949F1EFBC%2CQR-9614C49242%2CQR-1AB1AAA90D%2CQR-8E92111987" title="Share by Email">Email</a>
+        <a class="icon-btn" href="sms:?body=Here%20is%20my%20raffle%20ticket%20link%3A%20https%3A//qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html%3Fqr%3DQR-76AC8F191B%26siblings%3DQR-5A2D63DE36%2CQR-60ED2D5D62%2CQR-F7B059F50F%2CQR-5757B2C68D%2CQR-3822135121%2CQR-DD8653DF9A%2CQR-4075C4ADE5%2CQR-D0CB722A9A%2CQR-86AF8199EF%2CQR-7D56A50796%2CQR-B9A22387BA%2CQR-FB5B12DA7A%2CQR-3CCCBC4795%2CQR-C4D6C9094F%2CQR-EAB427074E%2CQR-4949F1EFBC%2CQR-9614C49242%2CQR-1AB1AAA90D%2CQR-8E92111987" title="Share by Text Message">Text</a>
+      </div>
+    </div>
+    
+
+    <div class="ticket-card">
+      <div class="ticket-label">Ticket 7 of 20</div>
+      <div class="ticket-id">Ticket ID: TKT-20260916-KFRGSO</div>
+
+      <a class="btn btn-view" href="https://qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html?qr=QR-DD8653DF9A&amp;siblings=QR-5A2D63DE36,QR-60ED2D5D62,QR-F7B059F50F,QR-5757B2C68D,QR-3822135121,QR-76AC8F191B,QR-4075C4ADE5,QR-D0CB722A9A,QR-86AF8199EF,QR-7D56A50796,QR-B9A22387BA,QR-FB5B12DA7A,QR-3CCCBC4795,QR-C4D6C9094F,QR-EAB427074E,QR-4949F1EFBC,QR-9614C49242,QR-1AB1AAA90D,QR-8E92111987" target="_blank" rel="noopener">
+        &#128065;&nbsp; View My Ticket
+      </a>
+
+      <button class="btn btn-copy" onclick="copyLink(this, 'https://qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html?qr=QR-DD8653DF9A&siblings=QR-5A2D63DE36,QR-60ED2D5D62,QR-F7B059F50F,QR-5757B2C68D,QR-3822135121,QR-76AC8F191B,QR-4075C4ADE5,QR-D0CB722A9A,QR-86AF8199EF,QR-7D56A50796,QR-B9A22387BA,QR-FB5B12DA7A,QR-3CCCBC4795,QR-C4D6C9094F,QR-EAB427074E,QR-4949F1EFBC,QR-9614C49242,QR-1AB1AAA90D,QR-8E92111987')">
+        &#128203;&nbsp; Copy Link
+      </button>
+
+      <button class="btn btn-share" onclick="shareLink('https://qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html?qr=QR-DD8653DF9A&siblings=QR-5A2D63DE36,QR-60ED2D5D62,QR-F7B059F50F,QR-5757B2C68D,QR-3822135121,QR-76AC8F191B,QR-4075C4ADE5,QR-D0CB722A9A,QR-86AF8199EF,QR-7D56A50796,QR-B9A22387BA,QR-FB5B12DA7A,QR-3CCCBC4795,QR-C4D6C9094F,QR-EAB427074E,QR-4949F1EFBC,QR-9614C49242,QR-1AB1AAA90D,QR-8E92111987', 7)">
+        &#128228;&nbsp; Share
+      </button>
+
+      <div class="fallback-row">
+        <a class="icon-btn" href="https://www.facebook.com/sharer/sharer.php?u=https%3A//qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html%3Fqr%3DQR-DD8653DF9A%26siblings%3DQR-5A2D63DE36%2CQR-60ED2D5D62%2CQR-F7B059F50F%2CQR-5757B2C68D%2CQR-3822135121%2CQR-76AC8F191B%2CQR-4075C4ADE5%2CQR-D0CB722A9A%2CQR-86AF8199EF%2CQR-7D56A50796%2CQR-B9A22387BA%2CQR-FB5B12DA7A%2CQR-3CCCBC4795%2CQR-C4D6C9094F%2CQR-EAB427074E%2CQR-4949F1EFBC%2CQR-9614C49242%2CQR-1AB1AAA90D%2CQR-8E92111987" target="_blank" rel="noopener" title="Share on Facebook">Facebook</a>
+        <a class="icon-btn" href="mailto:?subject=My%20Raffle%20Ticket%20%237&body=Here%20is%20my%20raffle%20ticket%20link%3A%0Ahttps%3A//qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html%3Fqr%3DQR-DD8653DF9A%26siblings%3DQR-5A2D63DE36%2CQR-60ED2D5D62%2CQR-F7B059F50F%2CQR-5757B2C68D%2CQR-3822135121%2CQR-76AC8F191B%2CQR-4075C4ADE5%2CQR-D0CB722A9A%2CQR-86AF8199EF%2CQR-7D56A50796%2CQR-B9A22387BA%2CQR-FB5B12DA7A%2CQR-3CCCBC4795%2CQR-C4D6C9094F%2CQR-EAB427074E%2CQR-4949F1EFBC%2CQR-9614C49242%2CQR-1AB1AAA90D%2CQR-8E92111987" title="Share by Email">Email</a>
+        <a class="icon-btn" href="sms:?body=Here%20is%20my%20raffle%20ticket%20link%3A%20https%3A//qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html%3Fqr%3DQR-DD8653DF9A%26siblings%3DQR-5A2D63DE36%2CQR-60ED2D5D62%2CQR-F7B059F50F%2CQR-5757B2C68D%2CQR-3822135121%2CQR-76AC8F191B%2CQR-4075C4ADE5%2CQR-D0CB722A9A%2CQR-86AF8199EF%2CQR-7D56A50796%2CQR-B9A22387BA%2CQR-FB5B12DA7A%2CQR-3CCCBC4795%2CQR-C4D6C9094F%2CQR-EAB427074E%2CQR-4949F1EFBC%2CQR-9614C49242%2CQR-1AB1AAA90D%2CQR-8E92111987" title="Share by Text Message">Text</a>
+      </div>
+    </div>
+    
+
+    <div class="ticket-card">
+      <div class="ticket-label">Ticket 8 of 20</div>
+      <div class="ticket-id">Ticket ID: TKT-20260916-RC7Y1N</div>
+
+      <a class="btn btn-view" href="https://qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html?qr=QR-4075C4ADE5&amp;siblings=QR-5A2D63DE36,QR-60ED2D5D62,QR-F7B059F50F,QR-5757B2C68D,QR-3822135121,QR-76AC8F191B,QR-DD8653DF9A,QR-D0CB722A9A,QR-86AF8199EF,QR-7D56A50796,QR-B9A22387BA,QR-FB5B12DA7A,QR-3CCCBC4795,QR-C4D6C9094F,QR-EAB427074E,QR-4949F1EFBC,QR-9614C49242,QR-1AB1AAA90D,QR-8E92111987" target="_blank" rel="noopener">
+        &#128065;&nbsp; View My Ticket
+      </a>
+
+      <button class="btn btn-copy" onclick="copyLink(this, 'https://qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html?qr=QR-4075C4ADE5&siblings=QR-5A2D63DE36,QR-60ED2D5D62,QR-F7B059F50F,QR-5757B2C68D,QR-3822135121,QR-76AC8F191B,QR-DD8653DF9A,QR-D0CB722A9A,QR-86AF8199EF,QR-7D56A50796,QR-B9A22387BA,QR-FB5B12DA7A,QR-3CCCBC4795,QR-C4D6C9094F,QR-EAB427074E,QR-4949F1EFBC,QR-9614C49242,QR-1AB1AAA90D,QR-8E92111987')">
+        &#128203;&nbsp; Copy Link
+      </button>
+
+      <button class="btn btn-share" onclick="shareLink('https://qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html?qr=QR-4075C4ADE5&siblings=QR-5A2D63DE36,QR-60ED2D5D62,QR-F7B059F50F,QR-5757B2C68D,QR-3822135121,QR-76AC8F191B,QR-DD8653DF9A,QR-D0CB722A9A,QR-86AF8199EF,QR-7D56A50796,QR-B9A22387BA,QR-FB5B12DA7A,QR-3CCCBC4795,QR-C4D6C9094F,QR-EAB427074E,QR-4949F1EFBC,QR-9614C49242,QR-1AB1AAA90D,QR-8E92111987', 8)">
+        &#128228;&nbsp; Share
+      </button>
+
+      <div class="fallback-row">
+        <a class="icon-btn" href="https://www.facebook.com/sharer/sharer.php?u=https%3A//qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html%3Fqr%3DQR-4075C4ADE5%26siblings%3DQR-5A2D63DE36%2CQR-60ED2D5D62%2CQR-F7B059F50F%2CQR-5757B2C68D%2CQR-3822135121%2CQR-76AC8F191B%2CQR-DD8653DF9A%2CQR-D0CB722A9A%2CQR-86AF8199EF%2CQR-7D56A50796%2CQR-B9A22387BA%2CQR-FB5B12DA7A%2CQR-3CCCBC4795%2CQR-C4D6C9094F%2CQR-EAB427074E%2CQR-4949F1EFBC%2CQR-9614C49242%2CQR-1AB1AAA90D%2CQR-8E92111987" target="_blank" rel="noopener" title="Share on Facebook">Facebook</a>
+        <a class="icon-btn" href="mailto:?subject=My%20Raffle%20Ticket%20%238&body=Here%20is%20my%20raffle%20ticket%20link%3A%0Ahttps%3A//qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html%3Fqr%3DQR-4075C4ADE5%26siblings%3DQR-5A2D63DE36%2CQR-60ED2D5D62%2CQR-F7B059F50F%2CQR-5757B2C68D%2CQR-3822135121%2CQR-76AC8F191B%2CQR-DD8653DF9A%2CQR-D0CB722A9A%2CQR-86AF8199EF%2CQR-7D56A50796%2CQR-B9A22387BA%2CQR-FB5B12DA7A%2CQR-3CCCBC4795%2CQR-C4D6C9094F%2CQR-EAB427074E%2CQR-4949F1EFBC%2CQR-9614C49242%2CQR-1AB1AAA90D%2CQR-8E92111987" title="Share by Email">Email</a>
+        <a class="icon-btn" href="sms:?body=Here%20is%20my%20raffle%20ticket%20link%3A%20https%3A//qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html%3Fqr%3DQR-4075C4ADE5%26siblings%3DQR-5A2D63DE36%2CQR-60ED2D5D62%2CQR-F7B059F50F%2CQR-5757B2C68D%2CQR-3822135121%2CQR-76AC8F191B%2CQR-DD8653DF9A%2CQR-D0CB722A9A%2CQR-86AF8199EF%2CQR-7D56A50796%2CQR-B9A22387BA%2CQR-FB5B12DA7A%2CQR-3CCCBC4795%2CQR-C4D6C9094F%2CQR-EAB427074E%2CQR-4949F1EFBC%2CQR-9614C49242%2CQR-1AB1AAA90D%2CQR-8E92111987" title="Share by Text Message">Text</a>
+      </div>
+    </div>
+    
+
+    <div class="ticket-card">
+      <div class="ticket-label">Ticket 9 of 20</div>
+      <div class="ticket-id">Ticket ID: TKT-20260916-NL5ZL3</div>
+
+      <a class="btn btn-view" href="https://qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html?qr=QR-D0CB722A9A&amp;siblings=QR-5A2D63DE36,QR-60ED2D5D62,QR-F7B059F50F,QR-5757B2C68D,QR-3822135121,QR-76AC8F191B,QR-DD8653DF9A,QR-4075C4ADE5,QR-86AF8199EF,QR-7D56A50796,QR-B9A22387BA,QR-FB5B12DA7A,QR-3CCCBC4795,QR-C4D6C9094F,QR-EAB427074E,QR-4949F1EFBC,QR-9614C49242,QR-1AB1AAA90D,QR-8E92111987" target="_blank" rel="noopener">
+        &#128065;&nbsp; View My Ticket
+      </a>
+
+      <button class="btn btn-copy" onclick="copyLink(this, 'https://qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html?qr=QR-D0CB722A9A&siblings=QR-5A2D63DE36,QR-60ED2D5D62,QR-F7B059F50F,QR-5757B2C68D,QR-3822135121,QR-76AC8F191B,QR-DD8653DF9A,QR-4075C4ADE5,QR-86AF8199EF,QR-7D56A50796,QR-B9A22387BA,QR-FB5B12DA7A,QR-3CCCBC4795,QR-C4D6C9094F,QR-EAB427074E,QR-4949F1EFBC,QR-9614C49242,QR-1AB1AAA90D,QR-8E92111987')">
+        &#128203;&nbsp; Copy Link
+      </button>
+
+      <button class="btn btn-share" onclick="shareLink('https://qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html?qr=QR-D0CB722A9A&siblings=QR-5A2D63DE36,QR-60ED2D5D62,QR-F7B059F50F,QR-5757B2C68D,QR-3822135121,QR-76AC8F191B,QR-DD8653DF9A,QR-4075C4ADE5,QR-86AF8199EF,QR-7D56A50796,QR-B9A22387BA,QR-FB5B12DA7A,QR-3CCCBC4795,QR-C4D6C9094F,QR-EAB427074E,QR-4949F1EFBC,QR-9614C49242,QR-1AB1AAA90D,QR-8E92111987', 9)">
+        &#128228;&nbsp; Share
+      </button>
+
+      <div class="fallback-row">
+        <a class="icon-btn" href="https://www.facebook.com/sharer/sharer.php?u=https%3A//qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html%3Fqr%3DQR-D0CB722A9A%26siblings%3DQR-5A2D63DE36%2CQR-60ED2D5D62%2CQR-F7B059F50F%2CQR-5757B2C68D%2CQR-3822135121%2CQR-76AC8F191B%2CQR-DD8653DF9A%2CQR-4075C4ADE5%2CQR-86AF8199EF%2CQR-7D56A50796%2CQR-B9A22387BA%2CQR-FB5B12DA7A%2CQR-3CCCBC4795%2CQR-C4D6C9094F%2CQR-EAB427074E%2CQR-4949F1EFBC%2CQR-9614C49242%2CQR-1AB1AAA90D%2CQR-8E92111987" target="_blank" rel="noopener" title="Share on Facebook">Facebook</a>
+        <a class="icon-btn" href="mailto:?subject=My%20Raffle%20Ticket%20%239&body=Here%20is%20my%20raffle%20ticket%20link%3A%0Ahttps%3A//qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html%3Fqr%3DQR-D0CB722A9A%26siblings%3DQR-5A2D63DE36%2CQR-60ED2D5D62%2CQR-F7B059F50F%2CQR-5757B2C68D%2CQR-3822135121%2CQR-76AC8F191B%2CQR-DD8653DF9A%2CQR-4075C4ADE5%2CQR-86AF8199EF%2CQR-7D56A50796%2CQR-B9A22387BA%2CQR-FB5B12DA7A%2CQR-3CCCBC4795%2CQR-C4D6C9094F%2CQR-EAB427074E%2CQR-4949F1EFBC%2CQR-9614C49242%2CQR-1AB1AAA90D%2CQR-8E92111987" title="Share by Email">Email</a>
+        <a class="icon-btn" href="sms:?body=Here%20is%20my%20raffle%20ticket%20link%3A%20https%3A//qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html%3Fqr%3DQR-D0CB722A9A%26siblings%3DQR-5A2D63DE36%2CQR-60ED2D5D62%2CQR-F7B059F50F%2CQR-5757B2C68D%2CQR-3822135121%2CQR-76AC8F191B%2CQR-DD8653DF9A%2CQR-4075C4ADE5%2CQR-86AF8199EF%2CQR-7D56A50796%2CQR-B9A22387BA%2CQR-FB5B12DA7A%2CQR-3CCCBC4795%2CQR-C4D6C9094F%2CQR-EAB427074E%2CQR-4949F1EFBC%2CQR-9614C49242%2CQR-1AB1AAA90D%2CQR-8E92111987" title="Share by Text Message">Text</a>
+      </div>
+    </div>
+    
+
+    <div class="ticket-card">
+      <div class="ticket-label">Ticket 10 of 20</div>
+      <div class="ticket-id">Ticket ID: TKT-20260916-ONPUU2</div>
+
+      <a class="btn btn-view" href="https://qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html?qr=QR-86AF8199EF&amp;siblings=QR-5A2D63DE36,QR-60ED2D5D62,QR-F7B059F50F,QR-5757B2C68D,QR-3822135121,QR-76AC8F191B,QR-DD8653DF9A,QR-4075C4ADE5,QR-D0CB722A9A,QR-7D56A50796,QR-B9A22387BA,QR-FB5B12DA7A,QR-3CCCBC4795,QR-C4D6C9094F,QR-EAB427074E,QR-4949F1EFBC,QR-9614C49242,QR-1AB1AAA90D,QR-8E92111987" target="_blank" rel="noopener">
+        &#128065;&nbsp; View My Ticket
+      </a>
+
+      <button class="btn btn-copy" onclick="copyLink(this, 'https://qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html?qr=QR-86AF8199EF&siblings=QR-5A2D63DE36,QR-60ED2D5D62,QR-F7B059F50F,QR-5757B2C68D,QR-3822135121,QR-76AC8F191B,QR-DD8653DF9A,QR-4075C4ADE5,QR-D0CB722A9A,QR-7D56A50796,QR-B9A22387BA,QR-FB5B12DA7A,QR-3CCCBC4795,QR-C4D6C9094F,QR-EAB427074E,QR-4949F1EFBC,QR-9614C49242,QR-1AB1AAA90D,QR-8E92111987')">
+        &#128203;&nbsp; Copy Link
+      </button>
+
+      <button class="btn btn-share" onclick="shareLink('https://qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html?qr=QR-86AF8199EF&siblings=QR-5A2D63DE36,QR-60ED2D5D62,QR-F7B059F50F,QR-5757B2C68D,QR-3822135121,QR-76AC8F191B,QR-DD8653DF9A,QR-4075C4ADE5,QR-D0CB722A9A,QR-7D56A50796,QR-B9A22387BA,QR-FB5B12DA7A,QR-3CCCBC4795,QR-C4D6C9094F,QR-EAB427074E,QR-4949F1EFBC,QR-9614C49242,QR-1AB1AAA90D,QR-8E92111987', 10)">
+        &#128228;&nbsp; Share
+      </button>
+
+      <div class="fallback-row">
+        <a class="icon-btn" href="https://www.facebook.com/sharer/sharer.php?u=https%3A//qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html%3Fqr%3DQR-86AF8199EF%26siblings%3DQR-5A2D63DE36%2CQR-60ED2D5D62%2CQR-F7B059F50F%2CQR-5757B2C68D%2CQR-3822135121%2CQR-76AC8F191B%2CQR-DD8653DF9A%2CQR-4075C4ADE5%2CQR-D0CB722A9A%2CQR-7D56A50796%2CQR-B9A22387BA%2CQR-FB5B12DA7A%2CQR-3CCCBC4795%2CQR-C4D6C9094F%2CQR-EAB427074E%2CQR-4949F1EFBC%2CQR-9614C49242%2CQR-1AB1AAA90D%2CQR-8E92111987" target="_blank" rel="noopener" title="Share on Facebook">Facebook</a>
+        <a class="icon-btn" href="mailto:?subject=My%20Raffle%20Ticket%20%2310&body=Here%20is%20my%20raffle%20ticket%20link%3A%0Ahttps%3A//qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html%3Fqr%3DQR-86AF8199EF%26siblings%3DQR-5A2D63DE36%2CQR-60ED2D5D62%2CQR-F7B059F50F%2CQR-5757B2C68D%2CQR-3822135121%2CQR-76AC8F191B%2CQR-DD8653DF9A%2CQR-4075C4ADE5%2CQR-D0CB722A9A%2CQR-7D56A50796%2CQR-B9A22387BA%2CQR-FB5B12DA7A%2CQR-3CCCBC4795%2CQR-C4D6C9094F%2CQR-EAB427074E%2CQR-4949F1EFBC%2CQR-9614C49242%2CQR-1AB1AAA90D%2CQR-8E92111987" title="Share by Email">Email</a>
+        <a class="icon-btn" href="sms:?body=Here%20is%20my%20raffle%20ticket%20link%3A%20https%3A//qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html%3Fqr%3DQR-86AF8199EF%26siblings%3DQR-5A2D63DE36%2CQR-60ED2D5D62%2CQR-F7B059F50F%2CQR-5757B2C68D%2CQR-3822135121%2CQR-76AC8F191B%2CQR-DD8653DF9A%2CQR-4075C4ADE5%2CQR-D0CB722A9A%2CQR-7D56A50796%2CQR-B9A22387BA%2CQR-FB5B12DA7A%2CQR-3CCCBC4795%2CQR-C4D6C9094F%2CQR-EAB427074E%2CQR-4949F1EFBC%2CQR-9614C49242%2CQR-1AB1AAA90D%2CQR-8E92111987" title="Share by Text Message">Text</a>
+      </div>
+    </div>
+    
+
+    <div class="ticket-card">
+      <div class="ticket-label">Ticket 11 of 20</div>
+      <div class="ticket-id">Ticket ID: TKT-20260916-GNBHKO</div>
+
+      <a class="btn btn-view" href="https://qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html?qr=QR-7D56A50796&amp;siblings=QR-5A2D63DE36,QR-60ED2D5D62,QR-F7B059F50F,QR-5757B2C68D,QR-3822135121,QR-76AC8F191B,QR-DD8653DF9A,QR-4075C4ADE5,QR-D0CB722A9A,QR-86AF8199EF,QR-B9A22387BA,QR-FB5B12DA7A,QR-3CCCBC4795,QR-C4D6C9094F,QR-EAB427074E,QR-4949F1EFBC,QR-9614C49242,QR-1AB1AAA90D,QR-8E92111987" target="_blank" rel="noopener">
+        &#128065;&nbsp; View My Ticket
+      </a>
+
+      <button class="btn btn-copy" onclick="copyLink(this, 'https://qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html?qr=QR-7D56A50796&siblings=QR-5A2D63DE36,QR-60ED2D5D62,QR-F7B059F50F,QR-5757B2C68D,QR-3822135121,QR-76AC8F191B,QR-DD8653DF9A,QR-4075C4ADE5,QR-D0CB722A9A,QR-86AF8199EF,QR-B9A22387BA,QR-FB5B12DA7A,QR-3CCCBC4795,QR-C4D6C9094F,QR-EAB427074E,QR-4949F1EFBC,QR-9614C49242,QR-1AB1AAA90D,QR-8E92111987')">
+        &#128203;&nbsp; Copy Link
+      </button>
+
+      <button class="btn btn-share" onclick="shareLink('https://qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html?qr=QR-7D56A50796&siblings=QR-5A2D63DE36,QR-60ED2D5D62,QR-F7B059F50F,QR-5757B2C68D,QR-3822135121,QR-76AC8F191B,QR-DD8653DF9A,QR-4075C4ADE5,QR-D0CB722A9A,QR-86AF8199EF,QR-B9A22387BA,QR-FB5B12DA7A,QR-3CCCBC4795,QR-C4D6C9094F,QR-EAB427074E,QR-4949F1EFBC,QR-9614C49242,QR-1AB1AAA90D,QR-8E92111987', 11)">
+        &#128228;&nbsp; Share
+      </button>
+
+      <div class="fallback-row">
+        <a class="icon-btn" href="https://www.facebook.com/sharer/sharer.php?u=https%3A//qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html%3Fqr%3DQR-7D56A50796%26siblings%3DQR-5A2D63DE36%2CQR-60ED2D5D62%2CQR-F7B059F50F%2CQR-5757B2C68D%2CQR-3822135121%2CQR-76AC8F191B%2CQR-DD8653DF9A%2CQR-4075C4ADE5%2CQR-D0CB722A9A%2CQR-86AF8199EF%2CQR-B9A22387BA%2CQR-FB5B12DA7A%2CQR-3CCCBC4795%2CQR-C4D6C9094F%2CQR-EAB427074E%2CQR-4949F1EFBC%2CQR-9614C49242%2CQR-1AB1AAA90D%2CQR-8E92111987" target="_blank" rel="noopener" title="Share on Facebook">Facebook</a>
+        <a class="icon-btn" href="mailto:?subject=My%20Raffle%20Ticket%20%2311&body=Here%20is%20my%20raffle%20ticket%20link%3A%0Ahttps%3A//qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html%3Fqr%3DQR-7D56A50796%26siblings%3DQR-5A2D63DE36%2CQR-60ED2D5D62%2CQR-F7B059F50F%2CQR-5757B2C68D%2CQR-3822135121%2CQR-76AC8F191B%2CQR-DD8653DF9A%2CQR-4075C4ADE5%2CQR-D0CB722A9A%2CQR-86AF8199EF%2CQR-B9A22387BA%2CQR-FB5B12DA7A%2CQR-3CCCBC4795%2CQR-C4D6C9094F%2CQR-EAB427074E%2CQR-4949F1EFBC%2CQR-9614C49242%2CQR-1AB1AAA90D%2CQR-8E92111987" title="Share by Email">Email</a>
+        <a class="icon-btn" href="sms:?body=Here%20is%20my%20raffle%20ticket%20link%3A%20https%3A//qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html%3Fqr%3DQR-7D56A50796%26siblings%3DQR-5A2D63DE36%2CQR-60ED2D5D62%2CQR-F7B059F50F%2CQR-5757B2C68D%2CQR-3822135121%2CQR-76AC8F191B%2CQR-DD8653DF9A%2CQR-4075C4ADE5%2CQR-D0CB722A9A%2CQR-86AF8199EF%2CQR-B9A22387BA%2CQR-FB5B12DA7A%2CQR-3CCCBC4795%2CQR-C4D6C9094F%2CQR-EAB427074E%2CQR-4949F1EFBC%2CQR-9614C49242%2CQR-1AB1AAA90D%2CQR-8E92111987" title="Share by Text Message">Text</a>
+      </div>
+    </div>
+    
+
+    <div class="ticket-card">
+      <div class="ticket-label">Ticket 12 of 20</div>
+      <div class="ticket-id">Ticket ID: TKT-20260916-P2QYXX</div>
+
+      <a class="btn btn-view" href="https://qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html?qr=QR-B9A22387BA&amp;siblings=QR-5A2D63DE36,QR-60ED2D5D62,QR-F7B059F50F,QR-5757B2C68D,QR-3822135121,QR-76AC8F191B,QR-DD8653DF9A,QR-4075C4ADE5,QR-D0CB722A9A,QR-86AF8199EF,QR-7D56A50796,QR-FB5B12DA7A,QR-3CCCBC4795,QR-C4D6C9094F,QR-EAB427074E,QR-4949F1EFBC,QR-9614C49242,QR-1AB1AAA90D,QR-8E92111987" target="_blank" rel="noopener">
+        &#128065;&nbsp; View My Ticket
+      </a>
+
+      <button class="btn btn-copy" onclick="copyLink(this, 'https://qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html?qr=QR-B9A22387BA&siblings=QR-5A2D63DE36,QR-60ED2D5D62,QR-F7B059F50F,QR-5757B2C68D,QR-3822135121,QR-76AC8F191B,QR-DD8653DF9A,QR-4075C4ADE5,QR-D0CB722A9A,QR-86AF8199EF,QR-7D56A50796,QR-FB5B12DA7A,QR-3CCCBC4795,QR-C4D6C9094F,QR-EAB427074E,QR-4949F1EFBC,QR-9614C49242,QR-1AB1AAA90D,QR-8E92111987')">
+        &#128203;&nbsp; Copy Link
+      </button>
+
+      <button class="btn btn-share" onclick="shareLink('https://qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html?qr=QR-B9A22387BA&siblings=QR-5A2D63DE36,QR-60ED2D5D62,QR-F7B059F50F,QR-5757B2C68D,QR-3822135121,QR-76AC8F191B,QR-DD8653DF9A,QR-4075C4ADE5,QR-D0CB722A9A,QR-86AF8199EF,QR-7D56A50796,QR-FB5B12DA7A,QR-3CCCBC4795,QR-C4D6C9094F,QR-EAB427074E,QR-4949F1EFBC,QR-9614C49242,QR-1AB1AAA90D,QR-8E92111987', 12)">
+        &#128228;&nbsp; Share
+      </button>
+
+      <div class="fallback-row">
+        <a class="icon-btn" href="https://www.facebook.com/sharer/sharer.php?u=https%3A//qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html%3Fqr%3DQR-B9A22387BA%26siblings%3DQR-5A2D63DE36%2CQR-60ED2D5D62%2CQR-F7B059F50F%2CQR-5757B2C68D%2CQR-3822135121%2CQR-76AC8F191B%2CQR-DD8653DF9A%2CQR-4075C4ADE5%2CQR-D0CB722A9A%2CQR-86AF8199EF%2CQR-7D56A50796%2CQR-FB5B12DA7A%2CQR-3CCCBC4795%2CQR-C4D6C9094F%2CQR-EAB427074E%2CQR-4949F1EFBC%2CQR-9614C49242%2CQR-1AB1AAA90D%2CQR-8E92111987" target="_blank" rel="noopener" title="Share on Facebook">Facebook</a>
+        <a class="icon-btn" href="mailto:?subject=My%20Raffle%20Ticket%20%2312&body=Here%20is%20my%20raffle%20ticket%20link%3A%0Ahttps%3A//qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html%3Fqr%3DQR-B9A22387BA%26siblings%3DQR-5A2D63DE36%2CQR-60ED2D5D62%2CQR-F7B059F50F%2CQR-5757B2C68D%2CQR-3822135121%2CQR-76AC8F191B%2CQR-DD8653DF9A%2CQR-4075C4ADE5%2CQR-D0CB722A9A%2CQR-86AF8199EF%2CQR-7D56A50796%2CQR-FB5B12DA7A%2CQR-3CCCBC4795%2CQR-C4D6C9094F%2CQR-EAB427074E%2CQR-4949F1EFBC%2CQR-9614C49242%2CQR-1AB1AAA90D%2CQR-8E92111987" title="Share by Email">Email</a>
+        <a class="icon-btn" href="sms:?body=Here%20is%20my%20raffle%20ticket%20link%3A%20https%3A//qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html%3Fqr%3DQR-B9A22387BA%26siblings%3DQR-5A2D63DE36%2CQR-60ED2D5D62%2CQR-F7B059F50F%2CQR-5757B2C68D%2CQR-3822135121%2CQR-76AC8F191B%2CQR-DD8653DF9A%2CQR-4075C4ADE5%2CQR-D0CB722A9A%2CQR-86AF8199EF%2CQR-7D56A50796%2CQR-FB5B12DA7A%2CQR-3CCCBC4795%2CQR-C4D6C9094F%2CQR-EAB427074E%2CQR-4949F1EFBC%2CQR-9614C49242%2CQR-1AB1AAA90D%2CQR-8E92111987" title="Share by Text Message">Text</a>
+      </div>
+    </div>
+    
+
+    <div class="ticket-card">
+      <div class="ticket-label">Ticket 13 of 20</div>
+      <div class="ticket-id">Ticket ID: TKT-20260916-U7F33Z</div>
+
+      <a class="btn btn-view" href="https://qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html?qr=QR-FB5B12DA7A&amp;siblings=QR-5A2D63DE36,QR-60ED2D5D62,QR-F7B059F50F,QR-5757B2C68D,QR-3822135121,QR-76AC8F191B,QR-DD8653DF9A,QR-4075C4ADE5,QR-D0CB722A9A,QR-86AF8199EF,QR-7D56A50796,QR-B9A22387BA,QR-3CCCBC4795,QR-C4D6C9094F,QR-EAB427074E,QR-4949F1EFBC,QR-9614C49242,QR-1AB1AAA90D,QR-8E92111987" target="_blank" rel="noopener">
+        &#128065;&nbsp; View My Ticket
+      </a>
+
+      <button class="btn btn-copy" onclick="copyLink(this, 'https://qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html?qr=QR-FB5B12DA7A&siblings=QR-5A2D63DE36,QR-60ED2D5D62,QR-F7B059F50F,QR-5757B2C68D,QR-3822135121,QR-76AC8F191B,QR-DD8653DF9A,QR-4075C4ADE5,QR-D0CB722A9A,QR-86AF8199EF,QR-7D56A50796,QR-B9A22387BA,QR-3CCCBC4795,QR-C4D6C9094F,QR-EAB427074E,QR-4949F1EFBC,QR-9614C49242,QR-1AB1AAA90D,QR-8E92111987')">
+        &#128203;&nbsp; Copy Link
+      </button>
+
+      <button class="btn btn-share" onclick="shareLink('https://qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html?qr=QR-FB5B12DA7A&siblings=QR-5A2D63DE36,QR-60ED2D5D62,QR-F7B059F50F,QR-5757B2C68D,QR-3822135121,QR-76AC8F191B,QR-DD8653DF9A,QR-4075C4ADE5,QR-D0CB722A9A,QR-86AF8199EF,QR-7D56A50796,QR-B9A22387BA,QR-3CCCBC4795,QR-C4D6C9094F,QR-EAB427074E,QR-4949F1EFBC,QR-9614C49242,QR-1AB1AAA90D,QR-8E92111987', 13)">
+        &#128228;&nbsp; Share
+      </button>
+
+      <div class="fallback-row">
+        <a class="icon-btn" href="https://www.facebook.com/sharer/sharer.php?u=https%3A//qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html%3Fqr%3DQR-FB5B12DA7A%26siblings%3DQR-5A2D63DE36%2CQR-60ED2D5D62%2CQR-F7B059F50F%2CQR-5757B2C68D%2CQR-3822135121%2CQR-76AC8F191B%2CQR-DD8653DF9A%2CQR-4075C4ADE5%2CQR-D0CB722A9A%2CQR-86AF8199EF%2CQR-7D56A50796%2CQR-B9A22387BA%2CQR-3CCCBC4795%2CQR-C4D6C9094F%2CQR-EAB427074E%2CQR-4949F1EFBC%2CQR-9614C49242%2CQR-1AB1AAA90D%2CQR-8E92111987" target="_blank" rel="noopener" title="Share on Facebook">Facebook</a>
+        <a class="icon-btn" href="mailto:?subject=My%20Raffle%20Ticket%20%2313&body=Here%20is%20my%20raffle%20ticket%20link%3A%0Ahttps%3A//qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html%3Fqr%3DQR-FB5B12DA7A%26siblings%3DQR-5A2D63DE36%2CQR-60ED2D5D62%2CQR-F7B059F50F%2CQR-5757B2C68D%2CQR-3822135121%2CQR-76AC8F191B%2CQR-DD8653DF9A%2CQR-4075C4ADE5%2CQR-D0CB722A9A%2CQR-86AF8199EF%2CQR-7D56A50796%2CQR-B9A22387BA%2CQR-3CCCBC4795%2CQR-C4D6C9094F%2CQR-EAB427074E%2CQR-4949F1EFBC%2CQR-9614C49242%2CQR-1AB1AAA90D%2CQR-8E92111987" title="Share by Email">Email</a>
+        <a class="icon-btn" href="sms:?body=Here%20is%20my%20raffle%20ticket%20link%3A%20https%3A//qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html%3Fqr%3DQR-FB5B12DA7A%26siblings%3DQR-5A2D63DE36%2CQR-60ED2D5D62%2CQR-F7B059F50F%2CQR-5757B2C68D%2CQR-3822135121%2CQR-76AC8F191B%2CQR-DD8653DF9A%2CQR-4075C4ADE5%2CQR-D0CB722A9A%2CQR-86AF8199EF%2CQR-7D56A50796%2CQR-B9A22387BA%2CQR-3CCCBC4795%2CQR-C4D6C9094F%2CQR-EAB427074E%2CQR-4949F1EFBC%2CQR-9614C49242%2CQR-1AB1AAA90D%2CQR-8E92111987" title="Share by Text Message">Text</a>
+      </div>
+    </div>
+    
+
+    <div class="ticket-card">
+      <div class="ticket-label">Ticket 14 of 20</div>
+      <div class="ticket-id">Ticket ID: TKT-20260916-X5BGA1</div>
+
+      <a class="btn btn-view" href="https://qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html?qr=QR-3CCCBC4795&amp;siblings=QR-5A2D63DE36,QR-60ED2D5D62,QR-F7B059F50F,QR-5757B2C68D,QR-3822135121,QR-76AC8F191B,QR-DD8653DF9A,QR-4075C4ADE5,QR-D0CB722A9A,QR-86AF8199EF,QR-7D56A50796,QR-B9A22387BA,QR-FB5B12DA7A,QR-C4D6C9094F,QR-EAB427074E,QR-4949F1EFBC,QR-9614C49242,QR-1AB1AAA90D,QR-8E92111987" target="_blank" rel="noopener">
+        &#128065;&nbsp; View My Ticket
+      </a>
+
+      <button class="btn btn-copy" onclick="copyLink(this, 'https://qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html?qr=QR-3CCCBC4795&siblings=QR-5A2D63DE36,QR-60ED2D5D62,QR-F7B059F50F,QR-5757B2C68D,QR-3822135121,QR-76AC8F191B,QR-DD8653DF9A,QR-4075C4ADE5,QR-D0CB722A9A,QR-86AF8199EF,QR-7D56A50796,QR-B9A22387BA,QR-FB5B12DA7A,QR-C4D6C9094F,QR-EAB427074E,QR-4949F1EFBC,QR-9614C49242,QR-1AB1AAA90D,QR-8E92111987')">
+        &#128203;&nbsp; Copy Link
+      </button>
+
+      <button class="btn btn-share" onclick="shareLink('https://qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html?qr=QR-3CCCBC4795&siblings=QR-5A2D63DE36,QR-60ED2D5D62,QR-F7B059F50F,QR-5757B2C68D,QR-3822135121,QR-76AC8F191B,QR-DD8653DF9A,QR-4075C4ADE5,QR-D0CB722A9A,QR-86AF8199EF,QR-7D56A50796,QR-B9A22387BA,QR-FB5B12DA7A,QR-C4D6C9094F,QR-EAB427074E,QR-4949F1EFBC,QR-9614C49242,QR-1AB1AAA90D,QR-8E92111987', 14)">
+        &#128228;&nbsp; Share
+      </button>
+
+      <div class="fallback-row">
+        <a class="icon-btn" href="https://www.facebook.com/sharer/sharer.php?u=https%3A//qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html%3Fqr%3DQR-3CCCBC4795%26siblings%3DQR-5A2D63DE36%2CQR-60ED2D5D62%2CQR-F7B059F50F%2CQR-5757B2C68D%2CQR-3822135121%2CQR-76AC8F191B%2CQR-DD8653DF9A%2CQR-4075C4ADE5%2CQR-D0CB722A9A%2CQR-86AF8199EF%2CQR-7D56A50796%2CQR-B9A22387BA%2CQR-FB5B12DA7A%2CQR-C4D6C9094F%2CQR-EAB427074E%2CQR-4949F1EFBC%2CQR-9614C49242%2CQR-1AB1AAA90D%2CQR-8E92111987" target="_blank" rel="noopener" title="Share on Facebook">Facebook</a>
+        <a class="icon-btn" href="mailto:?subject=My%20Raffle%20Ticket%20%2314&body=Here%20is%20my%20raffle%20ticket%20link%3A%0Ahttps%3A//qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html%3Fqr%3DQR-3CCCBC4795%26siblings%3DQR-5A2D63DE36%2CQR-60ED2D5D62%2CQR-F7B059F50F%2CQR-5757B2C68D%2CQR-3822135121%2CQR-76AC8F191B%2CQR-DD8653DF9A%2CQR-4075C4ADE5%2CQR-D0CB722A9A%2CQR-86AF8199EF%2CQR-7D56A50796%2CQR-B9A22387BA%2CQR-FB5B12DA7A%2CQR-C4D6C9094F%2CQR-EAB427074E%2CQR-4949F1EFBC%2CQR-9614C49242%2CQR-1AB1AAA90D%2CQR-8E92111987" title="Share by Email">Email</a>
+        <a class="icon-btn" href="sms:?body=Here%20is%20my%20raffle%20ticket%20link%3A%20https%3A//qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html%3Fqr%3DQR-3CCCBC4795%26siblings%3DQR-5A2D63DE36%2CQR-60ED2D5D62%2CQR-F7B059F50F%2CQR-5757B2C68D%2CQR-3822135121%2CQR-76AC8F191B%2CQR-DD8653DF9A%2CQR-4075C4ADE5%2CQR-D0CB722A9A%2CQR-86AF8199EF%2CQR-7D56A50796%2CQR-B9A22387BA%2CQR-FB5B12DA7A%2CQR-C4D6C9094F%2CQR-EAB427074E%2CQR-4949F1EFBC%2CQR-9614C49242%2CQR-1AB1AAA90D%2CQR-8E92111987" title="Share by Text Message">Text</a>
+      </div>
+    </div>
+    
+
+    <div class="ticket-card">
+      <div class="ticket-label">Ticket 15 of 20</div>
+      <div class="ticket-id">Ticket ID: TKT-20260916-330R92</div>
+
+      <a class="btn btn-view" href="https://qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html?qr=QR-C4D6C9094F&amp;siblings=QR-5A2D63DE36,QR-60ED2D5D62,QR-F7B059F50F,QR-5757B2C68D,QR-3822135121,QR-76AC8F191B,QR-DD8653DF9A,QR-4075C4ADE5,QR-D0CB722A9A,QR-86AF8199EF,QR-7D56A50796,QR-B9A22387BA,QR-FB5B12DA7A,QR-3CCCBC4795,QR-EAB427074E,QR-4949F1EFBC,QR-9614C49242,QR-1AB1AAA90D,QR-8E92111987" target="_blank" rel="noopener">
+        &#128065;&nbsp; View My Ticket
+      </a>
+
+      <button class="btn btn-copy" onclick="copyLink(this, 'https://qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html?qr=QR-C4D6C9094F&siblings=QR-5A2D63DE36,QR-60ED2D5D62,QR-F7B059F50F,QR-5757B2C68D,QR-3822135121,QR-76AC8F191B,QR-DD8653DF9A,QR-4075C4ADE5,QR-D0CB722A9A,QR-86AF8199EF,QR-7D56A50796,QR-B9A22387BA,QR-FB5B12DA7A,QR-3CCCBC4795,QR-EAB427074E,QR-4949F1EFBC,QR-9614C49242,QR-1AB1AAA90D,QR-8E92111987')">
+        &#128203;&nbsp; Copy Link
+      </button>
+
+      <button class="btn btn-share" onclick="shareLink('https://qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html?qr=QR-C4D6C9094F&siblings=QR-5A2D63DE36,QR-60ED2D5D62,QR-F7B059F50F,QR-5757B2C68D,QR-3822135121,QR-76AC8F191B,QR-DD8653DF9A,QR-4075C4ADE5,QR-D0CB722A9A,QR-86AF8199EF,QR-7D56A50796,QR-B9A22387BA,QR-FB5B12DA7A,QR-3CCCBC4795,QR-EAB427074E,QR-4949F1EFBC,QR-9614C49242,QR-1AB1AAA90D,QR-8E92111987', 15)">
+        &#128228;&nbsp; Share
+      </button>
+
+      <div class="fallback-row">
+        <a class="icon-btn" href="https://www.facebook.com/sharer/sharer.php?u=https%3A//qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html%3Fqr%3DQR-C4D6C9094F%26siblings%3DQR-5A2D63DE36%2CQR-60ED2D5D62%2CQR-F7B059F50F%2CQR-5757B2C68D%2CQR-3822135121%2CQR-76AC8F191B%2CQR-DD8653DF9A%2CQR-4075C4ADE5%2CQR-D0CB722A9A%2CQR-86AF8199EF%2CQR-7D56A50796%2CQR-B9A22387BA%2CQR-FB5B12DA7A%2CQR-3CCCBC4795%2CQR-EAB427074E%2CQR-4949F1EFBC%2CQR-9614C49242%2CQR-1AB1AAA90D%2CQR-8E92111987" target="_blank" rel="noopener" title="Share on Facebook">Facebook</a>
+        <a class="icon-btn" href="mailto:?subject=My%20Raffle%20Ticket%20%2315&body=Here%20is%20my%20raffle%20ticket%20link%3A%0Ahttps%3A//qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html%3Fqr%3DQR-C4D6C9094F%26siblings%3DQR-5A2D63DE36%2CQR-60ED2D5D62%2CQR-F7B059F50F%2CQR-5757B2C68D%2CQR-3822135121%2CQR-76AC8F191B%2CQR-DD8653DF9A%2CQR-4075C4ADE5%2CQR-D0CB722A9A%2CQR-86AF8199EF%2CQR-7D56A50796%2CQR-B9A22387BA%2CQR-FB5B12DA7A%2CQR-3CCCBC4795%2CQR-EAB427074E%2CQR-4949F1EFBC%2CQR-9614C49242%2CQR-1AB1AAA90D%2CQR-8E92111987" title="Share by Email">Email</a>
+        <a class="icon-btn" href="sms:?body=Here%20is%20my%20raffle%20ticket%20link%3A%20https%3A//qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html%3Fqr%3DQR-C4D6C9094F%26siblings%3DQR-5A2D63DE36%2CQR-60ED2D5D62%2CQR-F7B059F50F%2CQR-5757B2C68D%2CQR-3822135121%2CQR-76AC8F191B%2CQR-DD8653DF9A%2CQR-4075C4ADE5%2CQR-D0CB722A9A%2CQR-86AF8199EF%2CQR-7D56A50796%2CQR-B9A22387BA%2CQR-FB5B12DA7A%2CQR-3CCCBC4795%2CQR-EAB427074E%2CQR-4949F1EFBC%2CQR-9614C49242%2CQR-1AB1AAA90D%2CQR-8E92111987" title="Share by Text Message">Text</a>
+      </div>
+    </div>
+    
+
+    <div class="ticket-card">
+      <div class="ticket-label">Ticket 16 of 20</div>
+      <div class="ticket-id">Ticket ID: TKT-20260916-K1UGZA</div>
+
+      <a class="btn btn-view" href="https://qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html?qr=QR-EAB427074E&amp;siblings=QR-5A2D63DE36,QR-60ED2D5D62,QR-F7B059F50F,QR-5757B2C68D,QR-3822135121,QR-76AC8F191B,QR-DD8653DF9A,QR-4075C4ADE5,QR-D0CB722A9A,QR-86AF8199EF,QR-7D56A50796,QR-B9A22387BA,QR-FB5B12DA7A,QR-3CCCBC4795,QR-C4D6C9094F,QR-4949F1EFBC,QR-9614C49242,QR-1AB1AAA90D,QR-8E92111987" target="_blank" rel="noopener">
+        &#128065;&nbsp; View My Ticket
+      </a>
+
+      <button class="btn btn-copy" onclick="copyLink(this, 'https://qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html?qr=QR-EAB427074E&siblings=QR-5A2D63DE36,QR-60ED2D5D62,QR-F7B059F50F,QR-5757B2C68D,QR-3822135121,QR-76AC8F191B,QR-DD8653DF9A,QR-4075C4ADE5,QR-D0CB722A9A,QR-86AF8199EF,QR-7D56A50796,QR-B9A22387BA,QR-FB5B12DA7A,QR-3CCCBC4795,QR-C4D6C9094F,QR-4949F1EFBC,QR-9614C49242,QR-1AB1AAA90D,QR-8E92111987')">
+        &#128203;&nbsp; Copy Link
+      </button>
+
+      <button class="btn btn-share" onclick="shareLink('https://qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html?qr=QR-EAB427074E&siblings=QR-5A2D63DE36,QR-60ED2D5D62,QR-F7B059F50F,QR-5757B2C68D,QR-3822135121,QR-76AC8F191B,QR-DD8653DF9A,QR-4075C4ADE5,QR-D0CB722A9A,QR-86AF8199EF,QR-7D56A50796,QR-B9A22387BA,QR-FB5B12DA7A,QR-3CCCBC4795,QR-C4D6C9094F,QR-4949F1EFBC,QR-9614C49242,QR-1AB1AAA90D,QR-8E92111987', 16)">
+        &#128228;&nbsp; Share
+      </button>
+
+      <div class="fallback-row">
+        <a class="icon-btn" href="https://www.facebook.com/sharer/sharer.php?u=https%3A//qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html%3Fqr%3DQR-EAB427074E%26siblings%3DQR-5A2D63DE36%2CQR-60ED2D5D62%2CQR-F7B059F50F%2CQR-5757B2C68D%2CQR-3822135121%2CQR-76AC8F191B%2CQR-DD8653DF9A%2CQR-4075C4ADE5%2CQR-D0CB722A9A%2CQR-86AF8199EF%2CQR-7D56A50796%2CQR-B9A22387BA%2CQR-FB5B12DA7A%2CQR-3CCCBC4795%2CQR-C4D6C9094F%2CQR-4949F1EFBC%2CQR-9614C49242%2CQR-1AB1AAA90D%2CQR-8E92111987" target="_blank" rel="noopener" title="Share on Facebook">Facebook</a>
+        <a class="icon-btn" href="mailto:?subject=My%20Raffle%20Ticket%20%2316&body=Here%20is%20my%20raffle%20ticket%20link%3A%0Ahttps%3A//qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html%3Fqr%3DQR-EAB427074E%26siblings%3DQR-5A2D63DE36%2CQR-60ED2D5D62%2CQR-F7B059F50F%2CQR-5757B2C68D%2CQR-3822135121%2CQR-76AC8F191B%2CQR-DD8653DF9A%2CQR-4075C4ADE5%2CQR-D0CB722A9A%2CQR-86AF8199EF%2CQR-7D56A50796%2CQR-B9A22387BA%2CQR-FB5B12DA7A%2CQR-3CCCBC4795%2CQR-C4D6C9094F%2CQR-4949F1EFBC%2CQR-9614C49242%2CQR-1AB1AAA90D%2CQR-8E92111987" title="Share by Email">Email</a>
+        <a class="icon-btn" href="sms:?body=Here%20is%20my%20raffle%20ticket%20link%3A%20https%3A//qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html%3Fqr%3DQR-EAB427074E%26siblings%3DQR-5A2D63DE36%2CQR-60ED2D5D62%2CQR-F7B059F50F%2CQR-5757B2C68D%2CQR-3822135121%2CQR-76AC8F191B%2CQR-DD8653DF9A%2CQR-4075C4ADE5%2CQR-D0CB722A9A%2CQR-86AF8199EF%2CQR-7D56A50796%2CQR-B9A22387BA%2CQR-FB5B12DA7A%2CQR-3CCCBC4795%2CQR-C4D6C9094F%2CQR-4949F1EFBC%2CQR-9614C49242%2CQR-1AB1AAA90D%2CQR-8E92111987" title="Share by Text Message">Text</a>
+      </div>
+    </div>
+    
+
+    <div class="ticket-card">
+      <div class="ticket-label">Ticket 17 of 20</div>
+      <div class="ticket-id">Ticket ID: TKT-20260916-UP4II1</div>
+
+      <a class="btn btn-view" href="https://qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html?qr=QR-4949F1EFBC&amp;siblings=QR-5A2D63DE36,QR-60ED2D5D62,QR-F7B059F50F,QR-5757B2C68D,QR-3822135121,QR-76AC8F191B,QR-DD8653DF9A,QR-4075C4ADE5,QR-D0CB722A9A,QR-86AF8199EF,QR-7D56A50796,QR-B9A22387BA,QR-FB5B12DA7A,QR-3CCCBC4795,QR-C4D6C9094F,QR-EAB427074E,QR-9614C49242,QR-1AB1AAA90D,QR-8E92111987" target="_blank" rel="noopener">
+        &#128065;&nbsp; View My Ticket
+      </a>
+
+      <button class="btn btn-copy" onclick="copyLink(this, 'https://qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html?qr=QR-4949F1EFBC&siblings=QR-5A2D63DE36,QR-60ED2D5D62,QR-F7B059F50F,QR-5757B2C68D,QR-3822135121,QR-76AC8F191B,QR-DD8653DF9A,QR-4075C4ADE5,QR-D0CB722A9A,QR-86AF8199EF,QR-7D56A50796,QR-B9A22387BA,QR-FB5B12DA7A,QR-3CCCBC4795,QR-C4D6C9094F,QR-EAB427074E,QR-9614C49242,QR-1AB1AAA90D,QR-8E92111987')">
+        &#128203;&nbsp; Copy Link
+      </button>
+
+      <button class="btn btn-share" onclick="shareLink('https://qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html?qr=QR-4949F1EFBC&siblings=QR-5A2D63DE36,QR-60ED2D5D62,QR-F7B059F50F,QR-5757B2C68D,QR-3822135121,QR-76AC8F191B,QR-DD8653DF9A,QR-4075C4ADE5,QR-D0CB722A9A,QR-86AF8199EF,QR-7D56A50796,QR-B9A22387BA,QR-FB5B12DA7A,QR-3CCCBC4795,QR-C4D6C9094F,QR-EAB427074E,QR-9614C49242,QR-1AB1AAA90D,QR-8E92111987', 17)">
+        &#128228;&nbsp; Share
+      </button>
+
+      <div class="fallback-row">
+        <a class="icon-btn" href="https://www.facebook.com/sharer/sharer.php?u=https%3A//qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html%3Fqr%3DQR-4949F1EFBC%26siblings%3DQR-5A2D63DE36%2CQR-60ED2D5D62%2CQR-F7B059F50F%2CQR-5757B2C68D%2CQR-3822135121%2CQR-76AC8F191B%2CQR-DD8653DF9A%2CQR-4075C4ADE5%2CQR-D0CB722A9A%2CQR-86AF8199EF%2CQR-7D56A50796%2CQR-B9A22387BA%2CQR-FB5B12DA7A%2CQR-3CCCBC4795%2CQR-C4D6C9094F%2CQR-EAB427074E%2CQR-9614C49242%2CQR-1AB1AAA90D%2CQR-8E92111987" target="_blank" rel="noopener" title="Share on Facebook">Facebook</a>
+        <a class="icon-btn" href="mailto:?subject=My%20Raffle%20Ticket%20%2317&body=Here%20is%20my%20raffle%20ticket%20link%3A%0Ahttps%3A//qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html%3Fqr%3DQR-4949F1EFBC%26siblings%3DQR-5A2D63DE36%2CQR-60ED2D5D62%2CQR-F7B059F50F%2CQR-5757B2C68D%2CQR-3822135121%2CQR-76AC8F191B%2CQR-DD8653DF9A%2CQR-4075C4ADE5%2CQR-D0CB722A9A%2CQR-86AF8199EF%2CQR-7D56A50796%2CQR-B9A22387BA%2CQR-FB5B12DA7A%2CQR-3CCCBC4795%2CQR-C4D6C9094F%2CQR-EAB427074E%2CQR-9614C49242%2CQR-1AB1AAA90D%2CQR-8E92111987" title="Share by Email">Email</a>
+        <a class="icon-btn" href="sms:?body=Here%20is%20my%20raffle%20ticket%20link%3A%20https%3A//qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html%3Fqr%3DQR-4949F1EFBC%26siblings%3DQR-5A2D63DE36%2CQR-60ED2D5D62%2CQR-F7B059F50F%2CQR-5757B2C68D%2CQR-3822135121%2CQR-76AC8F191B%2CQR-DD8653DF9A%2CQR-4075C4ADE5%2CQR-D0CB722A9A%2CQR-86AF8199EF%2CQR-7D56A50796%2CQR-B9A22387BA%2CQR-FB5B12DA7A%2CQR-3CCCBC4795%2CQR-C4D6C9094F%2CQR-EAB427074E%2CQR-9614C49242%2CQR-1AB1AAA90D%2CQR-8E92111987" title="Share by Text Message">Text</a>
+      </div>
+    </div>
+    
+
+    <div class="ticket-card">
+      <div class="ticket-label">Ticket 18 of 20</div>
+      <div class="ticket-id">Ticket ID: TKT-20260916-HILKUE</div>
+
+      <a class="btn btn-view" href="https://qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html?qr=QR-9614C49242&amp;siblings=QR-5A2D63DE36,QR-60ED2D5D62,QR-F7B059F50F,QR-5757B2C68D,QR-3822135121,QR-76AC8F191B,QR-DD8653DF9A,QR-4075C4ADE5,QR-D0CB722A9A,QR-86AF8199EF,QR-7D56A50796,QR-B9A22387BA,QR-FB5B12DA7A,QR-3CCCBC4795,QR-C4D6C9094F,QR-EAB427074E,QR-4949F1EFBC,QR-1AB1AAA90D,QR-8E92111987" target="_blank" rel="noopener">
+        &#128065;&nbsp; View My Ticket
+      </a>
+
+      <button class="btn btn-copy" onclick="copyLink(this, 'https://qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html?qr=QR-9614C49242&siblings=QR-5A2D63DE36,QR-60ED2D5D62,QR-F7B059F50F,QR-5757B2C68D,QR-3822135121,QR-76AC8F191B,QR-DD8653DF9A,QR-4075C4ADE5,QR-D0CB722A9A,QR-86AF8199EF,QR-7D56A50796,QR-B9A22387BA,QR-FB5B12DA7A,QR-3CCCBC4795,QR-C4D6C9094F,QR-EAB427074E,QR-4949F1EFBC,QR-1AB1AAA90D,QR-8E92111987')">
+        &#128203;&nbsp; Copy Link
+      </button>
+
+      <button class="btn btn-share" onclick="shareLink('https://qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html?qr=QR-9614C49242&siblings=QR-5A2D63DE36,QR-60ED2D5D62,QR-F7B059F50F,QR-5757B2C68D,QR-3822135121,QR-76AC8F191B,QR-DD8653DF9A,QR-4075C4ADE5,QR-D0CB722A9A,QR-86AF8199EF,QR-7D56A50796,QR-B9A22387BA,QR-FB5B12DA7A,QR-3CCCBC4795,QR-C4D6C9094F,QR-EAB427074E,QR-4949F1EFBC,QR-1AB1AAA90D,QR-8E92111987', 18)">
+        &#128228;&nbsp; Share
+      </button>
+
+      <div class="fallback-row">
+        <a class="icon-btn" href="https://www.facebook.com/sharer/sharer.php?u=https%3A//qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html%3Fqr%3DQR-9614C49242%26siblings%3DQR-5A2D63DE36%2CQR-60ED2D5D62%2CQR-F7B059F50F%2CQR-5757B2C68D%2CQR-3822135121%2CQR-76AC8F191B%2CQR-DD8653DF9A%2CQR-4075C4ADE5%2CQR-D0CB722A9A%2CQR-86AF8199EF%2CQR-7D56A50796%2CQR-B9A22387BA%2CQR-FB5B12DA7A%2CQR-3CCCBC4795%2CQR-C4D6C9094F%2CQR-EAB427074E%2CQR-4949F1EFBC%2CQR-1AB1AAA90D%2CQR-8E92111987" target="_blank" rel="noopener" title="Share on Facebook">Facebook</a>
+        <a class="icon-btn" href="mailto:?subject=My%20Raffle%20Ticket%20%2318&body=Here%20is%20my%20raffle%20ticket%20link%3A%0Ahttps%3A//qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html%3Fqr%3DQR-9614C49242%26siblings%3DQR-5A2D63DE36%2CQR-60ED2D5D62%2CQR-F7B059F50F%2CQR-5757B2C68D%2CQR-3822135121%2CQR-76AC8F191B%2CQR-DD8653DF9A%2CQR-4075C4ADE5%2CQR-D0CB722A9A%2CQR-86AF8199EF%2CQR-7D56A50796%2CQR-B9A22387BA%2CQR-FB5B12DA7A%2CQR-3CCCBC4795%2CQR-C4D6C9094F%2CQR-EAB427074E%2CQR-4949F1EFBC%2CQR-1AB1AAA90D%2CQR-8E92111987" title="Share by Email">Email</a>
+        <a class="icon-btn" href="sms:?body=Here%20is%20my%20raffle%20ticket%20link%3A%20https%3A//qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html%3Fqr%3DQR-9614C49242%26siblings%3DQR-5A2D63DE36%2CQR-60ED2D5D62%2CQR-F7B059F50F%2CQR-5757B2C68D%2CQR-3822135121%2CQR-76AC8F191B%2CQR-DD8653DF9A%2CQR-4075C4ADE5%2CQR-D0CB722A9A%2CQR-86AF8199EF%2CQR-7D56A50796%2CQR-B9A22387BA%2CQR-FB5B12DA7A%2CQR-3CCCBC4795%2CQR-C4D6C9094F%2CQR-EAB427074E%2CQR-4949F1EFBC%2CQR-1AB1AAA90D%2CQR-8E92111987" title="Share by Text Message">Text</a>
+      </div>
+    </div>
+    
+
+    <div class="ticket-card">
+      <div class="ticket-label">Ticket 19 of 20</div>
+      <div class="ticket-id">Ticket ID: TKT-20260916-5RU7JI</div>
+
+      <a class="btn btn-view" href="https://qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html?qr=QR-1AB1AAA90D&amp;siblings=QR-5A2D63DE36,QR-60ED2D5D62,QR-F7B059F50F,QR-5757B2C68D,QR-3822135121,QR-76AC8F191B,QR-DD8653DF9A,QR-4075C4ADE5,QR-D0CB722A9A,QR-86AF8199EF,QR-7D56A50796,QR-B9A22387BA,QR-FB5B12DA7A,QR-3CCCBC4795,QR-C4D6C9094F,QR-EAB427074E,QR-4949F1EFBC,QR-9614C49242,QR-8E92111987" target="_blank" rel="noopener">
+        &#128065;&nbsp; View My Ticket
+      </a>
+
+      <button class="btn btn-copy" onclick="copyLink(this, 'https://qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html?qr=QR-1AB1AAA90D&siblings=QR-5A2D63DE36,QR-60ED2D5D62,QR-F7B059F50F,QR-5757B2C68D,QR-3822135121,QR-76AC8F191B,QR-DD8653DF9A,QR-4075C4ADE5,QR-D0CB722A9A,QR-86AF8199EF,QR-7D56A50796,QR-B9A22387BA,QR-FB5B12DA7A,QR-3CCCBC4795,QR-C4D6C9094F,QR-EAB427074E,QR-4949F1EFBC,QR-9614C49242,QR-8E92111987')">
+        &#128203;&nbsp; Copy Link
+      </button>
+
+      <button class="btn btn-share" onclick="shareLink('https://qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html?qr=QR-1AB1AAA90D&siblings=QR-5A2D63DE36,QR-60ED2D5D62,QR-F7B059F50F,QR-5757B2C68D,QR-3822135121,QR-76AC8F191B,QR-DD8653DF9A,QR-4075C4ADE5,QR-D0CB722A9A,QR-86AF8199EF,QR-7D56A50796,QR-B9A22387BA,QR-FB5B12DA7A,QR-3CCCBC4795,QR-C4D6C9094F,QR-EAB427074E,QR-4949F1EFBC,QR-9614C49242,QR-8E92111987', 19)">
+        &#128228;&nbsp; Share
+      </button>
+
+      <div class="fallback-row">
+        <a class="icon-btn" href="https://www.facebook.com/sharer/sharer.php?u=https%3A//qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html%3Fqr%3DQR-1AB1AAA90D%26siblings%3DQR-5A2D63DE36%2CQR-60ED2D5D62%2CQR-F7B059F50F%2CQR-5757B2C68D%2CQR-3822135121%2CQR-76AC8F191B%2CQR-DD8653DF9A%2CQR-4075C4ADE5%2CQR-D0CB722A9A%2CQR-86AF8199EF%2CQR-7D56A50796%2CQR-B9A22387BA%2CQR-FB5B12DA7A%2CQR-3CCCBC4795%2CQR-C4D6C9094F%2CQR-EAB427074E%2CQR-4949F1EFBC%2CQR-9614C49242%2CQR-8E92111987" target="_blank" rel="noopener" title="Share on Facebook">Facebook</a>
+        <a class="icon-btn" href="mailto:?subject=My%20Raffle%20Ticket%20%2319&body=Here%20is%20my%20raffle%20ticket%20link%3A%0Ahttps%3A//qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html%3Fqr%3DQR-1AB1AAA90D%26siblings%3DQR-5A2D63DE36%2CQR-60ED2D5D62%2CQR-F7B059F50F%2CQR-5757B2C68D%2CQR-3822135121%2CQR-76AC8F191B%2CQR-DD8653DF9A%2CQR-4075C4ADE5%2CQR-D0CB722A9A%2CQR-86AF8199EF%2CQR-7D56A50796%2CQR-B9A22387BA%2CQR-FB5B12DA7A%2CQR-3CCCBC4795%2CQR-C4D6C9094F%2CQR-EAB427074E%2CQR-4949F1EFBC%2CQR-9614C49242%2CQR-8E92111987" title="Share by Email">Email</a>
+        <a class="icon-btn" href="sms:?body=Here%20is%20my%20raffle%20ticket%20link%3A%20https%3A//qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html%3Fqr%3DQR-1AB1AAA90D%26siblings%3DQR-5A2D63DE36%2CQR-60ED2D5D62%2CQR-F7B059F50F%2CQR-5757B2C68D%2CQR-3822135121%2CQR-76AC8F191B%2CQR-DD8653DF9A%2CQR-4075C4ADE5%2CQR-D0CB722A9A%2CQR-86AF8199EF%2CQR-7D56A50796%2CQR-B9A22387BA%2CQR-FB5B12DA7A%2CQR-3CCCBC4795%2CQR-C4D6C9094F%2CQR-EAB427074E%2CQR-4949F1EFBC%2CQR-9614C49242%2CQR-8E92111987" title="Share by Text Message">Text</a>
+      </div>
+    </div>
+    
+
+    <div class="ticket-card">
+      <div class="ticket-label">Ticket 20 of 20</div>
+      <div class="ticket-id">Ticket ID: TKT-20260916-352L4I</div>
+
+      <a class="btn btn-view" href="https://qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html?qr=QR-8E92111987&amp;siblings=QR-5A2D63DE36,QR-60ED2D5D62,QR-F7B059F50F,QR-5757B2C68D,QR-3822135121,QR-76AC8F191B,QR-DD8653DF9A,QR-4075C4ADE5,QR-D0CB722A9A,QR-86AF8199EF,QR-7D56A50796,QR-B9A22387BA,QR-FB5B12DA7A,QR-3CCCBC4795,QR-C4D6C9094F,QR-EAB427074E,QR-4949F1EFBC,QR-9614C49242,QR-1AB1AAA90D" target="_blank" rel="noopener">
+        &#128065;&nbsp; View My Ticket
+      </a>
+
+      <button class="btn btn-copy" onclick="copyLink(this, 'https://qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html?qr=QR-8E92111987&siblings=QR-5A2D63DE36,QR-60ED2D5D62,QR-F7B059F50F,QR-5757B2C68D,QR-3822135121,QR-76AC8F191B,QR-DD8653DF9A,QR-4075C4ADE5,QR-D0CB722A9A,QR-86AF8199EF,QR-7D56A50796,QR-B9A22387BA,QR-FB5B12DA7A,QR-3CCCBC4795,QR-C4D6C9094F,QR-EAB427074E,QR-4949F1EFBC,QR-9614C49242,QR-1AB1AAA90D')">
+        &#128203;&nbsp; Copy Link
+      </button>
+
+      <button class="btn btn-share" onclick="shareLink('https://qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html?qr=QR-8E92111987&siblings=QR-5A2D63DE36,QR-60ED2D5D62,QR-F7B059F50F,QR-5757B2C68D,QR-3822135121,QR-76AC8F191B,QR-DD8653DF9A,QR-4075C4ADE5,QR-D0CB722A9A,QR-86AF8199EF,QR-7D56A50796,QR-B9A22387BA,QR-FB5B12DA7A,QR-3CCCBC4795,QR-C4D6C9094F,QR-EAB427074E,QR-4949F1EFBC,QR-9614C49242,QR-1AB1AAA90D', 20)">
+        &#128228;&nbsp; Share
+      </button>
+
+      <div class="fallback-row">
+        <a class="icon-btn" href="https://www.facebook.com/sharer/sharer.php?u=https%3A//qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html%3Fqr%3DQR-8E92111987%26siblings%3DQR-5A2D63DE36%2CQR-60ED2D5D62%2CQR-F7B059F50F%2CQR-5757B2C68D%2CQR-3822135121%2CQR-76AC8F191B%2CQR-DD8653DF9A%2CQR-4075C4ADE5%2CQR-D0CB722A9A%2CQR-86AF8199EF%2CQR-7D56A50796%2CQR-B9A22387BA%2CQR-FB5B12DA7A%2CQR-3CCCBC4795%2CQR-C4D6C9094F%2CQR-EAB427074E%2CQR-4949F1EFBC%2CQR-9614C49242%2CQR-1AB1AAA90D" target="_blank" rel="noopener" title="Share on Facebook">Facebook</a>
+        <a class="icon-btn" href="mailto:?subject=My%20Raffle%20Ticket%20%2320&body=Here%20is%20my%20raffle%20ticket%20link%3A%0Ahttps%3A//qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html%3Fqr%3DQR-8E92111987%26siblings%3DQR-5A2D63DE36%2CQR-60ED2D5D62%2CQR-F7B059F50F%2CQR-5757B2C68D%2CQR-3822135121%2CQR-76AC8F191B%2CQR-DD8653DF9A%2CQR-4075C4ADE5%2CQR-D0CB722A9A%2CQR-86AF8199EF%2CQR-7D56A50796%2CQR-B9A22387BA%2CQR-FB5B12DA7A%2CQR-3CCCBC4795%2CQR-C4D6C9094F%2CQR-EAB427074E%2CQR-4949F1EFBC%2CQR-9614C49242%2CQR-1AB1AAA90D" title="Share by Email">Email</a>
+        <a class="icon-btn" href="sms:?body=Here%20is%20my%20raffle%20ticket%20link%3A%20https%3A//qcbahaghariexecutivelionsclub.github.io/Digital-Raffle-Draw/view-ticket.html%3Fqr%3DQR-8E92111987%26siblings%3DQR-5A2D63DE36%2CQR-60ED2D5D62%2CQR-F7B059F50F%2CQR-5757B2C68D%2CQR-3822135121%2CQR-76AC8F191B%2CQR-DD8653DF9A%2CQR-4075C4ADE5%2CQR-D0CB722A9A%2CQR-86AF8199EF%2CQR-7D56A50796%2CQR-B9A22387BA%2CQR-FB5B12DA7A%2CQR-3CCCBC4795%2CQR-C4D6C9094F%2CQR-EAB427074E%2CQR-4949F1EFBC%2CQR-9614C49242%2CQR-1AB1AAA90D" title="Share by Text Message">Text</a>
+      </div>
+    </div>
+    
+
+    <footer>Generated 2026-09-16 21:07:32</footer>
+  </div>
+
+<script>
+function copyLink(btn, url) {
+  var done = function() {
+    var original = btn.innerHTML;
+    btn.innerHTML = "&#9989;&nbsp; Copied!";
+    btn.classList.add("copied");
+    setTimeout(function() {
+      btn.innerHTML = original;
+      btn.classList.remove("copied");
+    }, 2000);
+  };
+
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(url).then(done).catch(function() {
+      fallbackCopy(url, done);
+    });
+  } else {
+    fallbackCopy(url, done);
+  }
+}
+
+function fallbackCopy(url, done) {
+  var ta = document.createElement("textarea");
+  ta.value = url;
+  ta.style.position = "fixed";
+  ta.style.opacity = "0";
+  document.body.appendChild(ta);
+  ta.focus();
+  ta.select();
+  try { document.execCommand("copy"); done(); }
+  catch (e) { alert("Could not copy automatically. Please select and copy the link manually."); }
+  document.body.removeChild(ta);
+}
+
+function shareLink(url, ticketNum) {
+  if (navigator.share) {
+    navigator.share({
+      title: "My Raffle Ticket #" + ticketNum,
+      text: "Here is my raffle ticket:",
+      url: url
+    }).catch(function() { /* user cancelled, do nothing */ });
+  } else {
+    alert("Your device's Share menu isn't available here. Use the Facebook, Email, or Text buttons below instead, or tap Copy Link.");
+  }
+}
+</script>
+</body>
+</html>
