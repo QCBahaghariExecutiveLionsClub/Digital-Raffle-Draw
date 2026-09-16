@@ -330,11 +330,13 @@ header p{font-size:1rem;color:rgba(255,248,238,.6);}
     <a href="registration.html">📋 Register</a>
     <a href="raffle-draw.html">🎯 Draw</a>
     <a href="generate-ticket.html">🎟️ Generate Ticket</a>
+    <a href="generate-bulk-ticket.html">🦁 QCBELC Pool</a>
   </div>
 
   <div class="section-tabs">
     <button class="section-tab active" id="tabRegistrations" onclick="switchSection('registrations')">📋 Self-Registrations</button>
     <button class="section-tab" id="tabGenerated" onclick="switchSection('generated')">🎟️ Seller-Generated Tickets</button>
+    <button class="section-tab" id="tabPool" onclick="switchSection('pool')">🦁 QCBELC Pool Tickets</button>
   </div>
 
   <!-- ============ SECTION: REGISTRATIONS (existing) ============ -->
@@ -448,6 +450,57 @@ header p{font-size:1rem;color:rgba(255,248,238,.6);}
     <div class="pagination" id="genPagination"></div>
   </div> <!-- /genSection -->
 
+  <!-- ============ SECTION: QCBELC POOL TICKETS (new) ============ -->
+  <div id="poolSection" style="display:none;">
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-num" id="poolStatRemaining">—</div>
+        <div class="stat-label">Remaining in Pool</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="poolStatIssued">—</div>
+        <div class="stat-label">Tickets Issued</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="poolStatVerified">—</div>
+        <div class="stat-label">Verified</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="poolStatRevenue">—</div>
+        <div class="stat-label">Total Value</div>
+      </div>
+    </div>
+
+    <div class="search-card">
+      <div class="search-label">Search Pool Tickets</div>
+      <div class="search-bar-wrap">
+        <div class="search-input-wrap">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="poolSearchInput"
+            placeholder="Search by recipient, sold by, ticket ID, or transaction number..."
+            oninput="onPoolSearchInput()"
+            onkeydown="if(event.key==='Enter')doPoolSearch()"/>
+        </div>
+        <button class="btn-search" onclick="doPoolSearch()">Search</button>
+      </div>
+      <div class="filter-tabs">
+        <button class="filter-tab active" onclick="setPoolFilter('all',this)">All</button>
+        <button class="filter-tab" onclick="setPoolFilter('verified',this)">✅ Verified</button>
+        <button class="filter-tab" onclick="setPoolFilter('pending',this)">⏳ Pending</button>
+      </div>
+    </div>
+
+    <div id="poolResultsArea">
+      <div class="state-box">
+        <span class="emoji">🔎</span>
+        <p>Loading pool tickets...</p>
+      </div>
+    </div>
+
+    <div class="pagination" id="poolPagination"></div>
+  </div> <!-- /poolSection -->
+
 </div>
 
 <div class="toast" id="toast"></div>
@@ -489,15 +542,21 @@ if(sessionStorage.getItem('luckyDrawAdminUnlocked') === '1'){
 
 // ====== SECTION SWITCHING ======
 let genLoaded = false;
+let poolLoaded = false;
 function switchSection(section){
-  const isReg = section === 'registrations';
-  document.getElementById('regSection').style.display = isReg ? '' : 'none';
-  document.getElementById('genSection').style.display = isReg ? 'none' : '';
-  document.getElementById('tabRegistrations').classList.toggle('active', isReg);
-  document.getElementById('tabGenerated').classList.toggle('active', !isReg);
-  if(!isReg && !genLoaded){
+  document.getElementById('regSection').style.display = section === 'registrations' ? '' : 'none';
+  document.getElementById('genSection').style.display = section === 'generated' ? '' : 'none';
+  document.getElementById('poolSection').style.display = section === 'pool' ? '' : 'none';
+  document.getElementById('tabRegistrations').classList.toggle('active', section === 'registrations');
+  document.getElementById('tabGenerated').classList.toggle('active', section === 'generated');
+  document.getElementById('tabPool').classList.toggle('active', section === 'pool');
+  if(section === 'generated' && !genLoaded){
     genLoaded = true;
     loadGenerated();
+  }
+  if(section === 'pool' && !poolLoaded){
+    poolLoaded = true;
+    loadPool();
   }
 }
 
@@ -941,6 +1000,224 @@ async function markVerified(qrCodeId, btn){
       showToast('Ticket marked as Verified ✅');
       updateGenStats();
       doGenSearch();
+    } else {
+      showToast('Error: ' + (data.message||'Could not verify.'), true);
+      btn.disabled = false;
+      btn.textContent = '✅ Mark Verified';
+    }
+  } catch(e){
+    showToast('Could not save. Please check your connection and try again.', true);
+    btn.disabled = false;
+    btn.textContent = '✅ Mark Verified';
+  }
+}
+
+// ============================================================
+//  QCBELC POOL TICKETS (bulk/district-issued tickets)
+// ============================================================
+let allPoolTickets = [];
+let filteredPoolTickets = [];
+let poolFilter = 'all';
+let poolPage = 1;
+const POOL_PAGE_SIZE = 10;
+let poolRemainingCount = null;
+let poolTotalCount = null;
+
+function findPoolBatchSiblings(t){
+  if (!t.transactionNumberId || !t.generatedAt) return [];
+  return allPoolTickets.filter(x =>
+    x.qrCodeId !== t.qrCodeId &&
+    x.transactionNumberId === t.transactionNumberId &&
+    x.generatedAt === t.generatedAt
+  );
+}
+
+async function loadPool(){
+  document.getElementById('poolResultsArea').innerHTML = `
+    <div class="state-box"><span class="emoji"><span class="spinner"></span></span><p>Loading pool tickets...</p></div>`;
+  try {
+    const resp = await fetch(WEBAPP_URL + '?action=getPoolTickets&secret=' + encodeURIComponent(API_SECRET), {mode:'cors'});
+    const data = await resp.json();
+    if(data.success){
+      allPoolTickets = data.tickets || [];
+      poolRemainingCount = data.poolRemaining != null ? Number(data.poolRemaining) : null;
+      poolTotalCount = data.poolTotal != null ? Number(data.poolTotal) : null;
+    } else { throw new Error(data.message || 'Failed to load'); }
+  } catch(e) {
+    allPoolTickets = [];
+    poolRemainingCount = null;
+    poolTotalCount = null;
+    document.getElementById('poolResultsArea').innerHTML = `
+      <div class="state-box">
+        <span class="emoji">⚠️</span>
+        <p>Could not load pool tickets.<br/>${e.message ? String(e.message) : 'Please check your connection and try again.'}</p>
+      </div>`;
+    showToast('Could not load pool tickets. Please refresh and try again.', true);
+    updatePoolStats();
+    return;
+  }
+  updatePoolStats();
+  filteredPoolTickets = [...allPoolTickets];
+  renderPoolResults(filteredPoolTickets);
+}
+
+function updatePoolStats(){
+  const issued = allPoolTickets.length;
+  const verified = allPoolTickets.filter(t=>String(t.status||'').toLowerCase()==='verified').length;
+  const revenue = allPoolTickets.reduce((s,t)=>s+(Number(t.priceEach)||100),0);
+  document.getElementById('poolStatRemaining').textContent = poolRemainingCount != null ? poolRemainingCount : '—';
+  document.getElementById('poolStatIssued').textContent = issued;
+  document.getElementById('poolStatVerified').textContent = verified;
+  document.getElementById('poolStatRevenue').textContent = '₱'+revenue.toLocaleString();
+}
+
+let poolSearchTimeout;
+function onPoolSearchInput(){
+  clearTimeout(poolSearchTimeout);
+  poolSearchTimeout = setTimeout(doPoolSearch, 300);
+}
+
+function doPoolSearch(){
+  const q = document.getElementById('poolSearchInput').value.toLowerCase().trim();
+  let results = allPoolTickets;
+
+  if(poolFilter === 'verified') results = results.filter(t=>String(t.status||'').toLowerCase()==='verified');
+  else if(poolFilter === 'pending') results = results.filter(t=>String(t.status||'').toLowerCase()!=='verified');
+
+  if(q){
+    results = results.filter(t=>
+      String(t.recipientName||'').toLowerCase().includes(q) ||
+      String(t.soldBy||'').toLowerCase().includes(q) ||
+      String(t.ticketId||'').toLowerCase().includes(q) ||
+      String(t.transactionNumberId||'').toLowerCase().includes(q) ||
+      String(t.recipientPhone||'').toLowerCase().includes(q)
+    );
+  }
+
+  filteredPoolTickets = results;
+  poolPage = 1;
+  renderPoolResults(results);
+}
+
+function setPoolFilter(filter, btn){
+  poolFilter = filter;
+  btn.parentElement.querySelectorAll('.filter-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  doPoolSearch();
+}
+
+function renderPoolResults(tickets){
+  const area = document.getElementById('poolResultsArea');
+  const paginator = document.getElementById('poolPagination');
+
+  if(tickets.length === 0){
+    area.innerHTML = `<div class="state-box"><span class="emoji">🔍</span><p>No pool tickets found matching your search.</p></div>`;
+    paginator.innerHTML = '';
+    return;
+  }
+
+  const total = tickets.length;
+  const totalPages = Math.ceil(total/POOL_PAGE_SIZE);
+  poolPage = Math.min(poolPage, totalPages);
+  const start = (poolPage-1)*POOL_PAGE_SIZE;
+  const page = tickets.slice(start, start+POOL_PAGE_SIZE);
+
+  area.innerHTML = `
+    <div style="font-size:.82rem;color:rgba(255,248,238,.4);margin-bottom:12px;">
+      Showing ${start+1}–${Math.min(start+POOL_PAGE_SIZE,total)} of ${total} ticket${total!==1?'s':''}
+    </div>
+    <div class="results-wrap" id="poolCardsWrap"></div>`;
+
+  const wrap = document.getElementById('poolCardsWrap');
+  page.forEach(t => wrap.appendChild(renderPoolCard(t)));
+
+  if(totalPages > 1){
+    let pages = '';
+    for(let p=1;p<=totalPages;p++){
+      if(p===1||p===totalPages||Math.abs(p-poolPage)<=1){
+        pages+=`<button class="page-btn ${p===poolPage?'active':''}" onclick="goPoolPage(${p})">${p}</button>`;
+      } else if(Math.abs(p-poolPage)===2){
+        pages+=`<button class="page-btn" disabled>…</button>`;
+      }
+    }
+    paginator.innerHTML =
+      `<button class="page-btn" onclick="goPoolPage(${poolPage-1})" ${poolPage===1?'disabled':''}>‹</button>` +
+      pages +
+      `<button class="page-btn" onclick="goPoolPage(${poolPage+1})" ${poolPage===totalPages?'disabled':''}>›</button>`;
+  } else {
+    paginator.innerHTML = '';
+  }
+}
+
+function renderPoolCard(t){
+  const isVerified = String(t.status||'').toLowerCase() === 'verified';
+  const siblings = findPoolBatchSiblings(t);
+  const siblingIds = siblings.map(s => s.qrCodeId);
+  const viewUrl = ticketViewUrl(t.qrCodeId, siblingIds);
+
+  const card = document.createElement('div');
+  card.className = 'gen-card' + (isVerified ? ' verified' : '');
+
+  const qrBox = document.createElement('div');
+  qrBox.className = 'qr-thumb';
+  card.appendChild(qrBox);
+
+  const info = document.createElement('div');
+  info.className = 'gen-info';
+  info.innerHTML = `
+    <div class="gen-tid">${String(t.ticketId||'—')}</div>
+    <div class="gen-holder">${String(t.recipientName||'—')}</div>
+    <div class="gen-meta">
+      Sold by: ${String(t.soldBy || 'QCBELC')}<br/>
+      Txn Ref: ${String(t.transactionNumberId || '—')} · ${String(t.paymentMethod || '—')}<br/>
+      Phone: ${String(t.recipientPhone || '—')} · Issued: ${t.generatedAt ? String(t.generatedAt).split(' ')[0] : '—'}
+    </div>
+    <span class="chip ${isVerified ? 'chip-green' : 'chip-gold'}" style="margin-top:6px;display:inline-block;">
+      ${isVerified ? '✅ Verified' : '⏳ Not Verified'}
+    </span>
+  `;
+  card.appendChild(info);
+
+  const actions = document.createElement('div');
+  actions.className = 'gen-actions';
+  actions.innerHTML = `
+    <a class="btn-mini" href="${viewUrl}" target="_blank">🖨️ ${siblingIds.length ? `Reprint / View Bundle (${siblingIds.length + 1})` : 'Reprint / View'}</a>
+    ${t.receiptLink ? `<a class="btn-mini" href="${t.receiptLink}" target="_blank">🧾 View Receipt</a>` : ''}
+    ${isVerified ? '' : `<button class="btn-mini verify-btn" onclick="markPoolVerified('${t.qrCodeId}', this)">✅ Mark Verified</button>`}
+  `;
+  card.appendChild(actions);
+
+  new QRCode(qrBox, {
+    text: viewUrl, width: 76, height: 76,
+    colorDark: '#1A0A2E', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.M
+  });
+
+  return card;
+}
+
+function goPoolPage(p){
+  poolPage = p;
+  renderPoolResults(filteredPoolTickets);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+async function markPoolVerified(qrCodeId, btn){
+  btn.disabled = true;
+  btn.textContent = 'Saving...';
+  try {
+    const resp = await fetch(WEBAPP_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: 'verifyPoolTicket', secret: API_SECRET, qrCodeId }),
+      mode: 'cors'
+    });
+    const data = await resp.json();
+    if(data.success){
+      const t = allPoolTickets.find(x=>x.qrCodeId===qrCodeId);
+      if(t) t.status = 'Verified';
+      showToast('Ticket marked as Verified ✅');
+      updatePoolStats();
+      doPoolSearch();
     } else {
       showToast('Error: ' + (data.message||'Could not verify.'), true);
       btn.disabled = false;

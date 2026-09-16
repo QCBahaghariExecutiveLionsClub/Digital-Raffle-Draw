@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0"/>
+<title>QCBELC — Bulk Ticket Pool</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  :root {
+    --gold: #D4A017;
+    --gold-light: #F5C842;
+    --gold-dark: #A07010;
+    --deep: #1A0A2E;
+    --deep2: #2D1B5E;
+    --accent: #E85D04;
+    --cream: #FFF8EE;
+    --green: #2A9D5C;
+    --red: #C0392B;
+    --card: rgba(255,255,255,0.06);
+    --radius: 16px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--deep);
+    min-height: 100vh;
+    color: var(--cream);
+    overflow-x: hidden;
+    font-size: 17px;
+  }
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 20%, rgba(212,160,23,0.12) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba(232,93,4,0.1) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 50%, rgba(45,27,94,0.8) 0%, var(--deep) 100%);
+    z-index: 0; pointer-events: none;
+  }
+  .stars { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+  .star { position: absolute; background: #fff; border-radius: 50%; animation: twinkle var(--d, 3s) ease-in-out infinite var(--delay, 0s); }
+  @keyframes twinkle { 0%,100%{opacity:0.1;transform:scale(1);} 50%{opacity:0.8;transform:scale(1.4);} }
+
+  .page-wrap { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; padding: 40px 20px 60px; min-height: 100vh; }
+
+  header { text-align: center; margin-bottom: 26px; animation: slideDown 0.8s ease both; }
+  @keyframes slideDown { from{opacity:0;transform:translateY(-30px);}to{opacity:1;transform:none;} }
+  .logo-badge {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: linear-gradient(135deg, var(--gold), var(--accent));
+    padding: 9px 24px; border-radius: 100px;
+    font-family: 'Playfair Display', serif; font-size: 13px; letter-spacing: 3px; text-transform: uppercase;
+    color: #fff; margin-bottom: 18px; box-shadow: 0 4px 20px rgba(212,160,23,0.4);
+  }
+  header h1 {
+    font-family: 'Playfair Display', serif; font-size: clamp(2rem, 6vw, 3.2rem); font-weight: 800;
+    background: linear-gradient(135deg, var(--gold-light), var(--gold), #fff8);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    line-height: 1.15; margin-bottom: 10px;
+  }
+  header p { font-size: 1.1rem; color: rgba(255,248,238,0.75); max-width: 480px; margin: 0 auto; line-height: 1.6; }
+
+  /* ===== POOL STATUS BANNER ===== */
+  .pool-banner {
+    width: 100%; max-width: 620px;
+    background: rgba(255,255,255,0.055); border: 1px solid rgba(212,160,23,0.25);
+    border-radius: 18px; padding: 18px 22px; margin-bottom: 22px;
+    backdrop-filter: blur(14px);
+  }
+  .pool-banner .pool-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; flex-wrap: wrap; gap: 6px; }
+  .pool-banner .pool-label { font-size: 0.85rem; color: rgba(255,248,238,0.6); }
+  .pool-banner .pool-count { font-family: 'Playfair Display', serif; font-weight: 800; color: var(--gold-light); font-size: 1.1rem; }
+  .pool-bar-track { height: 10px; border-radius: 6px; background: rgba(255,255,255,0.08); overflow: hidden; }
+  .pool-bar-fill { height: 100%; background: linear-gradient(90deg, var(--gold), var(--accent)); border-radius: 6px; transition: width 0.4s ease; }
+  .pool-banner.demo { border-color: rgba(232,93,4,0.4); }
+  .pool-banner .demo-note { font-size: 0.78rem; color: rgba(255,248,238,0.45); margin-top: 8px; }
+  .pool-banner.soldout { border-color: rgba(192,57,43,0.5); }
+  .pool-banner.soldout .pool-count { color: #ff7675; }
+
+  .sold-out-box {
+    width: 100%; max-width: 620px; text-align: center;
+    background: rgba(255,255,255,0.055); border: 1px solid rgba(192,57,43,0.4); border-radius: 24px;
+    padding: 50px 30px; backdrop-filter: blur(16px);
+  }
+  .sold-out-box .emoji { font-size: 3rem; margin-bottom: 14px; }
+  .sold-out-box h2 { font-family: 'Playfair Display', serif; color: var(--gold-light); font-size: 1.5rem; margin-bottom: 10px; }
+  .sold-out-box p { color: rgba(255,248,238,0.7); line-height: 1.6; }
+
+  .form-card {
+    background: rgba(255,255,255,0.055);
+    border: 1px solid rgba(212,160,23,0.25);
+    border-radius: 24px; padding: 40px; width: 100%; max-width: 620px;
+    backdrop-filter: blur(16px);
+    box-shadow: 0 0 0 1px rgba(212,160,23,0.08), 0 30px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+    animation: fadeUp 0.9s 0.2s ease both;
+  }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(30px);}to{opacity:1;transform:none;} }
+
+  .section-label {
+    font-size: 12px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); font-weight: 700;
+    margin-bottom: 18px; display: flex; align-items: center; gap: 10px;
+  }
+  .section-label::before, .section-label::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, transparent, rgba(212,160,23,0.4), transparent); }
+
+  .field-group { margin-bottom: 22px; }
+  label { display: block; font-size: 0.95rem; font-weight: 700; color: rgba(255,248,238,0.85); margin-bottom: 8px; letter-spacing: 0.3px; }
+  label .req { color: var(--gold); margin-left: 2px; }
+  label .opt { color: rgba(255,248,238,0.4); font-weight: 600; font-size: 0.8rem; text-transform: uppercase; margin-left: 6px; }
+
+  input, select, textarea {
+    width: 100%; background: rgba(255,255,255,0.06); border: 1.5px solid rgba(212,160,23,0.2);
+    border-radius: 10px; padding: 15px 16px; font-family: 'Nunito', sans-serif; font-size: 1.05rem;
+    color: var(--cream); outline: none; transition: border-color 0.25s, background 0.25s, box-shadow 0.25s;
+  }
+  input::placeholder, textarea::placeholder { color: rgba(255,248,238,0.3); }
+  input:focus, select:focus, textarea:focus { border-color: var(--gold); background: rgba(212,160,23,0.08); box-shadow: 0 0 0 3px rgba(212,160,23,0.15); }
+  input.error { border-color: var(--red); box-shadow: 0 0 0 3px rgba(192,57,43,0.15); }
+  input.valid { border-color: var(--green); }
+  select option { background: var(--deep2); color: var(--cream); }
+
+  .field-hint { font-size: 0.85rem; color: rgba(255,248,238,0.5); margin-top: 6px; line-height: 1.5; }
+  .field-error { font-size: 0.85rem; color: #ff7675; margin-top: 6px; display: none; }
+  .field-error.show { display: block; }
+
+  .ticket-counter {
+    display: flex; align-items: center; gap: 0; background: rgba(255,255,255,0.06);
+    border: 1.5px solid rgba(212,160,23,0.2); border-radius: 10px; overflow: hidden; width: fit-content;
+  }
+  .ticket-counter button {
+    width: 52px; height: 54px; background: rgba(212,160,23,0.15); border: none; color: var(--gold-light);
+    font-size: 1.5rem; cursor: pointer; transition: background 0.2s; font-family: inherit;
+  }
+  .ticket-counter button:hover { background: rgba(212,160,23,0.3); }
+  .ticket-counter input {
+    width: 90px; text-align: center; border: none; border-radius: 0; background: transparent;
+    border-left: 1px solid rgba(212,160,23,0.15); border-right: 1px solid rgba(212,160,23,0.15);
+    font-size: 1.1rem; font-weight: 700;
+  }
+  .price-tag { font-size: 0.95rem; color: rgba(255,248,238,0.6); margin-left: 14px; }
+  .price-tag strong { color: var(--gold-light); font-size: 1.1rem; }
+  .ticket-price-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+
+  .fine-print {
+    background: rgba(0,0,0,0.25); border: 1px solid rgba(212,160,23,0.2); border-radius: 12px;
+    padding: 18px 20px; font-size: 0.85rem; line-height: 1.7; color: rgba(255,248,238,0.65); margin-bottom: 18px;
+  }
+  .fine-print strong { color: var(--gold-light); }
+  .fine-print ul { margin: 8px 0 0 20px; }
+
+  .agree-row { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 24px; }
+  .agree-row input[type="checkbox"] {
+    width: 24px; height: 24px; flex-shrink: 0; margin-top: 2px; accent-color: var(--gold); cursor: pointer;
+  }
+  .agree-row label { font-size: 0.92rem; color: rgba(255,248,238,0.8); font-weight: 600; margin: 0; cursor: pointer; line-height: 1.5; }
+
+  .btn-submit {
+    width: 100%; padding: 19px; background: linear-gradient(135deg, var(--gold), var(--accent));
+    border: none; border-radius: 12px; font-family: 'Playfair Display', serif; font-size: 1.25rem; font-weight: 600;
+    color: #fff; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+    box-shadow: 0 8px 30px rgba(212,160,23,0.4); margin-top: 6px; letter-spacing: 0.5px;
+  }
+  .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(212,160,23,0.5); }
+  .btn-submit:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+
+  .toast {
+    position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px);
+    background: var(--green); color: #fff; padding: 16px 28px; border-radius: 50px; font-weight: 700; font-size: 1rem;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.4); transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+    z-index: 1000; max-width: 90vw; text-align: center;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  .toast.error-toast { background: var(--red); }
+
+  .spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 8px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .nav-links { display: flex; gap: 14px; justify-content: center; margin-top: 26px; flex-wrap: wrap; }
+  .nav-links a {
+    color: var(--gold); text-decoration: none; font-weight: 700; font-size: 0.95rem; padding: 11px 24px;
+    border: 1.5px solid rgba(212,160,23,0.3); border-radius: 50px; transition: all 0.2s;
+  }
+  .nav-links a:hover { background: rgba(212,160,23,0.1); border-color: var(--gold); }
+
+  /* ===== PIN GATE ===== */
+  .pin-gate {
+    position: fixed; inset: 0; z-index: 2000;
+    background: var(--deep);
+    display: flex; align-items: center; justify-content: center; padding: 20px;
+  }
+  .pin-card {
+    background: rgba(255,255,255,0.055); border: 1px solid rgba(212,160,23,0.3); border-radius: 24px;
+    padding: 44px 34px; max-width: 380px; width: 100%; text-align: center;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+  }
+  .pin-card .icon { font-size: 3rem; margin-bottom: 14px; }
+  .pin-card h2 { font-family: 'Playfair Display', serif; color: var(--gold-light); font-size: 1.5rem; margin-bottom: 10px; }
+  .pin-card p { color: rgba(255,248,238,0.7); font-size: 0.95rem; margin-bottom: 22px; line-height: 1.6; }
+  .pin-card input {
+    text-align: center; letter-spacing: 8px; font-size: 1.6rem; font-weight: 700;
+    padding: 16px; margin-bottom: 14px;
+  }
+  .pin-card button {
+    width: 100%; padding: 15px; background: linear-gradient(135deg, var(--gold), var(--accent));
+    border: none; border-radius: 12px; color: #fff; font-weight: 700; font-size: 1.05rem; cursor: pointer;
+  }
+  .pin-card .pin-err { color: #ff7675; font-size: 0.85rem; margin-top: 10px; display: none; }
+  .pin-card .pin-err.show { display: block; }
+
+  /* ===== SUCCESS: generated tickets ===== */
+  .success-screen { display: none; animation: fadeUp 0.6s ease both; }
+  .success-screen.show { display: block; }
+  .success-head { text-align: center; margin-bottom: 26px; }
+  .success-head .emoji { font-size: 3rem; margin-bottom: 6px; }
+  .success-head h2 { font-family: 'Playfair Display', serif; font-size: 1.7rem; color: var(--gold-light); margin-bottom: 6px; }
+  .success-head p { color: rgba(255,248,238,0.65); font-size: 0.95rem; }
+
+  .ticket-card {
+    background: linear-gradient(135deg, rgba(212,160,23,0.14), rgba(232,93,4,0.08));
+    border: 2px solid rgba(212,160,23,0.35); border-radius: 18px; padding: 22px; margin-bottom: 18px;
+    display: flex; gap: 18px; align-items: center; flex-wrap: wrap;
+  }
+  .ticket-card .qr-box { background: #fff; padding: 8px; border-radius: 10px; flex-shrink: 0; line-height: 0; }
+  .ticket-card .qr-box img, .ticket-card .qr-box canvas { display: block; width: 110px; height: 110px; }
+  .ticket-card .info { flex: 1; min-width: 180px; }
+  .ticket-card .tid { font-family: 'Courier New', monospace; font-size: 1.15rem; font-weight: 700; color: var(--gold-light); letter-spacing: 1px; }
+  .ticket-card .buyer { font-size: 1.05rem; font-weight: 700; margin-top: 4px; }
+  .ticket-card .meta { font-size: 0.85rem; color: rgba(255,248,238,0.6); margin-top: 4px; }
+  .badge {
+    display: inline-block; padding: 4px 12px; border-radius: 50px; font-size: 0.75rem; font-weight: 800;
+    letter-spacing: 0.5px; text-transform: uppercase; margin-top: 8px;
+  }
+  .badge.verified-badge { background: rgba(42,157,92,0.2); color: #7be3a6; border: 1px solid rgba(42,157,92,0.5); }
+  .ticket-card .view-link {
+    display: inline-block; margin-top: 10px; color: var(--gold); text-decoration: none; font-weight: 700; font-size: 0.88rem;
+    border-bottom: 1px dashed var(--gold);
+  }
+
+  .screenshot-note {
+    background: rgba(212,160,23,0.1); border: 1px solid rgba(212,160,23,0.3); border-radius: 12px;
+    padding: 16px 18px; font-size: 0.92rem; text-align: center; color: rgba(255,248,238,0.85); margin: 20px 0; line-height: 1.6;
+  }
+
+  .share-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+  .share-btn {
+    display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 50px;
+    font-size: 0.82rem; font-weight: 700; text-decoration: none; cursor: pointer; border: 1.5px solid transparent;
+    font-family: 'Nunito', sans-serif; transition: transform 0.15s, opacity 0.15s;
+  }
+  .share-btn:hover { transform: translateY(-1px); opacity: 0.92; }
+  .share-btn.tw { background: #000; color: #fff; }
+  .share-btn.mail { background: rgba(255,248,238,0.12); color: var(--cream); border-color: rgba(212,160,23,0.4); }
+  .share-btn.copy { background: rgba(212,160,23,0.15); color: var(--gold-light); border-color: rgba(212,160,23,0.4); }
+
+  .share-all-bar {
+    background: rgba(212,160,23,0.08); border: 1px solid rgba(212,160,23,0.3); border-radius: 14px;
+    padding: 18px; margin-bottom: 20px; text-align: center;
+  }
+  .share-all-bar p { font-size: 0.88rem; color: rgba(255,248,238,0.7); margin-bottom: 12px; }
+  .share-all-bar .share-row { justify-content: center; }
+
+  .exit-modal-backdrop {
+    position: fixed; inset: 0; z-index: 3000; background: rgba(0,0,0,0.6);
+    display: none; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(4px);
+  }
+  .exit-modal-backdrop.show { display: flex; }
+  .exit-modal {
+    background: var(--deep2); border: 1px solid rgba(212,160,23,0.35); border-radius: 20px;
+    padding: 30px; max-width: 380px; width: 100%; text-align: center; box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+    animation: fadeUp 0.3s ease both;
+  }
+  .exit-modal .icon { font-size: 2.4rem; margin-bottom: 10px; }
+  .exit-modal h3 { font-family: 'Playfair Display', serif; color: var(--gold-light); font-size: 1.25rem; margin-bottom: 8px; }
+  .exit-modal p { color: rgba(255,248,238,0.75); font-size: 0.92rem; line-height: 1.5; margin-bottom: 22px; }
+  .exit-modal-actions { display: flex; gap: 10px; }
+  .exit-modal-actions button {
+    flex: 1; padding: 13px; border-radius: 10px; font-weight: 700; font-size: 0.95rem; cursor: pointer;
+    border: 1.5px solid rgba(212,160,23,0.4); font-family: 'Nunito', sans-serif;
+  }
+  .exit-modal-actions .btn-stay { background: linear-gradient(135deg, var(--gold), var(--accent)); color: #fff; border: none; }
+  .exit-modal-actions .btn-leave { background: transparent; color: rgba(255,248,238,0.7); }
+
+  @media(max-width: 540px){
+    .form-card { padding: 26px 18px; }
+    .ticket-card { flex-direction: column; text-align: center; }
+    .ticket-card .info { text-align: center; }
+  }
+
+  .upload-zone {
+    border: 2px dashed rgba(212,160,23,0.3); border-radius: 12px; padding: 28px;
+    text-align: center; cursor: pointer; transition: all 0.25s; position: relative; overflow: hidden;
+  }
+  .upload-zone.required-empty { border-color: rgba(192,57,43,0.5); }
+  .upload-zone:hover { border-color: var(--gold); background: rgba(212,160,23,0.06); }
+  .upload-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+  .upload-icon { font-size: 2.2rem; margin-bottom: 8px; }
+  .upload-text { font-size: 0.9rem; color: rgba(255,248,238,0.6); }
+  .upload-text strong { color: var(--gold); }
+  #fileName { font-size: 0.82rem; color: var(--gold-light); margin-top: 8px; }
+  #previewWrap { margin-top: 12px; display: none; }
+  #previewImg { max-width: 100%; max-height: 220px; border-radius: 10px; border: 1px solid rgba(212,160,23,0.3); }
+  .compress-note { font-size: 0.78rem; color: rgba(255,248,238,0.4); margin-top: 6px; }
+</style>
+</head>
+<body>
+
+<div class="stars" id="stars"></div>
+
+<!-- ===== PIN GATE ===== -->
+<div class="pin-gate" id="pinGate">
+  <div class="pin-card">
+    <div class="icon">🔐</div>
+    <h2>QCBELC Pool Access</h2>
+    <p>This page issues tickets from the shared QCBELC bulk pool to districts, groups, and individuals.<br/>Please enter the access PIN given to you by the organizer.</p>
+    <input type="password" id="pinInput" inputmode="numeric" maxlength="8" placeholder="• • • •" autocomplete="off"/>
+    <button type="button" onclick="checkPin()">Unlock</button>
+    <div class="pin-err" id="pinErr">Incorrect PIN. Please try again or ask the organizer.</div>
+  </div>
+</div>
+
+<div class="page-wrap">
+  <header>
+    <div class="logo-badge">🦁 QCBELC Bulk Ticket Pool</div>
+    <h1>Issue Pool Tickets</h1>
+    <p>Issue tickets from the shared QCBELC pool to a district, group, or individual. Every batch requires a receipt photo and reference number.</p>
+  </header>
+
+  <!-- ===== POOL STATUS ===== -->
+  <div class="pool-banner" id="poolBanner">
+    <div class="pool-row">
+      <span class="pool-label">Tickets remaining in pool</span>
+      <span class="pool-count" id="poolCountText">Loading…</span>
+    </div>
+    <div class="pool-bar-track"><div class="pool-bar-fill" id="poolBarFill" style="width:0%"></div></div>
+    <div style="text-align:right; margin-top:8px;">
+      <button type="button" id="adjustPoolBtn" onclick="adjustPoolTotal()" style="background:none; border:none; color:var(--gold); font-size:0.8rem; font-weight:700; cursor:pointer; text-decoration:underline; padding:4px;">⚙️ Adjust pool total</button>
+    </div>
+  </div>
+
+  <!-- ===== SOLD OUT STATE ===== -->
+  <div class="sold-out-box" id="soldOutBox" style="display:none;">
+    <div class="emoji">🎟️</div>
+    <h2>Pool Sold Out</h2>
+    <p>All tickets in the QCBELC pool have been issued. Contact the organizer if more tickets need to be released.</p>
+  </div>
+
+  <div class="form-card" id="formCard">
+
+    <!-- ===== GENERATE FORM ===== -->
+    <form id="generateForm" novalidate>
+
+      <div class="section-label">Issued Under</div>
+
+      <div class="field-group">
+        <label>Sold By <span class="opt">Optional</span></label>
+        <input type="text" id="soldBy" name="soldBy" placeholder="QCBELC" autocomplete="off"/>
+        <div class="field-hint">Leave this blank and the batch is recorded simply as "QCBELC." Type your own name here if you'd like this batch tracked to you individually.</div>
+      </div>
+
+      <div class="section-label" style="margin-top:8px;">Recipient</div>
+
+      <div class="field-group">
+        <label>District / Group / Individual Name <span class="req">*</span></label>
+        <input type="text" id="recipientName" name="recipientName" placeholder="e.g. District 301-A, Barangay X, or Juan Dela Cruz" autocomplete="off"/>
+        <div class="field-hint">Whoever these tickets are being issued to.</div>
+        <div class="field-error" id="recipientNameErr">Please enter the district, group, or individual's name.</div>
+      </div>
+
+      <div class="field-group">
+        <label>Contact Number <span class="opt">Optional</span></label>
+        <input type="tel" id="recipientPhone" name="recipientPhone" placeholder="+63 912 345 6789" autocomplete="off"/>
+      </div>
+
+      <div class="section-label" style="margin-top:8px;">Tickets & Payment</div>
+
+      <div class="field-group">
+        <label>Number of Tickets <span class="req">*</span></label>
+        <div class="ticket-price-row">
+          <div class="ticket-counter">
+            <button type="button" onclick="changeQty(-1)">−</button>
+            <input type="number" id="ticketQty" name="ticketQty" value="1" min="1" oninput="onQtyInput()"/>
+            <button type="button" onclick="changeQty(1)">+</button>
+          </div>
+          <div class="price-tag">× ₱100 = Total: <strong id="totalPrice">₱100</strong></div>
+        </div>
+        <div class="field-hint" id="qtyHint">Each ticket gets its own QR code and Ticket ID, decremented from the pool above.</div>
+      </div>
+
+      <div class="field-group">
+        <label>Payment Method <span class="opt">Optional</span></label>
+        <select id="paymentMethod" name="paymentMethod">
+          <option value="">— Select payment method —</option>
+          <option value="Cash">Cash</option>
+          <option value="Bank transfer - PNB">Bank transfer - PNB</option>
+        </select>
+      </div>
+
+      <div class="field-group">
+        <label>Transaction / Reference Number <span class="req">*</span></label>
+        <input type="text" id="transactionNumberId" name="transactionNumberId" placeholder="e.g. GC-20250521-XXXX or OR #1234"/>
+        <div class="field-hint">The full reference number from the receipt. Its last 4 characters become the PIN used to verify or transfer ticket ownership.</div>
+        <div class="field-error" id="transactionNumberIdErr">Please enter at least 4 characters — this will be used as the sharing PIN.</div>
+      </div>
+
+      <div class="field-group">
+        <label>Photo of Receipt / Payment Screenshot <span class="req">*</span></label>
+        <div class="upload-zone" id="uploadZone">
+          <input type="file" id="receiptImage" name="receiptImage" accept="image/*"/>
+          <div class="upload-icon">📸</div>
+          <div class="upload-text">
+            <strong>Tap to take a photo</strong> or choose from gallery<br/>
+            of the GCash/Bank receipt or screenshot
+          </div>
+          <div id="fileName"></div>
+        </div>
+        <div id="previewWrap"><img id="previewImg" src="" alt="Receipt preview"/></div>
+        <div class="compress-note">The photo is automatically resized to save space — no need to worry about file size.</div>
+        <div class="field-error" id="imageErr">A receipt photo or payment screenshot is required for every batch issued from the pool.</div>
+      </div>
+
+      <div class="fine-print">
+        <strong>📋 Please read before submitting:</strong>
+        <ul>
+          <li>By issuing this batch, you confirm that payment was actually received from the district/group/individual named above.</li>
+          <li>Every batch requires <strong>both</strong> a receipt photo and a reference number — no exceptions.</li>
+          <li>Tickets are drawn from the QCBELC pool shown above and cannot be un-issued once submitted — double-check the quantity.</li>
+          <li>Unless you enter your own name under "Sold By," this batch is recorded under QCBELC.</li>
+        </ul>
+      </div>
+
+      <div class="agree-row">
+        <input type="checkbox" id="agreeCheck"/>
+        <label for="agreeCheck">I confirm the details above are accurate and that payment was received from the recipient named above.</label>
+      </div>
+      <div class="field-error" id="agreeErr" style="margin-top:-14px; margin-bottom:18px;">Please confirm the checkbox above before submitting.</div>
+
+      <button type="submit" class="btn-submit" id="submitBtn">
+        🎟️ Issue Ticket(s) From Pool
+      </button>
+    </form>
+
+    <!-- ===== SUCCESS: SHOW GENERATED TICKETS ===== -->
+    <div class="success-screen" id="successScreen">
+      <div class="success-head">
+        <div class="emoji">✅</div>
+        <h2>Tickets Issued!</h2>
+        <p id="successSummary"></p>
+      </div>
+
+      <div class="screenshot-note">
+        📸 <strong>Please screenshot or save this screen for the recipient.</strong><br/>
+        Each ticket below has its own QR code — the recipient can scan it anytime to view or share their ticket.
+      </div>
+
+      <div class="screenshot-note" style="border-color: rgba(232,93,4,0.4); background: rgba(232,93,4,0.1);">
+        🔑 <strong>Important:</strong> If this ticket is ever given or sold to someone else later, they'll need the <strong>last 4 digits of the transaction number</strong> (<span id="transactionLast4"></span>) to update the ticket owner. Please share that with the recipient.
+      </div>
+
+      <div class="share-all-bar" id="shareAllBar">
+        <p>📤 Share all <strong id="shareAllCount">0</strong> ticket(s) with the recipient at once:</p>
+        <div class="share-row">
+          <a class="share-btn tw" id="shareAllTwitter" target="_blank" rel="noopener">🐦 X / Twitter</a>
+          <a class="share-btn mail" id="shareAllEmail">✉️ Email</a>
+          <button type="button" class="share-btn copy" onclick="copyAllTicketLinks()">🔗 Copy All Links</button>
+        </div>
+      </div>
+
+      <div id="ticketList"></div>
+
+      <div class="nav-links">
+        <a href="generate-bulk-ticket.html" onclick="confirmLeave(function(){ resetForm(); }); return false;">＋ Issue More</a>
+        <a href="admin.html" onclick="return confirmLeave(function(){ window.location.href='admin.html'; });">🔍 Admin Panel</a>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="nav-links">
+    <a href="generate-ticket.html">🎟️ Individual Member Generator</a>
+    <a href="admin.html">🔍 Admin Panel</a>
+  </div>
+</div>
+
+<div class="toast" id="toast">✓ Success!</div>
+
+<!-- ===== EXIT CONFIRM MODAL ===== -->
+<div class="exit-modal-backdrop" id="exitModalBackdrop">
+  <div class="exit-modal">
+    <div class="icon">🎟️</div>
+    <h3>Leave this screen?</h3>
+    <p>Make sure you've shared or screenshotted the ticket(s) for the recipient first — this list won't be shown again after you leave.</p>
+    <div class="exit-modal-actions">
+      <button type="button" class="btn-stay" onclick="closeExitModal()">Stay</button>
+      <button type="button" class="btn-leave" onclick="proceedLeave()">Leave anyway</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ====== CONFIGURATION ======
+  // NOTE: Same backend URL/secret as your other pages, but this page uses its own
+  // action names (generatePoolTicket / getPoolStatus) so it needs matching Apps
+  // Script functions added on the backend — see the message alongside this file.
+  const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbzDYBf744OYy-jKComn6tRtyw1U_N7qSKnPjSuaJRrvxBEWutmyYRv3IZfaOOpHQcDSKA/exec';
+  const TICKET_PRICE = 100;
+  const BULK_PIN = '1234'; // ← change this; deliberately separate from the individual-seller PIN
+  const API_SECRET = 'L10nsClvbQCBELC';
+  const DEFAULT_SOLD_BY = 'QCBELC';
+  const DEMO_POOL_TOTAL = 1000; // only used when the backend isn't reachable (demo mode)
+
+  // ====== STARS ======
+  (function(){
+    const container = document.getElementById('stars');
+    for(let i = 0; i < 80; i++){
+      const s = document.createElement('div');
+      s.className = 'star';
+      const size = Math.random() * 2.5 + 0.5;
+      s.style.cssText = `width:${size}px; height:${size}px; top:${Math.random()*100}%; left:${Math.random()*100}%; --d:${(Math.random()*3+2).toFixed(1)}s; --delay:-${(Math.random()*5).toFixed(1)}s;`;
+      container.appendChild(s);
+    }
+  })();
+
+  // ====== PIN GATE ======
+  function checkPin(){
+    const val = document.getElementById('pinInput').value.trim();
+    const err = document.getElementById('pinErr');
+    if(val === BULK_PIN){
+      document.getElementById('pinGate').style.display = 'none';
+      sessionStorage.setItem('luckyDrawBulkUnlocked', '1');
+    } else {
+      err.classList.add('show');
+      document.getElementById('pinInput').value = '';
+      document.getElementById('pinInput').focus();
+    }
+  }
+  document.getElementById('pinInput').addEventListener('keydown', e => { if(e.key === 'Enter') checkPin(); });
+  if(sessionStorage.getItem('luckyDrawBulkUnlocked') === '1'){
+    document.getElementById('pinGate').style.display = 'none';
+  }
+
+  // ====== POOL STATE ======
+  let poolRemaining = null;
+  let poolTotal = null;
+  let isDemoPool = false;
+
+  async function loadPoolStatus(){
+    try {
+      const resp = await fetch(WEBAPP_URL + '?action=getPoolStatus&secret=' + encodeURIComponent(API_SECRET), {mode:'cors'});
+      const data = await resp.json();
+      if(!data.success) throw new Error();
+      poolRemaining = Number(data.remaining);
+      poolTotal = Number(data.total);
+      isDemoPool = false;
+    } catch(e){
+      // Demo fallback — pool state only lives in this tab and resets on reload.
+      if(poolRemaining === null){ poolRemaining = DEMO_POOL_TOTAL; }
+      poolTotal = DEMO_POOL_TOTAL;
+      isDemoPool = true;
+    }
+    renderPoolBanner();
+  }
+
+  function renderPoolBanner(){
+    const banner = document.getElementById('poolBanner');
+    const text = document.getElementById('poolCountText');
+    const fill = document.getElementById('poolBarFill');
+    const pct = poolTotal ? Math.max(0, Math.min(100, (poolRemaining / poolTotal) * 100)) : 0;
+    text.textContent = poolRemaining + ' of ' + poolTotal;
+    fill.style.width = pct + '%';
+    banner.classList.toggle('demo', isDemoPool);
+    banner.classList.toggle('soldout', poolRemaining <= 0);
+
+    let demoNote = banner.querySelector('.demo-note');
+    if(isDemoPool){
+      if(!demoNote){
+        demoNote = document.createElement('div');
+        demoNote.className = 'demo-note';
+        banner.appendChild(demoNote);
+      }
+      demoNote.textContent = '⚠️ Demo mode — backend not connected, this count resets on reload.';
+    } else if(demoNote){
+      demoNote.remove();
+    }
+
+    document.getElementById('formCard').style.display = poolRemaining > 0 ? '' : 'none';
+    document.getElementById('soldOutBox').style.display = poolRemaining > 0 ? 'none' : '';
+
+    const qtyInput = document.getElementById('ticketQty');
+    qtyInput.max = Math.max(1, poolRemaining);
+    if(parseInt(qtyInput.value) > poolRemaining) qtyInput.value = Math.max(1, poolRemaining);
+    document.getElementById('qtyHint').textContent =
+      'Each ticket gets its own QR code and Ticket ID, decremented from the pool above. Maximum ' + poolRemaining + ' in this batch.';
+    updateTotalPrice();
+  }
+
+  loadPoolStatus();
+
+  // ====== ADJUST POOL TOTAL ======
+  async function adjustPoolTotal(){
+    const current = poolTotal != null ? poolTotal : DEMO_POOL_TOTAL;
+    const input = prompt('Set the total number of tickets in the QCBELC pool.\n\nCurrent total: ' + current + '\nAlready issued: ' + (poolTotal != null && poolRemaining != null ? (poolTotal - poolRemaining) : '—') + '\n\nEnter the new total:', String(current));
+    if(input === null) return; // cancelled
+    const newTotal = parseInt(input.trim(), 10);
+    if(isNaN(newTotal) || newTotal < 0){
+      showToast('Please enter a valid number (0 or more).', true);
+      return;
+    }
+    if(!confirm('Set pool total to ' + newTotal.toLocaleString() + '?\n\nThis only changes the ceiling — no tickets already issued are affected.')) return;
+
+    const btn = document.getElementById('adjustPoolBtn');
+    btn.disabled = true;
+    try {
+      const resp = await fetch(WEBAPP_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action: 'setPoolTotal', secret: API_SECRET, newTotal }),
+        mode: 'cors'
+      });
+      const data = await resp.json();
+      if(data.success){
+        poolTotal = data.total;
+        poolRemaining = data.remaining;
+        isDemoPool = false;
+        renderPoolBanner();
+        showToast(data.message || 'Pool total updated.');
+      } else {
+        showToast('Error: ' + (data.message || 'Could not update pool total.'), true);
+      }
+    } catch(e){
+      showToast('Could not reach the backend — pool total was not changed.', true);
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  // ====== TICKET COUNTER ======
+  function updateTotalPrice(){
+    const val = parseInt(document.getElementById('ticketQty').value) || 1;
+    document.getElementById('totalPrice').textContent = '₱' + (val * TICKET_PRICE).toLocaleString();
+  }
+  function changeQty(delta){
+    const inp = document.getElementById('ticketQty');
+    const max = Math.max(1, poolRemaining || 1);
+    let val = (parseInt(inp.value) || 1) + delta;
+    val = Math.max(1, Math.min(max, val));
+    inp.value = val;
+    updateTotalPrice();
+  }
+  function onQtyInput(){
+    const inp = document.getElementById('ticketQty');
+    const max = Math.max(1, poolRemaining || 1);
+    let val = parseInt(inp.value) || 1;
+    val = Math.max(1, Math.min(max, val));
+    inp.value = val;
+    updateTotalPrice();
+  }
+
+  // ====== VALIDATION ======
+  let compressedReceiptBase64 = null;
+  let receiptFileName = null;
+
+  // ====== SHARE / EXIT-CONFIRM STATE ======
+  let allGeneratedTicketLinks = [];
+  let ticketsUnsaved = false;
+  let pendingLeaveAction = null;
+
+  function copyTicketLink(url, btnEl){
+    navigator.clipboard.writeText(url).then(() => {
+      const original = btnEl.textContent;
+      btnEl.textContent = '✓ Copied!';
+      setTimeout(() => { btnEl.textContent = original; }, 1800);
+    }).catch(() => showToast('Could not copy link.', true));
+  }
+
+  function copyAllTicketLinks(){
+    const text = allGeneratedTicketLinks.map(t => `${t.id}: ${t.url}`).join('\n');
+    navigator.clipboard.writeText(text).then(() => {
+      showToast('All ticket links copied! 🔗');
+    }).catch(() => showToast('Could not copy links.', true));
+  }
+
+  function updateShareAllBar(buyerName){
+    document.getElementById('shareAllCount').textContent = allGeneratedTicketLinks.length;
+    const combinedText = `🎟️ Here are ${buyerName}'s QCBELC raffle ticket(s):\n` +
+      allGeneratedTicketLinks.map(t => `${t.id}: ${t.url}`).join('\n');
+
+    document.getElementById('shareAllTwitter').href =
+      'https://twitter.com/intent/tweet?text=' + encodeURIComponent(combinedText);
+    document.getElementById('shareAllEmail').href =
+      'mailto:?subject=' + encodeURIComponent('Your QCBELC Raffle Tickets') +
+      '&body=' + encodeURIComponent(combinedText);
+  }
+
+  // ====== EXIT CONFIRMATION ======
+  function confirmLeave(leaveActionFn){
+    if(!ticketsUnsaved){
+      leaveActionFn();
+      return true;
+    }
+    pendingLeaveAction = leaveActionFn;
+    document.getElementById('exitModalBackdrop').classList.add('show');
+    return false;
+  }
+  function closeExitModal(){
+    document.getElementById('exitModalBackdrop').classList.remove('show');
+    pendingLeaveAction = null;
+  }
+  function proceedLeave(){
+    ticketsUnsaved = false;
+    document.getElementById('exitModalBackdrop').classList.remove('show');
+    if(pendingLeaveAction) pendingLeaveAction();
+    pendingLeaveAction = null;
+  }
+  window.addEventListener('beforeunload', function(e){
+    if(ticketsUnsaved){
+      e.preventDefault();
+      e.returnValue = '';
+      return '';
+    }
+  });
+
+  function validateField(id, errId, test){
+    const el = document.getElementById(id);
+    const err = document.getElementById(errId);
+    const valid = test(el.value.trim());
+    el.classList.toggle('error', !valid);
+    el.classList.toggle('valid', valid);
+    err.classList.toggle('show', !valid);
+    return valid;
+  }
+  function validateAll(){
+    let ok = true;
+    ok = validateField('recipientName','recipientNameErr', v => v.length >= 2) && ok;
+    ok = validateField('transactionNumberId','transactionNumberIdErr', v => v.length >= 4) && ok;
+
+    const imageErr = document.getElementById('imageErr');
+    const uploadZone = document.getElementById('uploadZone');
+    const hasPhoto = !!compressedReceiptBase64;
+    if(!hasPhoto){
+      imageErr.classList.add('show');
+      uploadZone.classList.add('required-empty');
+      ok = false;
+    } else {
+      imageErr.classList.remove('show');
+      uploadZone.classList.remove('required-empty');
+    }
+
+    const agreeErr = document.getElementById('agreeErr');
+    const agreed = document.getElementById('agreeCheck').checked;
+    agreeErr.classList.toggle('show', !agreed);
+    ok = agreed && ok;
+
+    const qty = parseInt(document.getElementById('ticketQty').value) || 0;
+    if(poolRemaining !== null && qty > poolRemaining){
+      showToast('Only ' + poolRemaining + ' ticket(s) left in the pool.', true);
+      ok = false;
+    }
+    return ok;
+  }
+  ['recipientName','transactionNumberId'].forEach(id => {
+    document.getElementById(id).addEventListener('blur', () => validateAll());
+  });
+
+  // ====== RECEIPT PHOTO: COMPRESS TO ~70% QUALITY BEFORE UPLOAD ======
+  function compressImage(file, quality = 0.7, maxDimension = 1600){
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      const reader = new FileReader();
+      reader.onload = (e) => { img.src = e.target.result; };
+      reader.onerror = reject;
+      img.onload = () => {
+        let { width, height } = img;
+        if(width > maxDimension || height > maxDimension){
+          const scale = maxDimension / Math.max(width, height);
+          width = Math.round(width * scale);
+          height = Math.round(height * scale);
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        const dataUrl = canvas.toDataURL('image/jpeg', quality);
+        resolve(dataUrl);
+      };
+      img.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  document.getElementById('receiptImage').addEventListener('change', async function(e){
+    const file = e.target.files[0];
+    const fileNameEl = document.getElementById('fileName');
+    const previewWrap = document.getElementById('previewWrap');
+    const previewImg = document.getElementById('previewImg');
+
+    fileNameEl.textContent = '';
+    previewWrap.style.display = 'none';
+    compressedReceiptBase64 = null;
+    receiptFileName = null;
+
+    if(!file) { validateAll(); return; }
+
+    if(file.size > 15 * 1024 * 1024){
+      fileNameEl.textContent = '⚠️ File is too large. Please choose a smaller photo.';
+      return;
+    }
+
+    fileNameEl.textContent = '⏳ Processing photo...';
+    try {
+      const dataUrl = await compressImage(file, 0.7);
+      compressedReceiptBase64 = dataUrl.split(',')[1];
+      receiptFileName = (file.name || 'receipt').replace(/\.[^.]+$/, '') + '.jpg';
+      fileNameEl.textContent = '📎 ' + receiptFileName + ' — ready';
+      previewImg.src = dataUrl;
+      previewWrap.style.display = 'block';
+    } catch(err){
+      fileNameEl.textContent = '⚠️ Could not process this photo. Please try another.';
+    }
+    validateAll();
+  });
+
+  // ====== COMPACT VIEW (large batches) ======
+  // For big batches (districts buying 100s of tickets at once), rendering a
+  // full QR-code card per ticket would freeze the browser and produce an
+  // overwhelming, hard-to-scan screen — especially for non-technical users.
+  // Above COMPACT_VIEW_THRESHOLD tickets, we show a simple numbered list
+  // instead. Every ticket is still fully viewable/printable one at a time
+  // via the Admin Panel's search + reprint feature.
+  const COMPACT_VIEW_THRESHOLD = 30;
+
+  function renderCompactTicketList(container, tickets, buyerName, soldByName){
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'background:rgba(255,255,255,0.05); border:1px solid rgba(212,160,23,0.25); border-radius:14px; padding:18px 20px; max-height:420px; overflow-y:auto;';
+
+    const note = document.createElement('div');
+    note.style.cssText = 'font-size:0.88rem; color:rgba(255,248,238,0.7); margin-bottom:14px; line-height:1.5;';
+    note.innerHTML = `📋 <strong>${tickets.length} tickets</strong> issued to <strong>${buyerName}</strong> (sold by ${soldByName}). Showing a compact list since this is a large batch — open the <strong>Admin Panel</strong> anytime to look up, view, or reprint any individual ticket with its QR code.`;
+    wrap.appendChild(note);
+
+    const table = document.createElement('div');
+    tickets.forEach((t, idx) => {
+      const row = document.createElement('div');
+      row.style.cssText = 'display:flex; justify-content:space-between; gap:10px; padding:8px 4px; font-family:"Courier New",monospace; font-size:0.92rem; border-bottom:1px solid rgba(255,255,255,0.06);';
+      row.innerHTML = `<span style="color:rgba(255,248,238,0.5);">#${idx+1}</span><span style="color:var(--gold-light); font-weight:700;">${t.ticketId}</span>`;
+      table.appendChild(row);
+      allGeneratedTicketLinks.push({ id: t.ticketId, url: ticketOrigin() + '?qr=' + encodeURIComponent(t.qrCodeId) });
+    });
+    wrap.appendChild(table);
+    container.appendChild(wrap);
+  }
+
+  // ====== BUILD TICKET CARD (with offline QR) ======
+  function ticketOrigin(){
+    const parts = window.location.href.split('/');
+    parts.pop();
+    return parts.join('/') + '/view-ticket.html';
+  }
+
+  function renderTicketCard(container, ticket, buyerName, allTicketsInBatch, soldByName){
+    const card = document.createElement('div');
+    card.className = 'ticket-card';
+
+    const qrBox = document.createElement('div');
+    qrBox.className = 'qr-box';
+    card.appendChild(qrBox);
+
+    const info = document.createElement('div');
+    info.className = 'info';
+    const siblingIds = allTicketsInBatch
+      .map(t => t.qrCodeId)
+      .filter(id => id !== ticket.qrCodeId);
+    const siblingParam = siblingIds.length ? '&siblings=' + encodeURIComponent(siblingIds.join(',')) : '';
+    const viewUrl = ticketOrigin() + '?qr=' + encodeURIComponent(ticket.qrCodeId) + siblingParam;
+    const shareMsg = `🎟️ Here's my QCBELC raffle ticket (${ticket.ticketId})! Check it out:`;
+    const twShareUrl = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(shareMsg) + '&url=' + encodeURIComponent(viewUrl);
+    const mailShareUrl = 'mailto:?subject=' + encodeURIComponent('Your QCBELC Raffle Ticket') + '&body=' + encodeURIComponent(shareMsg + '\n\n' + viewUrl);
+    info.innerHTML = `
+      <div class="tid">${ticket.ticketId}</div>
+      <div class="buyer">${buyerName}</div>
+      <div class="meta">Sold by: ${soldByName}</div>
+      <div class="meta">QR ID: ${ticket.qrCodeId}</div>
+      <span class="badge verified-badge">✅ Good as Sold</span><br/>
+      <a class="view-link" href="${viewUrl}" target="_blank">🔗 Open Full Digital Ticket</a>
+      <div class="share-row">
+        <a class="share-btn tw" href="${twShareUrl}" target="_blank" rel="noopener">🐦 X</a>
+        <a class="share-btn mail" href="${mailShareUrl}">✉️ Email</a>
+        <button type="button" class="share-btn copy" onclick="copyTicketLink('${viewUrl}', this)">🔗 Copy</button>
+      </div>
+    `;
+    card.appendChild(info);
+    container.appendChild(card);
+    allGeneratedTicketLinks.push({ id: ticket.ticketId, url: viewUrl });
+
+    new QRCode(qrBox, {
+      text: viewUrl, width: 110, height: 110,
+      colorDark: '#1A0A2E', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.M
+    });
+  }
+
+  // ====== FORM SUBMIT ======
+  document.getElementById('generateForm').addEventListener('submit', async function(e){
+    e.preventDefault();
+    if(!validateAll()) return;
+
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Issuing...';
+
+    const soldByRaw = document.getElementById('soldBy').value.trim();
+    const soldBy = soldByRaw || DEFAULT_SOLD_BY;
+
+    const payload = {
+      action: 'generatePoolTicket',
+      secret: API_SECRET,
+      soldBy: soldBy,
+      recipientName: document.getElementById('recipientName').value.trim(),
+      recipientPhone: document.getElementById('recipientPhone').value.trim(),
+      ticketQty: document.getElementById('ticketQty').value,
+      paymentMethod: document.getElementById('paymentMethod').value,
+      transactionNumberId: document.getElementById('transactionNumberId').value.trim(),
+      receiptImage: compressedReceiptBase64 || null,
+      receiptFileName: receiptFileName || null,
+    };
+
+    function showResults(tickets, buyerName, remaining, total, demo){
+      document.getElementById('generateForm').style.display = 'none';
+      document.getElementById('successScreen').classList.add('show');
+      document.getElementById('successSummary').textContent =
+        tickets.length + ' ticket(s) issued to ' + buyerName + (demo ? ' (Demo Mode — backend not connected)' : '.');
+      const txn = document.getElementById('transactionNumberId').value.trim();
+      document.getElementById('transactionLast4').textContent = txn ? txn.slice(-4).toUpperCase() : '----';
+      const list = document.getElementById('ticketList');
+      list.innerHTML = '';
+      allGeneratedTicketLinks = [];
+      if(tickets.length > COMPACT_VIEW_THRESHOLD){
+        renderCompactTicketList(list, tickets, buyerName, soldBy);
+      } else {
+        tickets.forEach(t => renderTicketCard(list, t, buyerName, tickets, soldBy));
+      }
+      updateShareAllBar(buyerName);
+      ticketsUnsaved = true;
+      showToast(demo ? 'Demo mode: backend not connected.' : (tickets.length + ' ticket(s) issued! 🎉'), demo);
+
+      if(remaining != null){
+        poolRemaining = remaining;
+        if(total != null) poolTotal = total;
+      }
+    }
+
+    try {
+      const resp = await fetch(WEBAPP_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload),
+        mode: 'cors'
+      });
+      const data = await resp.json();
+
+      if(data.success){
+        showResults(data.tickets, payload.recipientName, data.poolRemaining, data.poolTotal, false);
+      } else if(data.soldOut){
+        showToast('Not enough tickets left in the pool for this batch.', true);
+        btn.disabled = false;
+        btn.innerHTML = '🎟️ Issue Ticket(s) From Pool';
+        loadPoolStatus();
+      } else {
+        showToast('Error: ' + (data.message || 'Something went wrong.'), true);
+        btn.disabled = false;
+        btn.innerHTML = '🎟️ Issue Ticket(s) From Pool';
+      }
+    } catch(err) {
+      // Demo mode fallback (no backend connected) — decrements the in-memory demo pool only.
+      const qty = Math.min(parseInt(payload.ticketQty) || 1, poolRemaining || 0);
+      const demoTickets = [];
+      for(let i=0;i<qty;i++){
+        demoTickets.push({
+          ticketId: 'QCB-' + Date.now().toString().slice(-6) + '-' + i,
+          qrCodeId: 'QR-QCB' + Date.now().toString().slice(-5) + i
+        });
+      }
+      const newRemaining = Math.max(0, (poolRemaining || 0) - qty);
+      showResults(demoTickets, payload.recipientName, newRemaining, poolTotal, true);
+    }
+  });
+
+  function showToast(msg, isError = false){
+    const t = document.getElementById('toast');
+    t.textContent = (isError ? '⚠️ ' : '✓ ') + msg;
+    t.className = 'toast' + (isError ? ' error-toast' : '') + ' show';
+    setTimeout(() => t.classList.remove('show'), 5000);
+  }
+
+  function resetForm(){
+    ticketsUnsaved = false;
+    allGeneratedTicketLinks = [];
+    document.getElementById('generateForm').reset();
+    document.getElementById('generateForm').style.display = '';
+    document.getElementById('successScreen').classList.remove('show');
+    document.getElementById('submitBtn').disabled = false;
+    document.getElementById('submitBtn').innerHTML = '🎟️ Issue Ticket(s) From Pool';
+    document.getElementById('ticketQty').value = 1;
+    compressedReceiptBase64 = null;
+    receiptFileName = null;
+    document.getElementById('fileName').textContent = '';
+    document.getElementById('previewWrap').style.display = 'none';
+    document.getElementById('uploadZone').classList.remove('required-empty');
+    ['recipientName','transactionNumberId'].forEach(id=>{
+      document.getElementById(id).classList.remove('error','valid');
+    });
+    document.querySelectorAll('.field-error').forEach(e=>e.classList.remove('show'));
+    loadPoolStatus();
+  }
+</script>
+</body>
+</html>
