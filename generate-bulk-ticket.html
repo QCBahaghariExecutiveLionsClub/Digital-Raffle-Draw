@@ -73,8 +73,6 @@
   .pool-banner .pool-count { font-family: 'Playfair Display', serif; font-weight: 800; color: var(--gold-light); font-size: 1.1rem; }
   .pool-bar-track { height: 10px; border-radius: 6px; background: rgba(255,255,255,0.08); overflow: hidden; }
   .pool-bar-fill { height: 100%; background: linear-gradient(90deg, var(--gold), var(--accent)); border-radius: 6px; transition: width 0.4s ease; }
-  .pool-banner.demo { border-color: rgba(232,93,4,0.4); }
-  .pool-banner .demo-note { font-size: 0.78rem; color: rgba(255,248,238,0.45); margin-top: 8px; }
   .pool-banner.soldout { border-color: rgba(192,57,43,0.5); }
   .pool-banner.soldout .pool-count { color: #ff7675; }
 
@@ -337,6 +335,14 @@
     </div>
   </div>
 
+  <!-- ===== CONNECTION ERROR STATE ===== -->
+  <div class="sold-out-box" id="connErrorBox" style="display:none; border-color: rgba(192,57,43,0.5);">
+    <div class="emoji">⚠️</div>
+    <h2 style="color:#ff7675;">Can't Reach the Server</h2>
+    <p id="connErrorMsg">We couldn't load the pool status. Please check your internet connection and try again — tickets can't be issued until this is working, since we need to confirm how many are actually left.</p>
+    <button type="button" onclick="loadPoolStatus()" style="margin-top:18px; padding:13px 30px; background:linear-gradient(135deg, var(--gold), var(--accent)); border:none; border-radius:10px; color:#fff; font-weight:700; font-size:0.95rem; cursor:pointer;">🔄 Retry</button>
+  </div>
+
   <!-- ===== SOLD OUT STATE ===== -->
   <div class="sold-out-box" id="soldOutBox" style="display:none;">
     <div class="emoji">🎟️</div>
@@ -503,10 +509,9 @@
   // Script functions added on the backend — see the message alongside this file.
   const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbzDYBf744OYy-jKComn6tRtyw1U_N7qSKnPjSuaJRrvxBEWutmyYRv3IZfaOOpHQcDSKA/exec';
   const TICKET_PRICE = 100;
-  const BULK_PIN = '1234'; // ← change this; deliberately separate from the individual-seller PIN
+  const BULK_PIN = '5678'; // ← change this; deliberately separate from the individual-seller PIN
   const API_SECRET = 'L10nsClvbQCBELC';
   const DEFAULT_SOLD_BY = 'QCBELC';
-  const DEMO_POOL_TOTAL = 1000; // only used when the backend isn't reachable (demo mode)
 
   // ====== STARS ======
   (function(){
@@ -541,23 +546,40 @@
   // ====== POOL STATE ======
   let poolRemaining = null;
   let poolTotal = null;
-  let isDemoPool = false;
+  let poolLoadError = false;
 
   async function loadPoolStatus(){
+    const banner = document.getElementById('poolBanner');
+    const text = document.getElementById('poolCountText');
+    text.textContent = 'Loading…';
+    banner.style.display = '';
+    document.getElementById('connErrorBox').style.display = 'none';
+
     try {
       const resp = await fetch(WEBAPP_URL + '?action=getPoolStatus&secret=' + encodeURIComponent(API_SECRET), {mode:'cors'});
       const data = await resp.json();
-      if(!data.success) throw new Error();
+      if(!data.success) throw new Error(data.message || 'Backend returned an error.');
       poolRemaining = Number(data.remaining);
       poolTotal = Number(data.total);
-      isDemoPool = false;
+      poolLoadError = false;
+      renderPoolBanner();
     } catch(e){
-      // Demo fallback — pool state only lives in this tab and resets on reload.
-      if(poolRemaining === null){ poolRemaining = DEMO_POOL_TOTAL; }
-      poolTotal = DEMO_POOL_TOTAL;
-      isDemoPool = true;
+      poolLoadError = true;
+      poolRemaining = null;
+      poolTotal = null;
+      showConnectionError(e && e.message ? e.message : '');
     }
-    renderPoolBanner();
+  }
+
+  function showConnectionError(detail){
+    document.getElementById('poolBanner').style.display = 'none';
+    document.getElementById('formCard').style.display = 'none';
+    document.getElementById('soldOutBox').style.display = 'none';
+    const box = document.getElementById('connErrorBox');
+    box.style.display = '';
+    const msgEl = document.getElementById('connErrorMsg');
+    msgEl.textContent = "We couldn't load the pool status. Please check your internet connection and try again — tickets can't be issued until this is working, since we need to confirm how many are actually left." +
+      (detail ? (' (' + detail + ')') : '');
   }
 
   function renderPoolBanner(){
@@ -567,20 +589,9 @@
     const pct = poolTotal ? Math.max(0, Math.min(100, (poolRemaining / poolTotal) * 100)) : 0;
     text.textContent = poolRemaining + ' of ' + poolTotal;
     fill.style.width = pct + '%';
-    banner.classList.toggle('demo', isDemoPool);
     banner.classList.toggle('soldout', poolRemaining <= 0);
-
-    let demoNote = banner.querySelector('.demo-note');
-    if(isDemoPool){
-      if(!demoNote){
-        demoNote = document.createElement('div');
-        demoNote.className = 'demo-note';
-        banner.appendChild(demoNote);
-      }
-      demoNote.textContent = '⚠️ Demo mode — backend not connected, this count resets on reload.';
-    } else if(demoNote){
-      demoNote.remove();
-    }
+    banner.style.display = '';
+    document.getElementById('connErrorBox').style.display = 'none';
 
     document.getElementById('formCard').style.display = poolRemaining > 0 ? '' : 'none';
     document.getElementById('soldOutBox').style.display = poolRemaining > 0 ? 'none' : '';
@@ -597,8 +608,12 @@
 
   // ====== ADJUST POOL TOTAL ======
   async function adjustPoolTotal(){
-    const current = poolTotal != null ? poolTotal : DEMO_POOL_TOTAL;
-    const input = prompt('Set the total number of tickets in the QCBELC pool.\n\nCurrent total: ' + current + '\nAlready issued: ' + (poolTotal != null && poolRemaining != null ? (poolTotal - poolRemaining) : '—') + '\n\nEnter the new total:', String(current));
+    if(poolLoadError || poolTotal == null){
+      showToast("Can't adjust the pool total right now — not connected to the server.", true);
+      return;
+    }
+    const current = poolTotal;
+    const input = prompt('Set the total number of tickets in the QCBELC pool.\n\nCurrent total: ' + current + '\nAlready issued: ' + (poolTotal - poolRemaining) + '\n\nEnter the new total:', String(current));
     if(input === null) return; // cancelled
     const newTotal = parseInt(input.trim(), 10);
     if(isNaN(newTotal) || newTotal < 0){
@@ -620,7 +635,6 @@
       if(data.success){
         poolTotal = data.total;
         poolRemaining = data.remaining;
-        isDemoPool = false;
         renderPoolBanner();
         showToast(data.message || 'Pool total updated.');
       } else {
@@ -923,11 +937,11 @@
       receiptFileName: receiptFileName || null,
     };
 
-    function showResults(tickets, buyerName, remaining, total, demo){
+    function showResults(tickets, buyerName, remaining, total){
       document.getElementById('generateForm').style.display = 'none';
       document.getElementById('successScreen').classList.add('show');
       document.getElementById('successSummary').textContent =
-        tickets.length + ' ticket(s) issued to ' + buyerName + (demo ? ' (Demo Mode — backend not connected)' : '.');
+        tickets.length + ' ticket(s) issued to ' + buyerName + '.';
       const txn = document.getElementById('transactionNumberId').value.trim();
       document.getElementById('transactionLast4').textContent = txn ? txn.slice(-4).toUpperCase() : '----';
       const list = document.getElementById('ticketList');
@@ -940,12 +954,24 @@
       }
       updateShareAllBar(buyerName);
       ticketsUnsaved = true;
-      showToast(demo ? 'Demo mode: backend not connected.' : (tickets.length + ' ticket(s) issued! 🎉'), demo);
+      showToast(tickets.length + ' ticket(s) issued! 🎉');
 
       if(remaining != null){
         poolRemaining = remaining;
         if(total != null) poolTotal = total;
       }
+    }
+
+    // Reusable "couldn't reach the server" state for this submission —
+    // no tickets are faked or generated locally. Nothing about the pool
+    // count changes unless the backend confirms it actually happened.
+    function showSubmitConnectionError(){
+      showToast("Couldn't reach the server — no tickets were issued. Please check your connection and try again.", true);
+      btn.disabled = false;
+      btn.innerHTML = '🎟️ Issue Ticket(s) From Pool';
+      // Re-check real pool status in case connectivity comes back, and to
+      // surface the full connection-error screen if it's still down.
+      loadPoolStatus();
     }
 
     try {
@@ -958,7 +984,7 @@
       const data = await resp.json();
 
       if(data.success){
-        showResults(data.tickets, payload.recipientName, data.poolRemaining, data.poolTotal, false);
+        showResults(data.tickets, payload.recipientName, data.poolRemaining, data.poolTotal);
       } else if(data.soldOut){
         showToast('Not enough tickets left in the pool for this batch.', true);
         btn.disabled = false;
@@ -970,17 +996,7 @@
         btn.innerHTML = '🎟️ Issue Ticket(s) From Pool';
       }
     } catch(err) {
-      // Demo mode fallback (no backend connected) — decrements the in-memory demo pool only.
-      const qty = Math.min(parseInt(payload.ticketQty) || 1, poolRemaining || 0);
-      const demoTickets = [];
-      for(let i=0;i<qty;i++){
-        demoTickets.push({
-          ticketId: 'QCB-' + Date.now().toString().slice(-6) + '-' + i,
-          qrCodeId: 'QR-QCB' + Date.now().toString().slice(-5) + i
-        });
-      }
-      const newRemaining = Math.max(0, (poolRemaining || 0) - qty);
-      showResults(demoTickets, payload.recipientName, newRemaining, poolTotal, true);
+      showSubmitConnectionError();
     }
   });
 
