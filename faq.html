@@ -204,6 +204,12 @@
         <p>No. Everything works right inside your phone or computer's web browser (like Chrome or Safari). There is nothing to download.</p>
       </div></div>
     </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleItem(this)">Where can I see the prizes, the draw date, and how the raffle works? <span class="plus">+</span></button>
+      <div class="faq-a"><div class="faq-a-inner">
+        <p>Right on the ticket page itself. Scroll down below any ticket to see the full prize breakdown, the draw date, the member guidelines, and how to purchase tickets — plus the official posters, so there's always one place to check everything without needing another link.</p>
+      </div></div>
+    </div>
   </section>
 
   <!-- ============ SECTION 2 ============ -->
@@ -242,7 +248,8 @@
     <div class="faq-item">
       <button class="faq-q" onclick="toggleItem(this)">Is the Transaction/Reference Number required? <span class="plus">+</span></button>
       <div class="faq-a"><div class="faq-a-inner">
-        <p>Yes. It's now a required field (at least 4 characters) when generating a ticket. It's not just for record-keeping — the last 4 characters become the PIN used later if that ticket is shared, given away, or resold, so it has to be filled in for every submission.</p>
+        <p>Yes. It's still a required field (at least 4 characters) when generating a ticket, since it's the proof-of-payment reference used for record-keeping and verification.</p>
+        <div class="callout good">📌 Update: This number is <strong>no longer used as a transfer PIN</strong>. Changing a ticket's holder now only needs a name — see Section 6 for details.</div>
       </div></div>
     </div>
   </section>
@@ -297,9 +304,21 @@
         <p>Older tickets still work perfectly for viewing, verifying, and transferring ownership. They just won't show the "View My Other Tickets" button, since that connection wasn't saved into their QR code at the time they were made.</p>
       </div></div>
     </div>
-  </section>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleItem(this)">Can I share a ticket straight from its own page, after it's already been generated? <span class="plus">+</span></button>
+      <div class="faq-a"><div class="faq-a-inner">
+        <p>Yes. Open the ticket and tap the big <strong>"📤 Share This Ticket"</strong> button. On a phone, this opens the normal share menu — Messenger, SMS, email, or whatever app is already installed — with the ticket link ready to send.</p>
+        <p>If that menu isn't supported (some desktop browsers), the link is copied automatically instead, ready to paste anywhere. There's also a "Copy Link" box right underneath the Share button as an easy backup for anyone unsure which app to pick.</p>
+      </div></div>
+    </div>
 
-  <!-- ============ SECTION 5 ============ -->
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleItem(this)">The ticket shows ₱100.00 — does that change if it's shared with someone overseas? <span class="plus">+</span></button>
+      <div class="faq-a"><div class="faq-a-inner">
+        <p>The ticket price is always ₱100.00 Philippine Pesos — that never changes. But if it's shared with family or friends abroad who pay in their own currency, the amount they actually see in their bank or app may vary slightly depending on that platform's exchange rate at the time. A short note on the ticket itself explains this.</p>
+      </div></div>
+    </div>
+  </section>
   <section class="faq-section" id="sec5">
     <div class="section-head"><span class="icon">🚪</span><h2>5. Leaving the Ticket Screen</h2></div>
 
@@ -325,15 +344,22 @@
     <div class="faq-item">
       <button class="faq-q" onclick="toggleItem(this)">What if a ticket is given or resold to someone else? <span class="plus">+</span></button>
       <div class="faq-a"><div class="faq-a-inner">
-        <p>The new owner can update this themselves, right from the ticket page, by entering their name and a 4-character verification code. This code is simply the <strong>last 4 characters of the original transaction/reference number</strong> — known only to the seller and the original buyer, which keeps a stranger from changing ownership just by seeing a QR code.</p>
-        <div class="callout good">📌 Note: The Transaction/Reference Number is now required (minimum 4 characters) when a ticket is generated, precisely so this PIN always exists and every ticket can be safely shared, given away, or resold.</div>
+        <p>The new owner can put their own name on it themselves, right from the ticket page — they just enter their full name and tap Save. <strong>No code or PIN is needed anymore.</strong> This was changed so that older or non-technical users don't need to track down a code from the seller just to claim a ticket that was sent to them.</p>
+        <div class="callout">🔐 Because of this, anyone who has the ticket's link can rename it — so please only send a ticket link to the person you're actually giving or selling it to.</div>
+      </div></div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleItem(this)">I just received a shared ticket — how do I make it mine? <span class="plus">+</span></button>
+      <div class="faq-a"><div class="faq-a-inner">
+        <p>Open the ticket link you were sent. A gold banner appears right at the top of the page asking <strong>"Was this ticket shared with you?"</strong> — tap <strong>"Yes, It's Mine Now"</strong>, type your full name, and tap Save. That's the whole process, done in a few seconds.</p>
       </div></div>
     </div>
 
     <div class="faq-item">
       <button class="faq-q" onclick="toggleItem(this)">Does changing the owner erase the original buyer's name? <span class="plus">+</span></button>
       <div class="faq-a"><div class="faq-a-inner">
-        <p>No. The original donor's name always stays on record for our audit trail — only the "current holder" shown on the ticket updates.</p>
+        <p>No. The original donor's name always stays on record for our audit trail — only the "current holder" shown on the ticket updates. Every change is also timestamped in the system's internal notes, so there's a record of who changed what and when.</p>
       </div></div>
     </div>
   </section>
