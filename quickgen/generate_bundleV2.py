@@ -54,7 +54,7 @@ from datetime import datetime
 # ===================== CONFIG - edit these =====================
 
 # Copied from your generate-ticket.html - already correct.
-WEBAPP_URL = "https://script.google.com/macros/s/AKfycbyjaKpDTIWxoQSjjqKhjUYrHc_Ypw-7a6vCksbk_LMiYbKaYfxGUON3tYLOLGiz-kGwqA/exec"
+WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxrJUdm_fgywvzr8v1aWjbiQMGR2K94WyesWjsCchRTEY_ANcBFJXu-ig13hWygjDOxrA/exec"
 API_SECRET = "L10nsClvbQCBELC"
 
 # vvv FILL THIS IN vvv  - where view-ticket.html is hosted, no trailing slash.
