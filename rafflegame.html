@@ -346,7 +346,7 @@ body.mode-display{overflow:hidden;}
     <h3>🎲 How Every Winner Is Chosen</h3>
     <ol>
       <li><b>Only paid, active tickets are eligible.</b> The list comes straight from the Registrations sheet each time it's loaded.</li>
-      <li><b>Past winners are removed automatically.</b> Once a ticket wins, it can never be picked again in the same event — no one gets a second chance.</li>
+      <li><b>Past winners are removed automatically.</b> Once someone wins, that ticket <i>and any other ticket under the same full name</i> is removed — no one can win twice in the same event.</li>
       <li><b>The computer picks, not a person.</b> The winning ticket is chosen using the device's built‑in secure random number generator (<code>crypto.getRandomValues</code>) — the same technology used to generate secure passwords. No one, including the operator, can influence or predict the result.</li>
       <li><b>Every remaining ticket has an equal chance.</b> If 187 tickets are eligible, each one has exactly a 1‑in‑187 chance — shown on screen before every draw.</li>
       <li><b>Everything is logged.</b> Round, prize, eligible count, excluded count, and the winning ticket are all saved and can be downloaded as an audit log after the event.</li>
@@ -386,7 +386,7 @@ body.mode-display{overflow:hidden;}
 
   <div class="stat-strip">
     <div class="stat-chip"><div class="n" id="statEligible">0</div><div class="l">Eligible Tickets</div></div>
-    <div class="stat-chip"><div class="n" id="statExcluded">0</div><div class="l">Already Won</div></div>
+    <div class="stat-chip"><div class="n" id="statExcluded">0</div><div class="l">Excluded Tickets</div></div>
     <div class="stat-chip"><div class="n" id="statRounds">0 / 0</div><div class="l">Prizes Drawn</div></div>
     <div class="stat-chip"><div class="n" id="statDisplay">Not connected</div><div class="l">Display Screen</div></div>
   </div>
@@ -495,7 +495,7 @@ body.mode-display{overflow:hidden;}
 // ============================================================
 // CONFIG — update these two to match your Code.gs deployment
 // ============================================================
-const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbxmptEAwQOesFoXE2gzj0Uqar52l3N86i-UUYpmj4WO9se8Ytj0_dvHa2XdgBNlj4KWCA/exec';
+const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbyx38ii0cX8LH77VXiYsDqDvUw77sOsogSjQttCc_j1kH1Iav3hNM5QGU9x1DfMqUfJLQ/exec';
 const RAFFLE_SECRET = 'L10nsClvbQCBELC'; // must match API_SECRET in Code.gs
 
 const STORAGE_KEY = 'lions_raffle_state_v1';
@@ -511,6 +511,7 @@ document.getElementById(isDisplay ? 'displayView' : 'controlView').hidden = fals
 let state = loadState() || {
   participants: [],
   excludedTickets: {},
+  excludedNames: {},   // normalized full names of winners — same person can't win twice
   rounds: [],
   activeRoundId: null,
   pendingWinner: null,
@@ -519,8 +520,21 @@ let state = loadState() || {
 };
 
 function loadState(){
-  try { const raw = localStorage.getItem(STORAGE_KEY); return raw ? JSON.parse(raw) : null; }
-  catch(e){ return null; }
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    const st = raw ? JSON.parse(raw) : null;
+    if(st && !st.excludedNames) st.excludedNames = {};
+    return st;
+  } catch(e){ return null; }
+}
+
+// Normalizes a full name so "Juan  DELA Cruz" and "juan dela cruz" count as the same person.
+function normName(n){
+  return String(n || '').normalize('NFKD').replace(/[\u0300-\u036f]/g,'')
+    .toLowerCase().replace(/[.,]/g,' ').replace(/\s+/g,' ').trim();
+}
+function isExcluded(p){
+  return !!state.excludedTickets[p.ticket] || !!state.excludedNames[normName(p.name)];
 }
 function persist(broadcast){
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e){}
@@ -543,13 +557,13 @@ window.addEventListener('message', (e) => handleMessage(e.data));
 if(bc) bc.onmessage = (e) => handleMessage(e.data);
 window.addEventListener('storage', (e) => {
   if(e.key === STORAGE_KEY && e.newValue){
-    try { state = JSON.parse(e.newValue); renderAll(); } catch(err){}
+    try { state = JSON.parse(e.newValue); if(!state.excludedNames) state.excludedNames = {}; renderAll(); } catch(err){}
   }
 });
 
 function handleMessage(msg){
   if(!msg || !msg.type) return;
-  if(msg.type === 'state'){ state = msg.state; renderAll(); }
+  if(msg.type === 'state'){ state = msg.state; if(!state.excludedNames) state.excludedNames = {}; renderAll(); }
   else if(msg.type === 'draw:start'){ onDrawStart(msg); }
   else if(msg.type === 'draw:cancel'){ onDrawCancel(); }
   else if(msg.type === 'display:hello' && !isDisplay){ persist(); updateDisplayStatus(true); }
@@ -612,7 +626,7 @@ if(!isDisplay){
   };
 
   function eligibleParticipants(){
-    return state.participants.filter(p => !state.excludedTickets[p.ticket]);
+    return state.participants.filter(p => !isExcluded(p));
   }
 
   function secureRandomIndex(n){
@@ -670,6 +684,7 @@ if(!isDisplay){
     round.status = 'drawn';
     round.winner = { name: pending.name, ticket: pending.ticket, email: pending.email, phone: pending.phone };
     state.excludedTickets[pending.ticket] = true;
+    state.excludedNames[normName(pending.name)] = true; // blocks all of this person's other tickets too
     state.winnersLog.push({
       round: round.round, prize: round.prize, name: pending.name, ticket: pending.ticket,
       time: Date.now(),
@@ -726,7 +741,7 @@ if(!isDisplay){
   function renderStats(){
     const eligible = eligibleParticipants().length;
     document.getElementById('statEligible').textContent = eligible;
-    document.getElementById('statExcluded').textContent = Object.keys(state.excludedTickets).length;
+    document.getElementById('statExcluded').textContent = state.participants.length - eligible;
     const drawn = state.rounds.filter(r => r.status === 'drawn').length;
     document.getElementById('statRounds').textContent = drawn + ' / ' + state.rounds.length;
   }
@@ -763,13 +778,13 @@ if(!isDisplay){
   function renderFairness(){
     const box = document.getElementById('fairnessBox');
     const eligible = eligibleParticipants();
-    const excluded = Object.keys(state.excludedTickets).length;
+    const excluded = state.participants.length - eligible.length;
     if(state.participants.length === 0){
       box.innerHTML = 'Load participants to see the fairness breakdown here.';
       return;
     }
     box.innerHTML = `🎲 <b>${eligible.length}</b> ticket(s) are eligible right now` +
-      (excluded > 0 ? ` — <b>${excluded}</b> already won and are excluded from every future round.` : '.') +
+      (excluded > 0 ? ` — <b>${excluded}</b> belong to previous winners (matched by ticket <i>and</i> full name) and are excluded from every future round.` : '.') +
       ` Every eligible ticket has exactly a <b>1-in-${eligible.length}</b> chance, chosen using the browser's cryptographically secure random number generator (not a simple shuffle) — the same guarantee shown live on the display screen.`;
   }
 
@@ -808,14 +823,15 @@ if(!isDisplay){
     list.innerHTML = filtered.map((p,i) => {
       const initials = p.name.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
       const color = BALL_COLORS[i % BALL_COLORS.length];
-      const excluded = !!state.excludedTickets[p.ticket];
+      const excluded = isExcluded(p);
+      const byNameOnly = excluded && !state.excludedTickets[p.ticket];
       return `<div class="participant-item ${excluded?'excluded':''}">
         <div class="p-avatar" style="background:${color}">${initials}</div>
         <div class="p-info">
           <div class="p-name">${escapeHtml(p.name)}</div>
           <div class="p-ticket">${escapeHtml(p.ticket)}</div>
         </div>
-        ${excluded ? '<span class="p-badge">Already Won</span>' : ''}
+        ${excluded ? `<span class="p-badge">${byNameOnly ? 'Winner’s other ticket' : 'Already Won'}</span>` : ''}
       </div>`;
     }).join('');
   };
