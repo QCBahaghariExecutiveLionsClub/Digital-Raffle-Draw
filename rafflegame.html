@@ -559,8 +559,6 @@ function handleMessage(msg){
 // CONTROL VIEW LOGIC
 // ============================================================
 if(!isDisplay){
-  renderAll();
-
   window.openDisplayWindow = function(){
     const url = location.href.split('?')[0] + '?mode=display';
     displayWin = window.open(url, 'lionsRaffleDisplay', 'width=1280,height=800');
