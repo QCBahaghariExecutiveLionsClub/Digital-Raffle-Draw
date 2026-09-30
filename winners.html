@@ -166,7 +166,7 @@ async function loadWinners(){
       document.getElementById('swipeHint').hidden = allWinners.length < 2;
     }
     document.getElementById('footerNote').textContent =
-      'Results as of ' + new Date().toLocaleString() + ' · ' + allWinners.length + ' winner(s) drawn';
+      '';
   } catch(e){
     showMessage('⚠️', 'Could not load results right now. Please check your internet connection and reload the page.');
   }
